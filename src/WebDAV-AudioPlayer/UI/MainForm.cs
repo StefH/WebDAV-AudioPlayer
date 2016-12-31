@@ -48,8 +48,7 @@ namespace WebDav.AudioPlayer.UI
 
                     trackBarSong.Maximum = (int)_player.TotalTime.TotalSeconds;
 
-                    listView.SelectedIndices.Clear();
-                    listView.SelectedIndices.Add(selectedIndex);
+                    listView.SetSelectedIndex(selectedIndex);
                 },
                 PlayContinue = selectedSongName =>
                 {
@@ -182,6 +181,35 @@ namespace WebDav.AudioPlayer.UI
             _player.Play(listView.SelectedIndices[0], _cancelToken);
         }
 
+        private void listView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (listView.Items.Count == 0)
+                return;
+
+            if (e.KeyData == Keys.Enter)
+                _player.Play(listView.SelectedIndices[0], _cancelToken);
+
+            if (e.KeyData == Keys.PageUp)
+                listView.SetSelectedIndex(0);
+
+            if (e.KeyData == Keys.PageDown)
+                listView.SetSelectedIndex(listView.Items.Count - 1);
+
+            if (e.KeyData == Keys.Up)
+            {
+                int upIndex = listView.SelectedIndices[0] - 1;
+                if (upIndex > 0)
+                    listView.SetSelectedIndex(upIndex);
+            }
+
+            if (e.KeyData == Keys.Down)
+            {
+                int downIndex = listView.SelectedIndices[0] + 1;
+                if (downIndex < listView.Items.Count)
+                    listView.SetSelectedIndex(downIndex);
+            }
+        }
+
         private void buttonPlay_Click(object sender, EventArgs e)
         {
             _player.Play(listView.SelectedIndices[0], _cancelToken);
@@ -219,7 +247,6 @@ namespace WebDav.AudioPlayer.UI
             RefreshTreeAsync();
         }
 
-
         private void trackBarSong_MouseDown(object sender, MouseEventArgs e)
         {
             _player.SetVolume(0);
@@ -254,7 +281,7 @@ namespace WebDav.AudioPlayer.UI
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
+            if (disposing && components != null)
             {
                 components.Dispose();
             }

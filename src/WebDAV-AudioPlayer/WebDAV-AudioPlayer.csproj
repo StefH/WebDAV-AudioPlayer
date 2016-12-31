@@ -87,6 +87,7 @@
     <Compile Include="Client\IConnectionSettings.cs" />
     <Compile Include="Client\OnlinePathBuilder.cs" />
     <Compile Include="Client\MyWebDavClient.cs" />
+    <Compile Include="Extensions\ListViewExtensions.cs" />
     <Compile Include="Extensions\TaskExtensions.cs" />
     <Compile Include="IO\SecurePasswordHelper.cs" />
     <Compile Include="IO\AssemblyConfigRepository.cs" />
@@ -128,7 +129,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\MediaPlayer-2.ico" />
     <None Include="Resources\MediaPlayer-1.ico" />
     <None Include="Resources\Drive.ico" />
     <Content Include="Resources\arrow_refresh.png" />

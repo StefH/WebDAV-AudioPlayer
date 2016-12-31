@@ -156,6 +156,7 @@
             this.listView.TabIndex = 17;
             this.listView.UseCompatibleStateImageBehavior = false;
             this.listView.View = System.Windows.Forms.View.Details;
+            this.listView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listView_KeyDown);
             this.listView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView_MouseDoubleClick);
             // 
             // DisplayName
