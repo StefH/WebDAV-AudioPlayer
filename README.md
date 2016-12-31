@@ -9,3 +9,8 @@ The following codecs are supported:
 * AC3
 * WMA
 * OGG-Vorbis
+
+<br>
+<br>
+Screenshot:
+![WebDAV-AudioPlaye](https://raw.githubusercontent.com/StefH/WebDAV-AudioPlayer/master/src/WebDAV-AudioPlayer/Resources/WebDAV-AudioPlayer.png "WebDAV-AudioPlaye")
