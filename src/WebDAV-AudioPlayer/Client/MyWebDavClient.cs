@@ -10,18 +10,9 @@ using WebDav.AudioPlayer.Models;
 
 namespace WebDav.AudioPlayer.Client
 {
-    public class MyWebDavClient
+    public class MyWebDavClient : IWebDavClient
     {
-        public enum ResourceLoadStatus
-        {
-            StreamLoaded,
-            StreamExisting,
-            StreamFailedToLoad,
-            IsCollection,
-            OperationCanceled
-        }
-
-        private static SemaphoreSlim semaphore = new SemaphoreSlim(5);
+        private static SemaphoreSlim semaphore = new SemaphoreSlim(5, 5);
 
         private static Func<WebDavResource, bool> _isAudioFile = r => r.Uri.EndsWith(".wav") || r.Uri.EndsWith(".wma") || r.Uri.EndsWith(".mp3") || r.Uri.EndsWith(".mp4") || r.Uri.EndsWith(".m4a") || r.Uri.EndsWith(".aac") || r.Uri.EndsWith(".ogg") || r.Uri.EndsWith(".flac");
         private static Func<WebDavResource, bool> _isFolder = r => r.IsCollection;
@@ -86,18 +77,20 @@ namespace WebDav.AudioPlayer.Client
             if (path == null)
                 path = OnlinePathBuilder.ConvertPathToFullUri(_connectionSettings.StorageUri, _connectionSettings.RootFolder);
 
+            PropfindResponse result;
             try
             {
-                Debug.WriteLine("semaphore 1 = [" + semaphore.CurrentCount + "]");
+                Debug.WriteLine("semaphore.CurrentCount = [" + semaphore.CurrentCount + "]");
                 await semaphore.WaitAsync(cancellationToken);
+
+                result = await _client.Propfind(path, new PropfindParameters { CancellationToken = cancellationToken });
             }
             finally
             {
                 semaphore.Release();
             }
 
-            var result = await _client.Propfind(path, new PropfindParameters { CancellationToken = cancellationToken });
-            if (result.Resources != null)
+            if (result != null && result.Resources != null)
             {
                 var tasks = result.Resources.Skip(1)
                     .Where(r => _isAudioFile(r) || _isFolder(r))
@@ -114,15 +107,7 @@ namespace WebDav.AudioPlayer.Client
 
                         if (r.IsCollection)
                         {
-                            try
-                            {
-                                Debug.WriteLine("semaphore 2 = [" + semaphore.CurrentCount + "]");
-                                resourceItem.Items = await ListResourcesAsyncX(fullPath, cancellationToken);
-                            }
-                            finally
-                            {
-                                semaphore.Release();
-                            }
+                            //resourceItem.Items = await ListResourcesAsyncX(fullPath, cancellationToken);
                         }
 
                         return resourceItem;
@@ -161,6 +146,11 @@ namespace WebDav.AudioPlayer.Client
             {
                 return ResourceLoadStatus.OperationCanceled;
             }
+        }
+
+        public void Dispose()
+        {
+            _client.Dispose();
         }
     }
 }

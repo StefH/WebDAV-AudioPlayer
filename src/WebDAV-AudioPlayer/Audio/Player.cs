@@ -17,7 +17,7 @@ namespace WebDav.AudioPlayer.Audio
 {
     internal class Player : IDisposable
     {
-        private readonly MyWebDavClient _client;
+        private readonly IWebDavClient _client;
 
         private readonly FixedSizedQueue<ResourceItem> _resourceItemQueue;
 
@@ -71,7 +71,7 @@ namespace WebDav.AudioPlayer.Audio
             }
         }
 
-        public Player(MyWebDavClient client)
+        public Player(IWebDavClient client)
         {
             _client = client;
 
@@ -119,7 +119,7 @@ namespace WebDav.AudioPlayer.Audio
 
             Log(string.Format(@"Reading : '{0}'", resourceItem.DisplayName));
             var status = await _client.GetStreamAsync(resourceItem, cancellationToken);
-            if (status != MyWebDavClient.ResourceLoadStatus.StreamLoaded && status != MyWebDavClient.ResourceLoadStatus.StreamExisting)
+            if (status != ResourceLoadStatus.StreamLoaded && status != ResourceLoadStatus.StreamExisting)
             {
                 Log(string.Format(@"Reading error : {0}", status));
                 return;
@@ -181,7 +181,7 @@ namespace WebDav.AudioPlayer.Audio
                 var resourceItem = Items[nextIndex];
                 Log(string.Format("Preloading : '{0}'", resourceItem.DisplayName));
                 var status = await _client.GetStreamAsync(resourceItem, cancellationToken);
-                if (status != MyWebDavClient.ResourceLoadStatus.StreamLoaded && status != MyWebDavClient.ResourceLoadStatus.StreamExisting)
+                if (status != ResourceLoadStatus.StreamLoaded && status != ResourceLoadStatus.StreamExisting)
                 {
                     Log(string.Format(@"Preloading error : {0}", status));
                     return;

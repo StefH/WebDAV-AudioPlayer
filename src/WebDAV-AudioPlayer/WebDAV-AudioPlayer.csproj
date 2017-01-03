@@ -53,6 +53,10 @@
       <HintPath>..\..\packages\CSCore.1.1.0\lib\net35-client\CSCore.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="DecaTec.WebDav.NetFx, Version=0.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\PortableWebDavLibrary.0.6.0\lib\DecaTec.WebDav.NetFx.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -85,8 +89,11 @@
     <Compile Include="Audio\Player.cs" />
     <Compile Include="Audio\NVorbisSource.cs" />
     <Compile Include="Client\IConnectionSettings.cs" />
+    <Compile Include="Client\IWebDavClient.cs" />
+    <Compile Include="Client\PortableWebDavClient.cs" />
     <Compile Include="Client\OnlinePathBuilder.cs" />
     <Compile Include="Client\MyWebDavClient.cs" />
+    <Compile Include="Client\ResourceLoadStatus.cs" />
     <Compile Include="Extensions\ListViewExtensions.cs" />
     <Compile Include="Extensions\TaskExtensions.cs" />
     <Compile Include="IO\SecurePasswordHelper.cs" />

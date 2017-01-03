@@ -16,7 +16,7 @@ namespace WebDav.AudioPlayer.UI
     public partial class MainForm : Form
     {
         private readonly AssemblyConfig _config;
-        private readonly MyWebDavClient _client;
+        private readonly IWebDavClient _client;
         private readonly Player _player;
 
         private CancellationTokenSource _cancelationTokenSource;
@@ -287,6 +287,8 @@ namespace WebDav.AudioPlayer.UI
             }
 
             _player.Dispose();
+
+            _client.Dispose();
 
             base.Dispose(disposing);
         }
