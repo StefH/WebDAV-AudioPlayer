@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -94,14 +95,21 @@ namespace WebDav.AudioPlayer.Client
 
             if (resourceItem.Stream != null && resourceItem.Stream.CanRead)
                 return ResourceLoadStatus.StreamExisting;
-
+            
             try
             {
+                resourceItem.Stream = new MemoryStream();
                 bool isSuccessful = await _session.DownloadFileAsync(resourceItem.FullPath, resourceItem.Stream).WithCancellation(cancellationToken);
                 if (isSuccessful)
+                {
+                    resourceItem.Stream.Position = 0;
                     return ResourceLoadStatus.StreamLoaded;
+                }
 
+                resourceItem.Stream.Close();
+                resourceItem.Stream.Dispose();
                 resourceItem.Stream = null;
+
                 return ResourceLoadStatus.StreamFailedToLoad;
             }
             catch (OperationCanceledException)

@@ -71,6 +71,11 @@ namespace WebDav.AudioPlayer.Audio
             }
         }
 
+        public string SoundOut
+        {
+            get { return _soundOut.GetType().Name; }
+        }
+
         public Player(IWebDavClient client)
         {
             _client = client;

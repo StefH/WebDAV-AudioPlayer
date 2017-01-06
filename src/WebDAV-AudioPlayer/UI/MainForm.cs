@@ -69,6 +69,8 @@ namespace WebDav.AudioPlayer.UI
                     labelCurrentTime.Text = labelTotalTime.Text = @"00:00:00";
                 }
             };
+
+            Log(string.Format("Using : '{0}-SoundOut'", _player.SoundOut));
         }
 
         private void InitCancellationTokenSource()
