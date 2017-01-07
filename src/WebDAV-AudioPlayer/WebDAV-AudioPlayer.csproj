@@ -90,7 +90,7 @@
     <Compile Include="Audio\NVorbisSource.cs" />
     <Compile Include="Client\IConnectionSettings.cs" />
     <Compile Include="Client\IWebDavClient.cs" />
-    <Compile Include="Client\PortableWebDavClient.cs" />
+    <Compile Include="Client\DecaTecWebDavClient.cs" />
     <Compile Include="Client\OnlinePathBuilder.cs" />
     <Compile Include="Client\MyWebDavClient.cs" />
     <Compile Include="Client\ResourceLoadStatus.cs" />

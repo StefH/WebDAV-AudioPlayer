@@ -14,7 +14,7 @@ using WebDav.AudioPlayer.Models;
 
 namespace WebDav.AudioPlayer.Client
 {
-    public class PortableWebDavClient : IWebDavClient
+    public class DecaTecWebDavClient : IWebDavClient
     {
         private static Func<WebDavSessionListItem, bool> _isAudioFile = r => r.Name.EndsWith(".wav") || r.Name.EndsWith(".wma") || r.Name.EndsWith(".mp3") || r.Name.EndsWith(".mp4") || r.Name.EndsWith(".m4a") || r.Name.EndsWith(".aac") || r.Name.EndsWith(".ogg") || r.Name.EndsWith(".flac");
         private static Func<WebDavSessionListItem, bool> _isFolder = r => r.IsCollection;
@@ -22,7 +22,7 @@ namespace WebDav.AudioPlayer.Client
         private readonly WebDavSession _session;
         private readonly IConnectionSettings _connectionSettings;
 
-        public PortableWebDavClient(IConnectionSettings connectionSettings)
+        public DecaTecWebDavClient(IConnectionSettings connectionSettings)
         {
             _connectionSettings = connectionSettings;
 
@@ -80,6 +80,65 @@ namespace WebDav.AudioPlayer.Client
                     });
 
                 return items.ToList();
+            }
+
+            return null;
+        }
+
+        public async Task<List<ResourceItem>> ListResourcesAsyncX(Uri path, CancellationToken cancellationToken)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return null;
+
+            Debug.WriteLine("path=[" + path + "]");
+
+            if (path == null)
+                path = OnlinePathBuilder.ConvertPathToFullUri(_connectionSettings.StorageUri, _connectionSettings.RootFolder);
+
+            var propfind = PropFind.CreatePropFindWithEmptyProperties(
+                PropNameConstants.Name,
+                PropNameConstants.DisplayName,
+                PropNameConstants.IsCollection,
+                PropNameConstants.ResourceType,
+                PropNameConstants.GetContentLength
+            );
+
+            IList<WebDavSessionListItem> result;
+            try
+            {
+                result = await _session.ListAsync(path, propfind).WithCancellation(cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                return null;
+            }
+
+            if (result != null)
+            {
+                var tasks = result
+                    .Where(r => _isAudioFile(r) || _isFolder(r))
+                    .Select(async r =>
+                    {
+                        //Debug.WriteLine("WebDavSessionListItem = " + JsonConvert.SerializeObject(r, Formatting.Indented));
+
+                        Uri fullPath = new Uri(string.Join("/", r.Uri.ToString().Split('/').Distinct()));
+                        var resourceItem = new ResourceItem
+                        {
+                            DisplayName = r.DisplayName,
+                            IsCollection = r.IsCollection,
+                            FullPath = fullPath,
+                            ContentLength = r.ContentLength
+                        };
+
+                        if (r.IsCollection)
+                        {
+                            resourceItem.Items = await ListResourcesAsyncX(fullPath, cancellationToken);
+                        }
+
+                        return resourceItem;
+                    });
+
+                await Task.WhenAll(tasks);
             }
 
             return null;
