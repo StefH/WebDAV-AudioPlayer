@@ -43,6 +43,7 @@
             this.labelTotalTime = new System.Windows.Forms.ToolStripLabel();
             this.trackBarSong = new System.Windows.Forms.TrackBar();
             this.audioPlaybackTimer = new System.Windows.Forms.Timer(this.components);
+            this.Bitrate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -145,7 +146,8 @@
             this.listView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.listView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.DisplayName,
-            this.ContentLength});
+            this.ContentLength,
+            this.Bitrate});
             this.listView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listView.GridLines = true;
             this.listView.Location = new System.Drawing.Point(0, 0);
@@ -161,11 +163,13 @@
             // 
             // DisplayName
             // 
+            this.DisplayName.Tag = "DisplayName";
             this.DisplayName.Text = "Title";
-            this.DisplayName.Width = 399;
+            this.DisplayName.Width = 350;
             // 
             // ContentLength
             // 
+            this.ContentLength.Tag = "ContentLength";
             this.ContentLength.Text = "Size";
             this.ContentLength.Width = 70;
             // 
@@ -327,6 +331,12 @@
             this.audioPlaybackTimer.Interval = 249;
             this.audioPlaybackTimer.Tick += new System.EventHandler(this.audioPlaybackTimer_Tick);
             // 
+            // Bitrate
+            // 
+            this.Bitrate.Tag = "Bitrate";
+            this.Bitrate.Text = "Bitrate";
+            this.Bitrate.Width = 50;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -383,5 +393,6 @@
         private System.Windows.Forms.Panel panelRightTop;
         private System.Windows.Forms.Panel panelRightBottom;
         private System.Windows.Forms.Panel panelRightMid;
+        private System.Windows.Forms.ColumnHeader Bitrate;
     }
 }

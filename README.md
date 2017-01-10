@@ -10,6 +10,8 @@ The following codecs are supported:
 * WMA
 * OGG-Vorbis
 
+The [MediaInfo Library](https://mediaarea.net/en/MediaInfo) is used to get some more details like bitrate from the files.
+
 <br>
 <br>
 Screenshot:

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using WebDav.AudioPlayer.Audio;
 
 namespace WebDav.AudioPlayer.Models
 {
     public class ResourceItem
     {
+        public MediaDetails MediaDetails { get; set; }
+
         public string DisplayName { get; set; }
 
         public Uri FullPath { get; set; }

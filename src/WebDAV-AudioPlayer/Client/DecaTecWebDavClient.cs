@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using DecaTec.WebDav;
 using DecaTec.WebDav.WebDavArtifacts;
 using Newtonsoft.Json;
+using WebDav.AudioPlayer.Audio;
 using WebDav.AudioPlayer.Extensions;
 using WebDav.AudioPlayer.Models;
 
@@ -161,7 +162,8 @@ namespace WebDav.AudioPlayer.Client
                 bool isSuccessful = await _session.DownloadFileAsync(resourceItem.FullPath, resourceItem.Stream).WithCancellation(cancellationToken);
                 if (isSuccessful)
                 {
-                    resourceItem.Stream.Position = 0;
+                    resourceItem.MediaDetails = MediaInfoHelper.GetMediaDetails(resourceItem.Stream);
+
                     return ResourceLoadStatus.StreamLoaded;
                 }
 

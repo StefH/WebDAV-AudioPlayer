@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using WebDav.AudioPlayer.Audio;
 using WebDav.AudioPlayer.Extensions;
 using WebDav.AudioPlayer.Models;
 
@@ -136,6 +137,9 @@ namespace WebDav.AudioPlayer.Client
                 if (webDavStreamResponse.IsSuccessful)
                 {
                     resourceItem.Stream = webDavStreamResponse.Stream;
+
+                    resourceItem.MediaDetails = MediaInfoHelper.GetMediaDetails(resourceItem.Stream);
+
                     return ResourceLoadStatus.StreamLoaded;
                 }
 

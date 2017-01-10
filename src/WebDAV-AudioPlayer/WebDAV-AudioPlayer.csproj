@@ -44,6 +44,26 @@
   <PropertyGroup>
     <StartupObject>WebDav.AudioPlayer.Program</StartupObject>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="ByteSizeLib, Version=1.2.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\ByteSize.1.2.4\lib\net45\ByteSizeLib.dll</HintPath>
@@ -55,6 +75,10 @@
     </Reference>
     <Reference Include="DecaTec.WebDav.NetFx, Version=0.6.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\PortableWebDavLibrary.0.6.0\lib\DecaTec.WebDav.NetFx.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MediaInfo.Wrapper, Version=0.7.91.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\MediaInfo.Wrapper.0.7.91\lib\net40\MediaInfo.Wrapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -86,6 +110,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyConfig.cs" />
+    <Compile Include="Audio\MediaDetails.cs" />
+    <Compile Include="Audio\MediaInfoHelper.cs" />
     <Compile Include="Audio\Player.cs" />
     <Compile Include="Audio\NVorbisSource.cs" />
     <Compile Include="Client\IConnectionSettings.cs" />
@@ -130,7 +156,9 @@
     <EmbeddedResource Include="UI\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -161,6 +189,9 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>copy "$(SolutionDir)packages\MediaInfo.Native.0.7.91\build\native\$(PlatformName)\*.dll" "$(TargetDir)"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

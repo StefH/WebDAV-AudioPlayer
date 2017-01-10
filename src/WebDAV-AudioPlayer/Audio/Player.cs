@@ -26,7 +26,7 @@ namespace WebDav.AudioPlayer.Audio
         private List<ResourceItem> _items;
 
         public Action<string> Log;
-        public Action<int, string> PlayStarted;
+        public Action<int, ResourceItem> PlayStarted;
         public Action<string> PlayPaused;
         public Action<string> PlayContinue;
         public Action PlayStopped;
@@ -169,7 +169,7 @@ namespace WebDav.AudioPlayer.Audio
 
             _soundOut.Initialize(_waveSource);
             _soundOut.Play();
-            PlayStarted(SelectedIndex, resourceItem.DisplayName);
+            PlayStarted(SelectedIndex, resourceItem);
 
             // Preload Next
             PreloadNext(cancellationToken);
