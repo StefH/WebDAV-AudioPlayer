@@ -68,19 +68,18 @@ namespace WebDav.AudioPlayer.Client
                     {
                         Debug.WriteLine("WebDavSessionListItem = " + JsonConvert.SerializeObject(r, Formatting.Indented));
 
-                        Uri fullPath = new Uri(string.Join("/", r.Uri.ToString().Split('/').Distinct()));
                         var resourceItem = new ResourceItem
                         {
                             DisplayName = r.DisplayName,
                             IsCollection = r.IsCollection,
-                            FullPath = fullPath,
+                            FullPath = r.Uri,
                             ContentLength = r.ContentLength
                         };
 
                         return resourceItem;
                     });
 
-                return items.ToList();
+                return items.OrderBy(r => r.DisplayName).ToList();
             }
 
             return null;

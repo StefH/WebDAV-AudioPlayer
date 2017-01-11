@@ -62,7 +62,7 @@ namespace WebDav.AudioPlayer.Client
                         return resourceItem;
                     });
 
-                return items.ToList();
+                return items.OrderBy(r => r.DisplayName).ToList();
             }
 
             return null;

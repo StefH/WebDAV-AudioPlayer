@@ -32,7 +32,7 @@ namespace WebDav.AudioPlayer.UI
 
             InitCancellationTokenSource();
 
-            _client = new MyWebDavClient(config);
+            _client = new DecaTecWebDavClient(config);
 
             _player = new Player(_client)
             {
