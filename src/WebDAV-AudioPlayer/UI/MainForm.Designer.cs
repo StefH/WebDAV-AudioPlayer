@@ -27,6 +27,8 @@
             this.listView = new System.Windows.Forms.ListView();
             this.DisplayName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ContentLength = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.Length = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.Bitrate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.panelRightBottom = new System.Windows.Forms.Panel();
             this.txtLogging = new System.Windows.Forms.TextBox();
             this.panelRightTop = new System.Windows.Forms.Panel();
@@ -43,7 +45,6 @@
             this.labelTotalTime = new System.Windows.Forms.ToolStripLabel();
             this.trackBarSong = new System.Windows.Forms.TrackBar();
             this.audioPlaybackTimer = new System.Windows.Forms.Timer(this.components);
-            this.Bitrate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -147,6 +148,7 @@
             this.listView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.DisplayName,
             this.ContentLength,
+            this.Length,
             this.Bitrate});
             this.listView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listView.GridLines = true;
@@ -165,13 +167,25 @@
             // 
             this.DisplayName.Tag = "DisplayName";
             this.DisplayName.Text = "Title";
-            this.DisplayName.Width = 350;
+            this.DisplayName.Width = 320;
             // 
             // ContentLength
             // 
             this.ContentLength.Tag = "ContentLength";
             this.ContentLength.Text = "Size";
             this.ContentLength.Width = 70;
+            // 
+            // Length
+            // 
+            this.Length.Tag = "Length";
+            this.Length.Text = "Length";
+            this.Length.Width = 50;
+            // 
+            // Bitrate
+            // 
+            this.Bitrate.Tag = "Bitrate";
+            this.Bitrate.Text = "Bitrate";
+            this.Bitrate.Width = 50;
             // 
             // panelRightBottom
             // 
@@ -331,12 +345,6 @@
             this.audioPlaybackTimer.Interval = 249;
             this.audioPlaybackTimer.Tick += new System.EventHandler(this.audioPlaybackTimer_Tick);
             // 
-            // Bitrate
-            // 
-            this.Bitrate.Tag = "Bitrate";
-            this.Bitrate.Text = "Bitrate";
-            this.Bitrate.Width = 50;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -394,5 +402,6 @@
         private System.Windows.Forms.Panel panelRightBottom;
         private System.Windows.Forms.Panel panelRightMid;
         private System.Windows.Forms.ColumnHeader Bitrate;
+        private System.Windows.Forms.ColumnHeader Length;
     }
 }

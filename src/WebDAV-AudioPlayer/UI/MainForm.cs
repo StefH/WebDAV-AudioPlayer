@@ -50,7 +50,7 @@ namespace WebDav.AudioPlayer.UI
                     trackBarSong.Maximum = (int)_player.TotalTime.TotalSeconds;
 
                     listView.SetSelectedIndex(selectedIndex);
-                    listView.SetBitrate(selectedIndex, bitrate);
+                    listView.SetCells(selectedIndex, string.Format(@"{0:mm\:ss}", _player.TotalTime), bitrate);
                 },
                 PlayContinue = selectedSongName =>
                 {
@@ -173,7 +173,7 @@ namespace WebDav.AudioPlayer.UI
             foreach (var file in _player.Items)
             {
                 string size = file.ContentLength != null ? ByteSize.FromBytes(file.ContentLength.Value).ToString("0.00 MB") : string.Empty;
-                var listViewItem = new ListViewItem(new[] { file.DisplayName, size, null }) { Tag = file };
+                var listViewItem = new ListViewItem(new[] { file.DisplayName, size, null, null }) { Tag = file };
                 listView.Items.Add(listViewItem);
             }
 

@@ -8,9 +8,11 @@
             listView.SelectedIndices.Add(index);
         }
 
-        public static void SetBitrate(this ListView listView, int index, string bitrate)
+        public static void SetCells(this ListView listView, int index, string totalLength, string bitrate)
         {
-            listView.Items[index].SubItems[2].Text = bitrate;
+            var subItems = listView.Items[index].SubItems;
+            subItems[2].Text = totalLength;
+            subItems[3].Text = bitrate;
         }
     }
 }
