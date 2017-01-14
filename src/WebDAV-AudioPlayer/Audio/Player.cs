@@ -27,8 +27,8 @@ namespace WebDav.AudioPlayer.Audio
 
         public Action<string> Log;
         public Action<int, ResourceItem> PlayStarted;
-        public Action<string> PlayPaused;
-        public Action<string> PlayContinue;
+        public Action<ResourceItem> PlayPaused;
+        public Action<ResourceItem> PlayContinue;
         public Action PlayStopped;
 
         public List<ResourceItem> Items
@@ -240,12 +240,12 @@ namespace WebDav.AudioPlayer.Audio
             if (PlaybackState == PlaybackState.Playing)
             {
                 _soundOut.Pause();
-                PlayPaused(resourceItem.DisplayName);
+                PlayPaused(resourceItem);
             }
             else if (PlaybackState == PlaybackState.Paused)
             {
                 _soundOut.Play();
-                PlayContinue(resourceItem.DisplayName);
+                PlayContinue(resourceItem);
             }
         }
 

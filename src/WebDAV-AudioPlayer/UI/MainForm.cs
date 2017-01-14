@@ -34,6 +34,15 @@ namespace WebDav.AudioPlayer.UI
 
             _client = new DecaTecWebDavClient(config);
 
+            Func<ResourceItem, string, string> updateTitle = (resourceItem, action) =>
+            {
+                string bitrate = resourceItem.MediaDetails.Bitrate != null ? string.Format("{0}", resourceItem.MediaDetails.Bitrate / 1000) : "?";
+                string text = string.Format("{0} : '{1}' ({2} {3} kbps)", action, resourceItem.DisplayName, resourceItem.MediaDetails.Mode, bitrate);
+                Text = @"WebDAV-AudioPlayer " + text;
+
+                return text;
+            };
+
             _player = new Player(_client)
             {
                 Log = Log,
@@ -41,9 +50,8 @@ namespace WebDav.AudioPlayer.UI
                 PlayStarted = (selectedIndex, resourceItem) =>
                 {
                     string bitrate = resourceItem.MediaDetails.Bitrate != null ? string.Format("{0}", resourceItem.MediaDetails.Bitrate / 1000) : "?";
-                    string text = string.Format("Playing : '{0}' ({1} kbps)", resourceItem.DisplayName, bitrate);
+                    string text = updateTitle(resourceItem, "Playing");
                     textBoxSong.Text = text;
-                    Text = @"WebDAV-AudioPlayer " + text;
 
                     labelTotalTime.Text = string.Format(@"{0:hh\:mm\:ss}", _player.TotalTime);
 
@@ -52,23 +60,22 @@ namespace WebDav.AudioPlayer.UI
                     listView.SetSelectedIndex(selectedIndex);
                     listView.SetCells(selectedIndex, string.Format(@"{0:mm\:ss}", _player.TotalTime), bitrate);
                 },
-                PlayContinue = selectedSongName =>
+                PlayContinue = resourceItem =>
                 {
-                    string text = string.Format("Playing : '{0}'", selectedSongName);
+                    string text = updateTitle(resourceItem, "Playing");
                     textBoxSong.Text = text;
-                    Text = @"WebDAV-AudioPlayer " + text;
                 },
-                PlayPaused = selectedSongName =>
+                PlayPaused = resourceItem =>
                 {
-                    string text = string.Format("Pausing : '{0}'", selectedSongName);
+                    string text = updateTitle(resourceItem, "Pausing");
                     textBoxSong.Text = text;
-                    Text = @"WebDAV-AudioPlayer " + text;
                 },
                 PlayStopped = () =>
                 {
                     trackBarSong.Value = 0;
                     trackBarSong.Maximum = 1;
                     labelCurrentTime.Text = labelTotalTime.Text = @"00:00:00";
+                    Text = @"WebDAV-AudioPlayer";
                 }
             };
 

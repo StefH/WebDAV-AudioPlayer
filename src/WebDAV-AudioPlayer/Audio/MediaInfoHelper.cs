@@ -1,8 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using MI = MediaInfo;
-using Status = MediaInfo.Status;
+using MI = MediaInfo.DotNetWrapper;
 
 namespace WebDav.AudioPlayer.Audio
 {
@@ -17,6 +16,23 @@ namespace WebDav.AudioPlayer.Audio
             return null;
         };
 
+        public static bool TryGetVersion(out string version)
+        {
+            try
+            {
+                using (var info = new MI.MediaInfo())
+                {
+                    version = info.Option("Info_Version");
+                    return true;
+                }
+            }
+            catch (Exception)
+            {
+                version = null;
+                return false;
+            }
+        }
+
         public static MediaDetails GetMediaDetails(Stream stream)
         {
             var mediaDetails = new MediaDetails();
@@ -27,13 +43,11 @@ namespace WebDav.AudioPlayer.Audio
 
                 using (var info = new MI.MediaInfo())
                 {
-                    string version = info.Option("Info_Version");
-
                     byte[] buffer = new byte[64 * 1024];
                     int bufferSize; //The size of the read file buffer
 
                     //Preparing to fill MediaInfo with a buffer
-                    info.Open_Buffer_Init(stream.Length, 0);
+                    info.OpenBufferInit(stream.Length, 0);
 
                     //The parsing loop
                     do
@@ -44,24 +58,25 @@ namespace WebDav.AudioPlayer.Audio
                         //Sending the buffer to MediaInfo
                         GCHandle gc = GCHandle.Alloc(buffer, GCHandleType.Pinned);
                         IntPtr fromBufferIntPtr = gc.AddrOfPinnedObject();
-                        Status result = (Status)info.Open_Buffer_Continue(fromBufferIntPtr, (IntPtr)bufferSize);
+                        MI.Status result = info.OpenBufferContinue(fromBufferIntPtr, (IntPtr)bufferSize);
                         gc.Free();
 
-                        if ((result & Status.Finalized) == Status.Finalized)
+                        if ((result & MI.Status.Finalized) == MI.Status.Finalized)
                             break;
 
                         //Testing if MediaInfo request to go elsewhere
-                        if (info.Open_Buffer_Continue_GoTo_Get() != -1)
+                        if (info.OpenBufferContinueGoToGet() != -1)
                         {
-                            long position = stream.Seek(info.Open_Buffer_Continue_GoTo_Get(), SeekOrigin.Begin); //Position the file
-                            info.Open_Buffer_Init(stream.Length, position); //Informing MediaInfo we have performed the seek
+                            long position = stream.Seek(info.OpenBufferContinueGoToGet(), SeekOrigin.Begin); //Position the file
+                            info.OpenBufferInit(stream.Length, position); //Informing MediaInfo we have performed the seek
                         }
                     } while (bufferSize > 0);
 
                     //Finalizing
-                    info.Open_Buffer_Finalize(); //This is the end of the stream, MediaInfo must finish some work
+                    info.OpenBufferFinalize(); //This is the end of the stream, MediaInfo must finish some work
 
-                    mediaDetails.Format = info.Get(MI.StreamKind.Audio, 0, "Format");
+                    string mode = info.Get(MI.StreamKind.Audio, 0, "BitRate_Mode");
+                    mediaDetails.Mode = string.IsNullOrEmpty(mode) ? "CBR" : mode;
                     mediaDetails.Bitrate = GetNullableIntValue(info, "BitRate");
                     mediaDetails.Channels = GetNullableIntValue(info, "Channels");
                 }

@@ -28,10 +28,5 @@ namespace WebDav.AudioPlayer.Client
         {
             return new Uri(host, path);
         }
-
-        //public static Uri Combine(Uri host, Uri path)
-        //{
-        //    return new Uri(host, path);
-        //}
     }
 }

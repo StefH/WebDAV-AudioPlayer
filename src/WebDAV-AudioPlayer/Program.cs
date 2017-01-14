@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using WebDav.AudioPlayer.Audio;
 using WebDav.AudioPlayer.UI;
 
 namespace WebDav.AudioPlayer
@@ -28,6 +29,13 @@ namespace WebDav.AudioPlayer
 
             if (doConfig && new ConfigurationForm(config).ShowDialog() != DialogResult.OK)
                 return;
+
+            string version;
+            if (!MediaInfoHelper.TryGetVersion(out version))
+            {
+                MessageBox.Show(@"MediaInfo.dll was not found or could not be loaded.", @"Warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
             Application.Run(new MainForm(config));
         }
