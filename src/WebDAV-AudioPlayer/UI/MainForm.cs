@@ -93,9 +93,9 @@ namespace WebDav.AudioPlayer.UI
             txtLogging.AppendText(string.Format("{0} - {1}\r\n", DateTime.Now, text));
         }
 
-        private void MainForm_Load(object sender, EventArgs e)
+        private async void MainForm_Load(object sender, EventArgs e)
         {
-            RefreshTreeAsync();
+            await RefreshTreeAsync().ConfigureAwait(false);
         }
 
         private async Task RefreshTreeAsync()
@@ -253,9 +253,9 @@ namespace WebDav.AudioPlayer.UI
             _player.JumpTo(TimeSpan.FromSeconds(trackBarSong.Value));
         }
 
-        private void btnRefresh_Click(object sender, EventArgs e)
+        private async void btnRefresh_Click(object sender, EventArgs e)
         {
-            RefreshTreeAsync();
+            await RefreshTreeAsync().ConfigureAwait(false);
         }
 
         private void trackBarSong_MouseDown(object sender, MouseEventArgs e)
