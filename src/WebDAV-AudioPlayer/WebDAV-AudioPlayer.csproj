@@ -39,7 +39,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Resources\MediaPlayer-1.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\MediaPlayer-1_32x32_and_16x16.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>WebDav.AudioPlayer.Program</StartupObject>
@@ -164,6 +164,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\MediaPlayer-1_32x32_and_16x16.ico" />
     <None Include="Resources\MediaPlayer-1.ico" />
     <None Include="Resources\Drive.ico" />
     <Content Include="Resources\arrow_refresh.png" />
