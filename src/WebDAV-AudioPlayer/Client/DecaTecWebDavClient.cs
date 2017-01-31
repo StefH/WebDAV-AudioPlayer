@@ -20,7 +20,7 @@ namespace WebDav.AudioPlayer.Client
         private static Func<WebDavSessionListItem, bool> _isAudioFile = r => r.Name.EndsWith(".wav") || r.Name.EndsWith(".wma") || r.Name.EndsWith(".mp3") || r.Name.EndsWith(".mp4") || r.Name.EndsWith(".m4a") || r.Name.EndsWith(".aac") || r.Name.EndsWith(".ogg") || r.Name.EndsWith(".flac");
         private static Func<WebDavSessionListItem, bool> _isFolder = r => r.IsCollection;
 
-        private static SemaphoreSlim semaphore = new SemaphoreSlim(10, 10);
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(10, 10);
         private readonly WebDavSession _session;
         private readonly IConnectionSettings _connectionSettings;
 
@@ -33,7 +33,7 @@ namespace WebDav.AudioPlayer.Client
             _session = new WebDavSession(credentials);
         }
 
-        public async Task<List<ResourceItem>> ListResourcesAsync(Uri path, CancellationToken cancellationToken, int maxLevel, int level = 0)
+        public async Task<List<ResourceItem>> ListResourcesAsync(ResourceItem parent, CancellationToken cancellationToken, int maxLevel, int level = 0)
         {
             if (cancellationToken.IsCancellationRequested)
                 return null;
@@ -41,8 +41,9 @@ namespace WebDav.AudioPlayer.Client
             if (level > maxLevel)
                 return null;
 
-            if (path == null)
-                path = OnlinePathBuilder.ConvertPathToFullUri(_connectionSettings.StorageUri, _connectionSettings.RootFolder);
+            Uri path = parent == null
+                ? OnlinePathBuilder.ConvertPathToFullUri(_connectionSettings.StorageUri, _connectionSettings.RootFolder)
+                : parent.FullPath;
 
             var propfind = PropFind.CreatePropFindWithEmptyProperties(
                 PropNameConstants.Name,
@@ -56,7 +57,7 @@ namespace WebDav.AudioPlayer.Client
             IList<WebDavSessionListItem> result;
             try
             {
-                await semaphore.WaitAsync(cancellationToken);
+                await _semaphore.WaitAsync(cancellationToken);
                 result = await _session.ListAsync(path, propfind).WithCancellation(cancellationToken);
             }
             catch (OperationCanceledException)
@@ -65,7 +66,7 @@ namespace WebDav.AudioPlayer.Client
             }
             finally
             {
-                semaphore.Release();
+                _semaphore.Release();
             }
             Debug.WriteLine("path=[" + path + "], level = [" + level + "] " + "ListAsync   end : " + DateTime.UtcNow);
 
@@ -83,12 +84,13 @@ namespace WebDav.AudioPlayer.Client
                             DisplayName = r.DisplayName,
                             IsCollection = r.IsCollection,
                             FullPath = r.Uri,
-                            ContentLength = r.ContentLength
+                            ContentLength = r.ContentLength,
+                            Parent = parent
                         };
 
                         if (r.IsCollection && level < maxLevel)
                         {
-                            resourceItem.Items = await ListResourcesAsync(r.Uri, cancellationToken, maxLevel, level + 1);
+                            resourceItem.Items = await ListResourcesAsync(resourceItem, cancellationToken, maxLevel, level + 1);
                         }
 
                         return resourceItem;
@@ -142,4 +144,3 @@ namespace WebDav.AudioPlayer.Client
         }
     }
 }
- 

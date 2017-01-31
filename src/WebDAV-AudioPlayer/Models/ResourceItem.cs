@@ -21,6 +21,8 @@ namespace WebDav.AudioPlayer.Models
 
         public Stream Stream { get; set; }
 
+        public ResourceItem Parent { get; set; }
+
         public IList<ResourceItem> Items { get; set; }
     }
 }

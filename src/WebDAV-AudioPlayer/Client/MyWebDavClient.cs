@@ -33,7 +33,7 @@ namespace WebDav.AudioPlayer.Client
             });
         }
 
-        public async Task<List<ResourceItem>> ListResourcesAsync(Uri path, CancellationToken cancellationToken, int maxLevel, int level)
+        public async Task<List<ResourceItem>> ListResourcesAsync(ResourceItem parent, CancellationToken cancellationToken, int maxLevel, int level)
         {
             if (cancellationToken.IsCancellationRequested)
                 return null;
@@ -41,10 +41,11 @@ namespace WebDav.AudioPlayer.Client
             if (level > maxLevel)
                 return null;
 
-            Debug.WriteLine("path=[" + path + "]");
+            Uri path = parent == null
+                ? OnlinePathBuilder.ConvertPathToFullUri(_connectionSettings.StorageUri, _connectionSettings.RootFolder)
+                : parent.FullPath;
 
-            if (path == null)
-                path = OnlinePathBuilder.ConvertPathToFullUri(_connectionSettings.StorageUri, _connectionSettings.RootFolder);
+            Debug.WriteLine("path=[" + path + "]");
 
             var result = await _client.Propfind(path, new PropfindParameters { CancellationToken = cancellationToken });
             if (result.Resources != null)
@@ -59,12 +60,13 @@ namespace WebDav.AudioPlayer.Client
                             DisplayName = r.DisplayName,
                             IsCollection = r.IsCollection,
                             FullPath = fullPath,
-                            ContentLength = r.ContentLength
+                            ContentLength = r.ContentLength,
+                            Parent = parent
                         };
 
                         if (r.IsCollection && level < maxLevel)
                         {
-                            resourceItem.Items = await ListResourcesAsync(fullPath, cancellationToken, maxLevel, level + 1);
+                            resourceItem.Items = await ListResourcesAsync(resourceItem, cancellationToken, maxLevel, level + 1);
                         }
 
                         return resourceItem;

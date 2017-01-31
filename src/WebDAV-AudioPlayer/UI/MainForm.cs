@@ -37,7 +37,7 @@ namespace WebDav.AudioPlayer.UI
             Func<ResourceItem, string, string> updateTitle = (resourceItem, action) =>
             {
                 string bitrate = resourceItem.MediaDetails.Bitrate != null ? string.Format("{0}", resourceItem.MediaDetails.Bitrate / 1000) : "?";
-                string text = string.Format("{0} : '{1}' ({2} {3} kbps)", action, resourceItem.DisplayName, resourceItem.MediaDetails.Mode, bitrate);
+                string text = string.Format("{0} : '{1}\\{2}' ({3} {4} kbps)", action, resourceItem.Parent.DisplayName, resourceItem.DisplayName, resourceItem.MediaDetails.Mode, bitrate);
                 Text = @"WebDAV-AudioPlayer " + text;
 
                 return text;
@@ -164,7 +164,7 @@ namespace WebDav.AudioPlayer.UI
             var current = Cursor.Current;
             Cursor.Current = Cursors.WaitCursor;
 
-            var items = await _client.ListResourcesAsync(resourceItem.FullPath, _cancelToken, resourceItem.Level, resourceItem.Level) ?? new List<ResourceItem>();
+            var items = await _client.ListResourcesAsync(resourceItem, _cancelToken, resourceItem.Level, resourceItem.Level) ?? new List<ResourceItem>();
             var node = e.Node;
             node.Nodes.Clear();
             PopulateTree(ref node, items);
