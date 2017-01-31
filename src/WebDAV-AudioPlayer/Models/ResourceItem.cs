@@ -7,6 +7,8 @@ namespace WebDav.AudioPlayer.Models
 {
     public class ResourceItem
     {
+        public int Level { get; set; }
+
         public MediaDetails MediaDetails { get; set; }
 
         public string DisplayName { get; set; }

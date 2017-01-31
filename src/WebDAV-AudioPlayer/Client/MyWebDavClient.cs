@@ -13,7 +13,7 @@ namespace WebDav.AudioPlayer.Client
 {
     public class MyWebDavClient : IWebDavClient
     {
-        private static SemaphoreSlim semaphore = new SemaphoreSlim(5, 5);
+        private static SemaphoreSlim semaphore = new SemaphoreSlim(10, 10);
 
         private static Func<WebDavResource, bool> _isAudioFile = r => r.Uri.EndsWith(".wav") || r.Uri.EndsWith(".wma") || r.Uri.EndsWith(".mp3") || r.Uri.EndsWith(".mp4") || r.Uri.EndsWith(".m4a") || r.Uri.EndsWith(".aac") || r.Uri.EndsWith(".ogg") || r.Uri.EndsWith(".flac");
         private static Func<WebDavResource, bool> _isFolder = r => r.IsCollection;
@@ -33,9 +33,12 @@ namespace WebDav.AudioPlayer.Client
             });
         }
 
-        public async Task<List<ResourceItem>> ListResourcesAsync(Uri path, CancellationToken cancellationToken)
+        public async Task<List<ResourceItem>> ListResourcesAsync(Uri path, CancellationToken cancellationToken, int maxLevel, int level)
         {
             if (cancellationToken.IsCancellationRequested)
+                return null;
+
+            if (level > maxLevel)
                 return null;
 
             Debug.WriteLine("path=[" + path + "]");
@@ -46,9 +49,9 @@ namespace WebDav.AudioPlayer.Client
             var result = await _client.Propfind(path, new PropfindParameters { CancellationToken = cancellationToken });
             if (result.Resources != null)
             {
-                var items = result.Resources.Skip(1)
+                var tasks = result.Resources.Skip(1)
                     .Where(r => _isAudioFile(r) || _isFolder(r))
-                    .Select(r =>
+                    .Select(async r =>
                     {
                         Uri fullPath = OnlinePathBuilder.Combine(_connectionSettings.StorageUri, r.Uri);
                         var resourceItem = new ResourceItem
@@ -59,8 +62,15 @@ namespace WebDav.AudioPlayer.Client
                             ContentLength = r.ContentLength
                         };
 
+                        if (r.IsCollection && level < maxLevel)
+                        {
+                            resourceItem.Items = await ListResourcesAsync(fullPath, cancellationToken, maxLevel, level + 1);
+                        }
+
                         return resourceItem;
                     });
+
+                var items = await Task.WhenAll(tasks);
 
                 return items.OrderBy(r => r.DisplayName).ToList();
             }

@@ -105,7 +105,7 @@ namespace WebDav.AudioPlayer.UI
 
             treeView.Nodes.Clear();
 
-            var list = await _client.ListResourcesAsync(null, _cancelToken);
+            var list = await _client.ListResourcesAsync(null, _cancelToken, 0);
             if (list == null)
                 return;
 
@@ -164,11 +164,7 @@ namespace WebDav.AudioPlayer.UI
             var current = Cursor.Current;
             Cursor.Current = Cursors.WaitCursor;
 
-            var items = await _client.ListResourcesAsync(resourceItem.FullPath, _cancelToken);
-            //var items = resourceItem.Items;
-            if (items == null)
-                return;
-
+            var items = await _client.ListResourcesAsync(resourceItem.FullPath, _cancelToken, resourceItem.Level, resourceItem.Level) ?? new List<ResourceItem>();
             var node = e.Node;
             node.Nodes.Clear();
             PopulateTree(ref node, items);

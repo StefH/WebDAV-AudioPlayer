@@ -8,7 +8,7 @@ namespace WebDav.AudioPlayer.Client
 {
     interface IWebDavClient : IDisposable
     {
-        Task<List<ResourceItem>> ListResourcesAsync(Uri path, CancellationToken cancellationToken);
+        Task<List<ResourceItem>> ListResourcesAsync(Uri path, CancellationToken cancellationToken, int maxLevel, int level = 0);
 
         Task<ResourceLoadStatus> GetStreamAsync(ResourceItem resourceItem, CancellationToken cancellationToken);
     }
