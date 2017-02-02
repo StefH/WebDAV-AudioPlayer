@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using WebDav.AudioPlayer.Audio;
 using WebDav.AudioPlayer.Extensions;
 using WebDav.AudioPlayer.Models;
@@ -80,58 +82,6 @@ namespace WebDav.AudioPlayer.Client
             return null;
         }
 
-        public async Task<List<ResourceItem>> ListResourcesAsyncX(Uri path, CancellationToken cancellationToken)
-        {
-            if (cancellationToken.IsCancellationRequested)
-                return null;
-
-            Debug.WriteLine("path=[" + path + "]");
-
-            if (path == null)
-                path = OnlinePathBuilder.ConvertPathToFullUri(_connectionSettings.StorageUri, _connectionSettings.RootFolder);
-
-            PropfindResponse result;
-            try
-            {
-                Debug.WriteLine("semaphore.CurrentCount = [" + semaphore.CurrentCount + "]");
-                await semaphore.WaitAsync(cancellationToken);
-
-                result = await _client.Propfind(path, new PropfindParameters { CancellationToken = cancellationToken });
-            }
-            finally
-            {
-                semaphore.Release();
-            }
-
-            if (result != null && result.Resources != null)
-            {
-                var tasks = result.Resources.Skip(1)
-                    .Where(r => _isAudioFile(r) || _isFolder(r))
-                    .Select(async r =>
-                    {
-                        Uri fullPath = OnlinePathBuilder.Combine(_connectionSettings.StorageUri, r.Uri);
-                        var resourceItem = new ResourceItem
-                        {
-                            DisplayName = r.DisplayName,
-                            IsCollection = r.IsCollection,
-                            FullPath = fullPath,
-                            ContentLength = r.ContentLength
-                        };
-
-                        if (r.IsCollection)
-                        {
-                            //resourceItem.Items = await ListResourcesAsyncX(fullPath, cancellationToken);
-                        }
-
-                        return resourceItem;
-                    }).ToArray();
-
-                await Task.WhenAll(tasks);
-            }
-
-            return null;
-        }
-
         public async Task<ResourceLoadStatus> GetStreamAsync(ResourceItem resourceItem, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
@@ -159,6 +109,47 @@ namespace WebDav.AudioPlayer.Client
                 return ResourceLoadStatus.StreamFailedToLoad;
             }
             catch (OperationCanceledException)
+            {
+                return ResourceLoadStatus.OperationCanceled;
+            }
+        }
+
+        public async Task<ResourceLoadStatus> DownloadFolderAsync(ResourceItem folder, string destinationFolder, Action<bool, ResourceItem, int, int> notify, CancellationToken cancellationToken)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return ResourceLoadStatus.OperationCanceled;
+
+            try
+            {
+                if (folder.Items == null)
+                    folder.Items = await ListResourcesAsync(folder, cancellationToken, folder.Level + 1, folder.Level);
+
+                var files = folder.Items.Where(i => !i.IsCollection).ToArray();
+                if (!files.Any())
+                    return ResourceLoadStatus.NoFilesFoundInFolder;
+
+                string folderPath = Path.Combine(destinationFolder, folder.DisplayName);
+                if (!Directory.Exists(folderPath))
+                    Directory.CreateDirectory(folderPath);
+
+                for (int i = 0; i < files.Length; i++)
+                {
+                    ResourceItem fileResource = files[i];
+
+                    var result = await _client.GetRawFile(fileResource.FullPath, new GetFileParameters { CancellationToken = cancellationToken });
+
+                    string filePath = Path.Combine(folderPath, fileResource.DisplayName);
+                    using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                    {
+                        await result.Stream.CopyToAsync(fileStream);
+                    }
+
+                    notify(result.IsSuccessful, fileResource, i, files.Length);
+                }
+
+                return ResourceLoadStatus.FolderDownloaded;
+            }
+            catch (TaskCanceledException)
             {
                 return ResourceLoadStatus.OperationCanceled;
             }

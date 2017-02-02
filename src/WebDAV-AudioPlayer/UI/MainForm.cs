@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,12 +33,16 @@ namespace WebDav.AudioPlayer.UI
 
             InitCancellationTokenSource();
 
-            _client = new DecaTecWebDavClient(config);
+            //_client = new DecaTecWebDavClient(config);
+            _client = new MyWebDavClient(config);
 
             Func<ResourceItem, string, string> updateTitle = (resourceItem, action) =>
             {
-                string bitrate = resourceItem.MediaDetails.Bitrate != null ? string.Format("{0}", resourceItem.MediaDetails.Bitrate / 1000) : "?";
-                string text = string.Format("{0} : '{1}\\{2}' ({3} {4} kbps)", action, resourceItem.Parent.DisplayName, resourceItem.DisplayName, resourceItem.MediaDetails.Mode, bitrate);
+                string bitrate = resourceItem.MediaDetails.Bitrate != null ?
+                    $"{resourceItem.MediaDetails.Bitrate / 1000}"
+                    : "?";
+                string text =
+                    $"{action} : '{resourceItem.Parent.DisplayName}\\{resourceItem.DisplayName}' ({resourceItem.MediaDetails.Mode} {bitrate} kbps)";
                 Text = @"WebDAV-AudioPlayer " + text;
 
                 return text;
@@ -49,16 +54,18 @@ namespace WebDav.AudioPlayer.UI
 
                 PlayStarted = (selectedIndex, resourceItem) =>
                 {
-                    string bitrate = resourceItem.MediaDetails.Bitrate != null ? string.Format("{0}", resourceItem.MediaDetails.Bitrate / 1000) : "?";
+                    string bitrate = resourceItem.MediaDetails.Bitrate != null ?
+                        $"{resourceItem.MediaDetails.Bitrate / 1000}"
+                        : "?";
                     string text = updateTitle(resourceItem, "Playing");
                     textBoxSong.Text = text;
 
-                    labelTotalTime.Text = string.Format(@"{0:hh\:mm\:ss}", _player.TotalTime);
+                    labelTotalTime.Text = $@"{_player.TotalTime:hh\:mm\:ss}";
 
                     trackBarSong.Maximum = (int)_player.TotalTime.TotalSeconds;
 
                     listView.SetSelectedIndex(selectedIndex);
-                    listView.SetCells(selectedIndex, string.Format(@"{0:h\:mm\:ss}", _player.TotalTime), bitrate);
+                    listView.SetCells(selectedIndex, $@"{_player.TotalTime:h\:mm\:ss}", bitrate);
                 },
                 PlayContinue = resourceItem =>
                 {
@@ -79,18 +86,20 @@ namespace WebDav.AudioPlayer.UI
                 }
             };
 
-            Log(string.Format("Using : '{0}-SoundOut'", _player.SoundOut));
+            Log($"Using : '{_player.SoundOut}-SoundOut'");
         }
 
         private void InitCancellationTokenSource()
         {
+            _cancelationTokenSource?.Cancel();
+
             _cancelationTokenSource = new CancellationTokenSource();
             _cancelToken = _cancelationTokenSource.Token;
         }
 
         private void Log(string text)
         {
-            txtLogging.AppendText(string.Format("{0} - {1}\r\n", DateTime.Now, text));
+            txtLogging.AppendText($"{DateTime.Now} - {text}\r\n");
         }
 
         private async void MainForm_Load(object sender, EventArgs e)
@@ -143,12 +152,74 @@ namespace WebDav.AudioPlayer.UI
                     Text = resourceItem.DisplayName,
                     Tag = resourceItem,
                     ImageKey = @"Folder",
-                    SelectedImageKey = @"Folder"
+                    SelectedImageKey = @"Folder",
+                    ContextMenuStrip = contextMenuStripOnFolder
                 };
 
                 PopulateTree(ref childNode, resourceItem.Items);
                 node.Nodes.Add(childNode);
             }
+        }
+
+        private async void contextMenuStripOnFolder_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            var resourceItem = e.ClickedItem.Tag as ResourceItem;
+            if (resourceItem != null && e.ClickedItem.Name == "save")
+            {
+                await ShowFolderSaveDialogAsync(resourceItem);
+            }
+        }
+
+        private async Task ShowFolderSaveDialogAsync(ResourceItem resourceItem)
+        {
+            if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
+            {
+                var progress = CreateAndShowDownloadFolderForm();
+
+                Action<bool, ResourceItem, int, int> notify = (success, item, index, total) =>
+                {
+                    int pct = (int)(100.0 * index / total);
+                    progress.lblPct.Text = $@"{pct}%";
+                    progress.progressBar1.Value = pct;
+                };
+
+                ResourceLoadStatus status = ResourceLoadStatus.Unknown;
+                try
+                {
+                    status = await _client.DownloadFolderAsync(resourceItem, folderBrowserDialog1.SelectedPath, notify, _cancelToken);
+
+                    progress.lblPct.Text = "100%";
+                    progress.progressBar1.Value = 100;
+
+                    await Task.Delay(TimeSpan.FromMilliseconds(500), _cancelToken);
+                }
+                catch (Exception)
+                {
+                }
+                finally
+                {
+                    if (status == ResourceLoadStatus.FolderDownloaded)
+                        Log($"Folder '{resourceItem.DisplayName}' saved to {folderBrowserDialog1.SelectedPath}");
+                    else
+                        Log($"Folder '{resourceItem.DisplayName}' was not saved correctly : {status}");
+
+                    progress.Close();
+                    InitCancellationTokenSource();
+                }
+            }
+        }
+
+        private DownloadFolderForm CreateAndShowDownloadFolderForm()
+        {
+            var progress = new DownloadFolderForm
+            {
+                Owner = this,
+                CancellationTokenSource = _cancelationTokenSource,
+                StartPosition = FormStartPosition.Manual
+            };
+            progress.Location = new Point(Location.X + (Width - progress.Width) / 2, Location.Y + (Height - progress.Height) / 2);
+            progress.Show();
+            return progress;
         }
 
         private async void treeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
@@ -160,6 +231,13 @@ namespace WebDav.AudioPlayer.UI
             var resourceItem = e.Node.Tag as ResourceItem;
             if (resourceItem == null)
                 return;
+
+            if (e.Button == MouseButtons.Right)
+            {
+                contextMenuStripOnFolder.Items["save"].Tag = resourceItem;
+                contextMenuStripOnFolder.Show(Cursor.Position);
+                return;
+            }
 
             var current = Cursor.Current;
             Cursor.Current = Cursors.WaitCursor;
@@ -268,7 +346,7 @@ namespace WebDav.AudioPlayer.UI
         {
             if (_player != null)
             {
-                labelCurrentTime.Text = string.Format(@"{0:hh\:mm\:ss}", _player.CurrentTime);
+                labelCurrentTime.Text = $@"{_player.CurrentTime:hh\:mm\:ss}";
 
                 if (_player.PlaybackState == PlaybackState.Playing)
                 {

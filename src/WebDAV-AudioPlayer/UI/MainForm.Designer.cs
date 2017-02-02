@@ -45,6 +45,10 @@
             this.labelTotalTime = new System.Windows.Forms.ToolStripLabel();
             this.trackBarSong = new System.Windows.Forms.TrackBar();
             this.audioPlaybackTimer = new System.Windows.Forms.Timer(this.components);
+            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.contextMenuStripOnFolder = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.save = new System.Windows.Forms.ToolStripMenuItem();
+            this.cancel = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -55,6 +59,7 @@
             this.panelRightTop.SuspendLayout();
             this.toolStripRight.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarSong)).BeginInit();
+            this.contextMenuStripOnFolder.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer
@@ -345,6 +350,29 @@
             this.audioPlaybackTimer.Interval = 249;
             this.audioPlaybackTimer.Tick += new System.EventHandler(this.audioPlaybackTimer_Tick);
             // 
+            // contextMenuStripOnFolder
+            // 
+            this.contextMenuStripOnFolder.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.save,
+            this.cancel});
+            this.contextMenuStripOnFolder.Name = "contextMenuStripOnFolder";
+            this.contextMenuStripOnFolder.Size = new System.Drawing.Size(149, 48);
+            this.contextMenuStripOnFolder.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.contextMenuStripOnFolder_ItemClicked);
+            // 
+            // save
+            // 
+            this.save.Name = "save";
+            this.save.Size = new System.Drawing.Size(148, 22);
+            this.save.Tag = "save";
+            this.save.Text = "&Save to Folder";
+            // 
+            // cancel
+            // 
+            this.cancel.Name = "cancel";
+            this.cancel.Size = new System.Drawing.Size(148, 22);
+            this.cancel.Tag = "cancel";
+            this.cancel.Text = "&Cancel";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -369,6 +397,7 @@
             this.toolStripRight.ResumeLayout(false);
             this.toolStripRight.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarSong)).EndInit();
+            this.contextMenuStripOnFolder.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -403,5 +432,9 @@
         private System.Windows.Forms.Panel panelRightMid;
         private System.Windows.Forms.ColumnHeader Bitrate;
         private System.Windows.Forms.ColumnHeader Length;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStripOnFolder;
+        private System.Windows.Forms.ToolStripMenuItem save;
+        private System.Windows.Forms.ToolStripMenuItem cancel;
     }
 }

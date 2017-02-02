@@ -19,7 +19,6 @@ namespace WebDav.AudioPlayer.Client
         private static Func<WebDavSessionListItem, bool> _isAudioFile = r => r.Name.EndsWith(".wav") || r.Name.EndsWith(".wma") || r.Name.EndsWith(".mp3") || r.Name.EndsWith(".mp4") || r.Name.EndsWith(".m4a") || r.Name.EndsWith(".aac") || r.Name.EndsWith(".ogg") || r.Name.EndsWith(".flac");
         private static Func<WebDavSessionListItem, bool> _isFolder = r => r.IsCollection;
 
-        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(20, 20);
         private readonly WebDavSession _session;
         private readonly IConnectionSettings _connectionSettings;
 
@@ -56,7 +55,6 @@ namespace WebDav.AudioPlayer.Client
             IList<WebDavSessionListItem> result;
             try
             {
-                await _semaphore.WaitAsync(cancellationToken);
                 result = await _session.ListAsync(path, propfind); // .TimeoutAfter(TimeSpan.FromSeconds(1), cancellationToken);
             }
             catch (OperationCanceledException)
@@ -66,10 +64,6 @@ namespace WebDav.AudioPlayer.Client
             catch (TimeoutException)
             {
                 return null;
-            }
-            finally
-            {
-                _semaphore.Release();
             }
             Debug.WriteLine("path=[" + path + "], level = [" + level + "] " + "ListAsync   end : " + DateTime.UtcNow);
 
@@ -134,6 +128,72 @@ namespace WebDav.AudioPlayer.Client
                 resourceItem.Stream = null;
 
                 return ResourceLoadStatus.StreamFailedToLoad;
+            }
+            catch (TaskCanceledException)
+            {
+                return ResourceLoadStatus.OperationCanceled;
+            }
+        }
+
+        public async Task<ResourceLoadStatus> DownloadFolderAsync(ResourceItem folder, string destinationFolder, Action<bool, ResourceItem, int, int> notify, CancellationToken cancellationToken)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return ResourceLoadStatus.OperationCanceled;
+
+            try
+            {
+                if (folder.Items == null)
+                    folder.Items = await ListResourcesAsync(folder, cancellationToken, folder.Level + 1, folder.Level);
+
+                var files = folder.Items.Where(i => !i.IsCollection).ToArray();
+                if (!files.Any())
+                    return ResourceLoadStatus.NoFilesFoundInFolder;
+
+                string folderPath = Path.Combine(destinationFolder, folder.DisplayName);
+                if (!Directory.Exists(folderPath))
+                    Directory.CreateDirectory(folderPath);
+
+                var tasks = new List<Task>();
+                for (int i = 0; i < files.Length; i++)
+                {
+                    ResourceItem fileResource = files[i];
+
+                    string filePath = Path.Combine(folderPath, fileResource.DisplayName);
+                    var fileStream = new FileStream(filePath, FileMode.Create);
+
+                    var task = _session.DownloadFileAsync(fileResource.FullPath, fileStream, cancellationToken);
+                    tasks.Add(task);
+                }
+
+                await Task.WhenAll(tasks.ToArray());
+
+                //int index = 0;
+                //foreach (var fileResource in files)
+                //{
+                //    string filePath = Path.Combine(folderPath, fileResource.DisplayName);
+                //    var fileStream = new FileStream(filePath, FileMode.Create);
+
+                //    bool result = await _session.DownloadFileAsync(fileResource.FullPath, fileStream, cancellationToken);
+                //    fileStream.Flush();
+
+                //    //notify(result, fileResource, index++, files.Length);
+                //}
+
+                //var result = await Task.WhenAll(tasks.ToArray());
+
+                //for (int i = 0; i < files.Length; i++)
+                //{
+                //    ResourceItem fileResource = files[i];
+
+                //    string filePath = Path.Combine(folderPath, fileResource.DisplayName);
+                //    var fileStream = new FileStream(filePath, FileMode.Create);
+
+                //    bool isSuccessful = await _session.DownloadFileAsync(fileResource.FullPath, fileStream, cancellationToken);
+
+                //    notify(isSuccessful, fileResource, i, files.Length);
+                //}
+
+                return ResourceLoadStatus.FolderDownloaded;
             }
             catch (TaskCanceledException)
             {
