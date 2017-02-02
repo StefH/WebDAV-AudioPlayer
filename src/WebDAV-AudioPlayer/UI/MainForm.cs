@@ -58,7 +58,7 @@ namespace WebDav.AudioPlayer.UI
                     trackBarSong.Maximum = (int)_player.TotalTime.TotalSeconds;
 
                     listView.SetSelectedIndex(selectedIndex);
-                    listView.SetCells(selectedIndex, string.Format(@"{0:mm\:ss}", _player.TotalTime), bitrate);
+                    listView.SetCells(selectedIndex, string.Format(@"{0:h\:mm\:ss}", _player.TotalTime), bitrate);
                 },
                 PlayContinue = resourceItem =>
                 {

@@ -65,8 +65,8 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ByteSizeLib, Version=1.2.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ByteSize.1.2.4\lib\net45\ByteSizeLib.dll</HintPath>
+    <Reference Include="ByteSize, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\ByteSize.1.3.0\lib\net45\ByteSize.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="CSCore, Version=1.1.5992.18249, Culture=neutral, PublicKeyToken=5a08f2b6f4415dea, processorArchitecture=MSIL">
@@ -165,7 +165,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\MediaPlayer-1_32x32_and_16x16.ico" />
-    <None Include="Resources\MediaPlayer-1.ico" />
     <None Include="Resources\Drive.ico" />
     <Content Include="Resources\arrow_refresh.png" />
     <Content Include="Resources\control_eject.png" />
@@ -189,9 +188,9 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
-    <Error Condition="!Exists('..\..\packages\MediaInfo.Native.0.7.91.1\build\MediaInfo.Native.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\MediaInfo.Native.0.7.91.1\build\MediaInfo.Native.targets'))" />
+    <Error Condition="!Exists('..\..\packages\MediaInfo.Native.0.7.92\build\MediaInfo.Native.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\MediaInfo.Native.0.7.92\build\MediaInfo.Native.targets'))" />
   </Target>
-  <Import Project="..\..\packages\MediaInfo.Native.0.7.91.1\build\MediaInfo.Native.targets" Condition="Exists('..\..\packages\MediaInfo.Native.0.7.91.1\build\MediaInfo.Native.targets')" />
+  <Import Project="..\..\packages\MediaInfo.Native.0.7.92\build\MediaInfo.Native.targets" Condition="Exists('..\..\packages\MediaInfo.Native.0.7.92\build\MediaInfo.Native.targets')" />
   <!--<PropertyGroup>
     <PostBuildEvent>copy "$(SolutionDir)packages\MediaInfo.Native.0.7.91\build\native\$(PlatformName)\*.dll" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>-->
