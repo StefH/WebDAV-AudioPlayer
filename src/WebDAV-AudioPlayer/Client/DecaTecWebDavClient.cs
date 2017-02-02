@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using DecaTec.WebDav;
 using DecaTec.WebDav.WebDavArtifacts;
-using Newtonsoft.Json;
 using WebDav.AudioPlayer.Audio;
 using WebDav.AudioPlayer.Extensions;
 using WebDav.AudioPlayer.Models;
@@ -20,7 +19,7 @@ namespace WebDav.AudioPlayer.Client
         private static Func<WebDavSessionListItem, bool> _isAudioFile = r => r.Name.EndsWith(".wav") || r.Name.EndsWith(".wma") || r.Name.EndsWith(".mp3") || r.Name.EndsWith(".mp4") || r.Name.EndsWith(".m4a") || r.Name.EndsWith(".aac") || r.Name.EndsWith(".ogg") || r.Name.EndsWith(".flac");
         private static Func<WebDavSessionListItem, bool> _isFolder = r => r.IsCollection;
 
-        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(10, 10);
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(20, 20);
         private readonly WebDavSession _session;
         private readonly IConnectionSettings _connectionSettings;
 
@@ -58,9 +57,13 @@ namespace WebDav.AudioPlayer.Client
             try
             {
                 await _semaphore.WaitAsync(cancellationToken);
-                result = await _session.ListAsync(path, propfind).WithCancellation(cancellationToken);
+                result = await _session.ListAsync(path, propfind); // .TimeoutAfter(TimeSpan.FromSeconds(1), cancellationToken);
             }
             catch (OperationCanceledException)
+            {
+                return null;
+            }
+            catch (TimeoutException)
             {
                 return null;
             }

@@ -16,5 +16,20 @@ namespace WebDav.AudioPlayer.Extensions
 
             return await task;
         }
+
+        public static async Task<TResult> TimeoutAfter<TResult>(this Task<TResult> task, TimeSpan timeout, CancellationToken cancellationToken)
+        {
+            var timeoutCancellationTokenSource = new CancellationTokenSource();
+            var totalCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(timeoutCancellationTokenSource.Token, cancellationToken);
+
+            var completedTask = await Task.WhenAny(task, Task.Delay(timeout, totalCancellationTokenSource.Token));
+            if (completedTask == task)
+            {
+                totalCancellationTokenSource.Cancel();
+                return await task;  // Very important in order to propagate exceptions
+            }
+
+            throw new TimeoutException("The operation has timed out.");
+        }
     }
 }
