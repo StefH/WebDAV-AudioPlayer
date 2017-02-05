@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using DecaTec.WebDav;
 using DecaTec.WebDav.WebDavArtifacts;
 using WebDav.AudioPlayer.Audio;
-using WebDav.AudioPlayer.Extensions;
 using WebDav.AudioPlayer.Models;
 
 namespace WebDav.AudioPlayer.Client
@@ -31,17 +30,13 @@ namespace WebDav.AudioPlayer.Client
             _session = new WebDavSession(credentials);
         }
 
-        public async Task<List<ResourceItem>> ListResourcesAsync(ResourceItem parent, CancellationToken cancellationToken, int maxLevel, int level = 0)
+        public async Task<ResourceLoadStatus> FetchChildResourcesAsync(ResourceItem parent, CancellationToken cancellationToken, int maxLevel, int level = 0)
         {
             if (cancellationToken.IsCancellationRequested)
-                return null;
+                return ResourceLoadStatus.OperationCanceled;
 
             if (level > maxLevel)
-                return null;
-
-            Uri path = parent == null
-                ? OnlinePathBuilder.ConvertPathToFullUri(_connectionSettings.StorageUri, _connectionSettings.RootFolder)
-                : parent.FullPath;
+                return ResourceLoadStatus.OperationCanceled;
 
             var propfind = PropFind.CreatePropFindWithEmptyProperties(
                 PropNameConstants.Name,
@@ -51,21 +46,21 @@ namespace WebDav.AudioPlayer.Client
                 PropNameConstants.GetContentLength
             );
 
-            Debug.WriteLine("path=[" + path + "], level = [" + level + "] " + "ListAsync start : " + DateTime.UtcNow);
+            Debug.WriteLine("path=[" + parent.FullPath + "], level = [" + level + "] " + "ListAsync start : " + DateTime.UtcNow);
             IList<WebDavSessionListItem> result;
             try
             {
-                result = await _session.ListAsync(path, propfind); // .TimeoutAfter(TimeSpan.FromSeconds(1), cancellationToken);
+                result = await _session.ListAsync(parent.FullPath, propfind); // .TimeoutAfter(TimeSpan.FromSeconds(1), cancellationToken);
             }
             catch (OperationCanceledException)
             {
-                return null;
+                return ResourceLoadStatus.OperationCanceled;
             }
             catch (TimeoutException)
             {
-                return null;
+                return ResourceLoadStatus.OperationCanceled;
             }
-            Debug.WriteLine("path=[" + path + "], level = [" + level + "] " + "ListAsync   end : " + DateTime.UtcNow);
+            Debug.WriteLine("path=[" + parent.FullPath + "], level = [" + level + "] " + "ListAsync   end : " + DateTime.UtcNow);
 
             if (result != null)
             {
@@ -87,7 +82,7 @@ namespace WebDav.AudioPlayer.Client
 
                         if (r.IsCollection && level < maxLevel)
                         {
-                            resourceItem.Items = await ListResourcesAsync(resourceItem, cancellationToken, maxLevel, level + 1);
+                            await FetchChildResourcesAsync(resourceItem, cancellationToken, maxLevel, level + 1);
                         }
 
                         return resourceItem;
@@ -95,10 +90,11 @@ namespace WebDav.AudioPlayer.Client
 
                 var items = await Task.WhenAll(tasks);
 
-                return items.OrderBy(r => r.DisplayName).ToList();
+                parent.Items = items.OrderBy(r => r.DisplayName).ToList();
+                return ResourceLoadStatus.Ok;
             }
 
-            return null;
+            return ResourceLoadStatus.NoResourcesFound;
         }
 
         public async Task<ResourceLoadStatus> GetStreamAsync(ResourceItem resourceItem, CancellationToken cancellationToken)
@@ -120,7 +116,7 @@ namespace WebDav.AudioPlayer.Client
                 {
                     resourceItem.MediaDetails = MediaInfoHelper.GetMediaDetails(resourceItem.Stream);
 
-                    return ResourceLoadStatus.StreamLoaded;
+                    return ResourceLoadStatus.Ok;
                 }
 
                 resourceItem.Stream.Close();
@@ -143,11 +139,15 @@ namespace WebDav.AudioPlayer.Client
             try
             {
                 if (folder.Items == null)
-                    folder.Items = await ListResourcesAsync(folder, cancellationToken, folder.Level + 1, folder.Level);
+                {
+                    var fetchResult = await FetchChildResourcesAsync(folder, cancellationToken, folder.Level + 1, folder.Level);
+                    if (fetchResult != ResourceLoadStatus.Ok)
+                        return fetchResult;
+                }
 
                 var files = folder.Items.Where(i => !i.IsCollection).ToArray();
                 if (!files.Any())
-                    return ResourceLoadStatus.NoFilesFoundInFolder;
+                    return ResourceLoadStatus.NoResourcesFound;
 
                 string folderPath = Path.Combine(destinationFolder, folder.DisplayName);
                 if (!Directory.Exists(folderPath))
@@ -193,7 +193,7 @@ namespace WebDav.AudioPlayer.Client
                 //    notify(isSuccessful, fileResource, i, files.Length);
                 //}
 
-                return ResourceLoadStatus.FolderDownloaded;
+                return ResourceLoadStatus.Ok;
             }
             catch (TaskCanceledException)
             {

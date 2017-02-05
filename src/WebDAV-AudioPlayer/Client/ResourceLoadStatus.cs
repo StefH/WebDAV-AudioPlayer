@@ -4,12 +4,11 @@ namespace WebDav.AudioPlayer.Client
     public enum ResourceLoadStatus
     {
         Unknown,
-        StreamLoaded,
+        Ok,
         StreamExisting,
         StreamFailedToLoad,
         IsCollection,
-        FolderDownloaded,
-        NoFilesFoundInFolder,
+        NoResourcesFound,
         OperationCanceled
     }
 }

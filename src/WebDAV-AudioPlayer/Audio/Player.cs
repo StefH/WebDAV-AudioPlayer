@@ -45,36 +45,15 @@ namespace WebDav.AudioPlayer.Audio
             }
         }
 
-        public int SelectedIndex { get; private set; }
+        public int SelectedIndex { get; private set; } = -1;
 
-        public PlaybackState PlaybackState
-        {
-            get
-            {
-                return _soundOut != null ? _soundOut.PlaybackState : PlaybackState.Stopped;
-            }
-        }
+        public PlaybackState PlaybackState => _soundOut?.PlaybackState ?? PlaybackState.Stopped;
 
-        public TimeSpan CurrentTime
-        {
-            get
-            {
-                return _waveSource != null ? _waveSource.GetPosition() : TimeSpan.Zero;
-            }
-        }
+        public TimeSpan CurrentTime => _waveSource?.GetPosition() ?? TimeSpan.Zero;
 
-        public TimeSpan TotalTime
-        {
-            get
-            {
-                return _waveSource != null ? _waveSource.GetLength() : TimeSpan.Zero;
-            }
-        }
+        public TimeSpan TotalTime => _waveSource?.GetLength() ?? TimeSpan.Zero;
 
-        public string SoundOut
-        {
-            get { return _soundOut.GetType().Name; }
-        }
+        public string SoundOut => _soundOut.GetType().Name;
 
         public Player(IWebDavClient client)
         {
@@ -114,7 +93,7 @@ namespace WebDav.AudioPlayer.Audio
             }
 
             // If same song and stream is loaded, just JumpTo start and start play.
-            if (sameSong && resourceItem.Stream != null)
+            if (sameSong && resourceItem.Stream != null && PlaybackState == PlaybackState.Playing)
             {
                 JumpTo(TimeSpan.Zero);
                 return;
@@ -124,7 +103,7 @@ namespace WebDav.AudioPlayer.Audio
 
             Log(string.Format(@"Reading : '{0}'", resourceItem.DisplayName));
             var status = await _client.GetStreamAsync(resourceItem, cancellationToken);
-            if (status != ResourceLoadStatus.StreamLoaded && status != ResourceLoadStatus.StreamExisting)
+            if (status != ResourceLoadStatus.Ok && status != ResourceLoadStatus.StreamExisting)
             {
                 Log(string.Format(@"Reading error : {0}", status));
                 return;
@@ -186,7 +165,7 @@ namespace WebDav.AudioPlayer.Audio
                 var resourceItem = Items[nextIndex];
                 Log(string.Format("Preloading : '{0}'", resourceItem.DisplayName));
                 var status = await _client.GetStreamAsync(resourceItem, cancellationToken);
-                if (status != ResourceLoadStatus.StreamLoaded && status != ResourceLoadStatus.StreamExisting)
+                if (status != ResourceLoadStatus.Ok && status != ResourceLoadStatus.StreamExisting)
                 {
                     Log(string.Format(@"Preloading error : {0}", status));
                     return;

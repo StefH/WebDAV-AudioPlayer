@@ -113,9 +113,15 @@ namespace WebDav.AudioPlayer.UI
             Cursor.Current = Cursors.WaitCursor;
 
             treeView.Nodes.Clear();
+            
+            var root = new ResourceItem
+            {
+                DisplayName = _config.RootFolder,
+                FullPath = OnlinePathBuilder.ConvertPathToFullUri(_config.StorageUri, _config.RootFolder)
+            };
 
-            var list = await _client.ListResourcesAsync(null, _cancelToken, 0);
-            if (list == null)
+            var result = await _client.FetchChildResourcesAsync(root, _cancelToken, 0);
+            if (result != ResourceLoadStatus.Ok)
                 return;
 
             var rootNode = new TreeNode
@@ -124,7 +130,7 @@ namespace WebDav.AudioPlayer.UI
                 Tag = null
             };
 
-            PopulateTree(ref rootNode, list);
+            PopulateTree(ref rootNode, root.Items);
 
             treeView.Nodes.Add(rootNode);
             rootNode.Expand();
@@ -198,8 +204,8 @@ namespace WebDav.AudioPlayer.UI
                 }
                 finally
                 {
-                    if (status == ResourceLoadStatus.FolderDownloaded)
-                        Log($"Folder '{resourceItem.DisplayName}' saved to {folderBrowserDialog1.SelectedPath}");
+                    if (status == ResourceLoadStatus.Ok)
+                        Log($"Folder '{resourceItem.DisplayName}' saved to '{folderBrowserDialog1.SelectedPath}'");
                     else
                         Log($"Folder '{resourceItem.DisplayName}' was not saved correctly : {status}");
 
@@ -242,20 +248,23 @@ namespace WebDav.AudioPlayer.UI
             var current = Cursor.Current;
             Cursor.Current = Cursors.WaitCursor;
 
-            var items = await _client.ListResourcesAsync(resourceItem, _cancelToken, resourceItem.Level, resourceItem.Level) ?? new List<ResourceItem>();
-            var node = e.Node;
-            node.Nodes.Clear();
-            PopulateTree(ref node, items);
-            node.Expand();
-
-            _player.Items = items.Where(r => !r.IsCollection).ToList();
-
-            listView.Items.Clear();
-            foreach (var file in _player.Items)
+            var result = await _client.FetchChildResourcesAsync(resourceItem, _cancelToken, resourceItem.Level, resourceItem.Level);
+            if (result == ResourceLoadStatus.Ok)
             {
-                string size = file.ContentLength != null ? ByteSize.FromBytes(file.ContentLength.Value).ToString("0.00 MB") : string.Empty;
-                var listViewItem = new ListViewItem(new[] { file.DisplayName, size, null, null }) { Tag = file };
-                listView.Items.Add(listViewItem);
+                var node = e.Node;
+                node.Nodes.Clear();
+                PopulateTree(ref node, resourceItem.Items);
+                node.Expand();
+
+                _player.Items = resourceItem.Items.Where(r => !r.IsCollection).ToList();
+
+                listView.Items.Clear();
+                foreach (var file in _player.Items)
+                {
+                    string size = file.ContentLength != null ? ByteSize.FromBytes(file.ContentLength.Value).ToString("0.00 MB") : string.Empty;
+                    var listViewItem = new ListViewItem(new[] { file.DisplayName, size, null, null }) { Tag = file };
+                    listView.Items.Add(listViewItem);
+                }
             }
 
             Cursor.Current = current;

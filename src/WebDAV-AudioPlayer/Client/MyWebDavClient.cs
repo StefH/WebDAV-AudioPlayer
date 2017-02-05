@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using JetBrains.Annotations;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using WebDav.AudioPlayer.Audio;
 using WebDav.AudioPlayer.Extensions;
 using WebDav.AudioPlayer.Models;
@@ -15,8 +14,6 @@ namespace WebDav.AudioPlayer.Client
 {
     public class MyWebDavClient : IWebDavClient
     {
-        private static SemaphoreSlim semaphore = new SemaphoreSlim(10, 10);
-
         private static Func<WebDavResource, bool> _isAudioFile = r => r.Uri.EndsWith(".wav") || r.Uri.EndsWith(".wma") || r.Uri.EndsWith(".mp3") || r.Uri.EndsWith(".mp4") || r.Uri.EndsWith(".m4a") || r.Uri.EndsWith(".aac") || r.Uri.EndsWith(".ogg") || r.Uri.EndsWith(".flac");
         private static Func<WebDavResource, bool> _isFolder = r => r.IsCollection;
 
@@ -35,21 +32,17 @@ namespace WebDav.AudioPlayer.Client
             });
         }
 
-        public async Task<List<ResourceItem>> ListResourcesAsync(ResourceItem parent, CancellationToken cancellationToken, int maxLevel, int level)
+        public async Task<ResourceLoadStatus> FetchChildResourcesAsync([NotNull] ResourceItem parent, CancellationToken cancellationToken, int maxLevel, int level)
         {
             if (cancellationToken.IsCancellationRequested)
-                return null;
+                return ResourceLoadStatus.OperationCanceled;
 
             if (level > maxLevel)
-                return null;
+                return ResourceLoadStatus.OperationCanceled;
 
-            Uri path = parent == null
-                ? OnlinePathBuilder.ConvertPathToFullUri(_connectionSettings.StorageUri, _connectionSettings.RootFolder)
-                : parent.FullPath;
+            Debug.WriteLine("path=[" + parent.FullPath + "]");
 
-            Debug.WriteLine("path=[" + path + "]");
-
-            var result = await _client.Propfind(path, new PropfindParameters { CancellationToken = cancellationToken });
+            var result = await _client.Propfind(parent.FullPath, new PropfindParameters { CancellationToken = cancellationToken });
             if (result.Resources != null)
             {
                 var tasks = result.Resources.Skip(1)
@@ -68,7 +61,7 @@ namespace WebDav.AudioPlayer.Client
 
                         if (r.IsCollection && level < maxLevel)
                         {
-                            resourceItem.Items = await ListResourcesAsync(resourceItem, cancellationToken, maxLevel, level + 1);
+                            await FetchChildResourcesAsync(resourceItem, cancellationToken, maxLevel, level + 1);
                         }
 
                         return resourceItem;
@@ -76,10 +69,12 @@ namespace WebDav.AudioPlayer.Client
 
                 var items = await Task.WhenAll(tasks);
 
-                return items.OrderBy(r => r.DisplayName).ToList();
+                parent.Items = items.OrderBy(r => r.DisplayName).ToList();
+
+                return ResourceLoadStatus.Ok;
             }
 
-            return null;
+            return ResourceLoadStatus.NoResourcesFound;
         }
 
         public async Task<ResourceLoadStatus> GetStreamAsync(ResourceItem resourceItem, CancellationToken cancellationToken)
@@ -102,7 +97,7 @@ namespace WebDav.AudioPlayer.Client
 
                     resourceItem.MediaDetails = MediaInfoHelper.GetMediaDetails(resourceItem.Stream);
 
-                    return ResourceLoadStatus.StreamLoaded;
+                    return ResourceLoadStatus.Ok;
                 }
 
                 resourceItem.Stream = null;
@@ -122,32 +117,47 @@ namespace WebDav.AudioPlayer.Client
             try
             {
                 if (folder.Items == null)
-                    folder.Items = await ListResourcesAsync(folder, cancellationToken, folder.Level + 1, folder.Level);
+                {
+                    var fetchResult = await FetchChildResourcesAsync(folder, cancellationToken, folder.Level + 1, folder.Level);
+                    if (fetchResult != ResourceLoadStatus.Ok)
+                        return fetchResult;
+                }
 
-                var files = folder.Items.Where(i => !i.IsCollection).ToArray();
-                if (!files.Any())
-                    return ResourceLoadStatus.NoFilesFoundInFolder;
+                if (!folder.Items.Any(i => !i.IsCollection))
+                    return ResourceLoadStatus.NoResourcesFound;
 
                 string folderPath = Path.Combine(destinationFolder, folder.DisplayName);
                 if (!Directory.Exists(folderPath))
                     Directory.CreateDirectory(folderPath);
 
-                for (int i = 0; i < files.Length; i++)
+                int idx = 0;
+                foreach (var resourceItem in folder.Items)
                 {
-                    ResourceItem fileResource = files[i];
-
-                    var result = await _client.GetRawFile(fileResource.FullPath, new GetFileParameters { CancellationToken = cancellationToken });
-
-                    string filePath = Path.Combine(folderPath, fileResource.DisplayName);
-                    using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                    try
                     {
-                        await result.Stream.CopyToAsync(fileStream);
-                    }
+                        var status = await GetStreamAsync(resourceItem, cancellationToken);
+                        bool isSuccessful = status == ResourceLoadStatus.StreamExisting || status == ResourceLoadStatus.Ok;
 
-                    notify(result.IsSuccessful, fileResource, i, files.Length);
+                        if (isSuccessful)
+                        {
+                            string filePath = Path.Combine(folderPath, resourceItem.DisplayName);
+                            using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                            {
+                                await resourceItem.Stream.CopyToAsync(fileStream);
+                            }
+                        }
+
+                        notify(isSuccessful, resourceItem, idx, folder.Items.Count);
+                        idx++;
+                    }
+                    finally 
+                    {
+                        resourceItem.Stream.Dispose();
+                        resourceItem.Stream = null;
+                    }
                 }
 
-                return ResourceLoadStatus.FolderDownloaded;
+                return ResourceLoadStatus.Ok;
             }
             catch (TaskCanceledException)
             {
