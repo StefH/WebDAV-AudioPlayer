@@ -20,4 +20,5 @@ Used libraries:
 <br>
 <br>
 Screenshot:
-![WebDAV-AudioPlaye](https://raw.githubusercontent.com/StefH/WebDAV-AudioPlayer/master/src/WebDAV-AudioPlayer/Resources/WebDAV-AudioPlayer.png "WebDAV-AudioPlaye")
+
+![WebDAV-AudioPlayer](https://raw.githubusercontent.com/StefH/WebDAV-AudioPlayer/master/src/WebDAV-AudioPlayer/Resources/WebDAV-AudioPlayer.png "WebDAV-AudioPlayer")
