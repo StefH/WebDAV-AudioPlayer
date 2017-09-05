@@ -145,11 +145,11 @@
     <Compile Include="UI\ConfigurationForm.Designer.cs">
       <DependentUpon>ConfigurationForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\DownloadFolderForm.cs">
+    <Compile Include="UI\DownloadResourceItemForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\DownloadFolderForm.Designer.cs">
-      <DependentUpon>DownloadFolderForm.cs</DependentUpon>
+    <Compile Include="UI\DownloadResourceItemForm.Designer.cs">
+      <DependentUpon>DownloadResourceItemForm.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\MainForm.cs">
       <SubType>Form</SubType>
@@ -165,8 +165,8 @@
     <EmbeddedResource Include="UI\ConfigurationForm.resx">
       <DependentUpon>ConfigurationForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI\DownloadFolderForm.resx">
-      <DependentUpon>DownloadFolderForm.cs</DependentUpon>
+    <EmbeddedResource Include="UI\DownloadResourceItemForm.resx">
+      <DependentUpon>DownloadResourceItemForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

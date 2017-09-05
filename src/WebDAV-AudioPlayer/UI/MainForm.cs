@@ -113,7 +113,7 @@ namespace WebDav.AudioPlayer.UI
             Cursor.Current = Cursors.WaitCursor;
 
             treeView.Nodes.Clear();
-            
+
             var root = new ResourceItem
             {
                 DisplayName = _config.RootFolder,
@@ -180,7 +180,7 @@ namespace WebDav.AudioPlayer.UI
         {
             if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
             {
-                var progress = CreateAndShowDownloadFolderForm();
+                var progress = CreateAndShowDownloadResourceItemForm("Folder");
 
                 Action<bool, ResourceItem, int, int> notify = (success, item, index, total) =>
                 {
@@ -215,16 +215,19 @@ namespace WebDav.AudioPlayer.UI
             }
         }
 
-        private DownloadFolderForm CreateAndShowDownloadFolderForm()
+        private DownloadResourceItemForm CreateAndShowDownloadResourceItemForm(string title)
         {
-            var progress = new DownloadFolderForm
+            var progress = new DownloadResourceItemForm
             {
                 Owner = this,
                 CancellationTokenSource = _cancelationTokenSource,
-                StartPosition = FormStartPosition.Manual
+                StartPosition = FormStartPosition.Manual,
+                lblDownloadProgress = { Text = $@"{title} download progress:" }
             };
+
             progress.Location = new Point(Location.X + (Width - progress.Width) / 2, Location.Y + (Height - progress.Height) / 2);
             progress.Show();
+
             return progress;
         }
 
@@ -268,6 +271,23 @@ namespace WebDav.AudioPlayer.UI
             }
 
             Cursor.Current = current;
+        }
+
+
+        private void listView_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                var listView = (ListView)sender;
+                var resourceItem = listView.SelectedItems.Count > 0 ? listView.SelectedItems[0].Tag as ResourceItem : null;
+
+                if (resourceItem == null)
+                    return;
+
+                contextMenuStripOnFolder.Items["save"].Tag = resourceItem;
+                contextMenuStripOnFolder.Show(Cursor.Position);
+                return;
+            }
         }
 
         private void listView_MouseDoubleClick(object sender, MouseEventArgs e)

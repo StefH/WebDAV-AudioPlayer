@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
 
 namespace WebDav.AudioPlayer.UI
 {
-    public partial class DownloadFolderForm : Form
+    public partial class DownloadResourceItemForm : Form
     {
         public CancellationTokenSource CancellationTokenSource { get; set; }
 
-        public DownloadFolderForm()
+        public DownloadResourceItemForm()
         {
             InitializeComponent();
         }

@@ -8,7 +8,7 @@ namespace WebDav.AudioPlayer.Audio
     /// <summary>
     /// Copied from https://github.com/filoe/cscore/blob/master/Samples/NVorbisIntegration/Program.cs
     /// </summary>
-    /// <seealso cref="CSCore.ISampleSource" />
+    /// <seealso cref="ISampleSource" />
     public sealed class NVorbisSource : ISampleSource
     {
         private readonly Stream _stream;
@@ -30,20 +30,11 @@ namespace WebDav.AudioPlayer.Audio
             _waveFormat = new WaveFormat(_vorbisReader.SampleRate, 32, _vorbisReader.Channels, AudioEncoding.IeeeFloat);
         }
 
-        public bool CanSeek
-        {
-            get { return _stream.CanSeek; }
-        }
+        public bool CanSeek => _stream.CanSeek;
 
-        public WaveFormat WaveFormat
-        {
-            get { return _waveFormat; }
-        }
+        public WaveFormat WaveFormat => _waveFormat;
 
-        public long Length
-        {
-            get { return CanSeek ? (long)(_vorbisReader.TotalTime.TotalSeconds * _waveFormat.SampleRate * _waveFormat.Channels) : 0; }
-        }
+        public long Length => CanSeek ? (long)(_vorbisReader.TotalTime.TotalSeconds * _waveFormat.SampleRate * _waveFormat.Channels) : 0;
 
         public long Position
         {
