@@ -15,8 +15,9 @@ namespace WebDav.AudioPlayer.Client
 {
     public class DecaTecWebDavClient : IWebDavClient
     {
-        private static Func<WebDavSessionListItem, bool> _isAudioFile = r => r.Name.EndsWith(".wav") || r.Name.EndsWith(".wma") || r.Name.EndsWith(".mp3") || r.Name.EndsWith(".mp4") || r.Name.EndsWith(".m4a") || r.Name.EndsWith(".aac") || r.Name.EndsWith(".ogg") || r.Name.EndsWith(".flac");
-        private static Func<WebDavSessionListItem, bool> _isFolder = r => r.IsCollection;
+        private static readonly string[] AudioExtensions = { ".wav", ".wma", ".mp3", ".mp4", ".m4a", ".aac", ".ogg", ".flac" };
+        private static readonly Func<WebDavSessionListItem, bool> IsAudioFile = r => AudioExtensions.Any(e => r.Name.ToLowerInvariant().EndsWith(e));
+        private static readonly Func<WebDavSessionListItem, bool> IsFolder = r => r.IsCollection;
 
         private readonly WebDavSession _session;
         private readonly IConnectionSettings _connectionSettings;
@@ -65,7 +66,7 @@ namespace WebDav.AudioPlayer.Client
             if (result != null)
             {
                 var tasks = result
-                    .Where(r => _isAudioFile(r) || _isFolder(r))
+                    .Where(r => IsAudioFile(r) || IsFolder(r))
                     .Select(async r =>
                     {
                         //Debug.WriteLine("WebDavSessionListItem = " + JsonConvert.SerializeObject(r, Formatting.Indented));

@@ -14,8 +14,9 @@ namespace WebDav.AudioPlayer.Client
 {
     public class MyWebDavClient : IWebDavClient
     {
-        private static Func<WebDavResource, bool> _isAudioFile = r => r.Uri.EndsWith(".wav") || r.Uri.EndsWith(".wma") || r.Uri.EndsWith(".mp3") || r.Uri.EndsWith(".mp4") || r.Uri.EndsWith(".m4a") || r.Uri.EndsWith(".aac") || r.Uri.EndsWith(".ogg") || r.Uri.EndsWith(".flac");
-        private static Func<WebDavResource, bool> _isFolder = r => r.IsCollection;
+        private static readonly string[] AudioExtensions = { ".wav", ".wma", ".mp3", ".mp4", ".m4a", ".aac", ".ogg", ".flac" };
+        private static readonly Func<WebDavResource, bool> IsAudioFile = r => AudioExtensions.Any(e => r.Uri.ToLowerInvariant().EndsWith(e));
+        private static readonly Func<WebDavResource, bool> IsFolder = r => r.IsCollection;
 
         private readonly WebDavClient _client;
         private readonly IConnectionSettings _connectionSettings;
@@ -46,7 +47,7 @@ namespace WebDav.AudioPlayer.Client
             if (result.Resources != null)
             {
                 var tasks = result.Resources.Skip(1)
-                    .Where(r => _isAudioFile(r) || _isFolder(r))
+                    .Where(r => IsAudioFile(r) || IsFolder(r))
                     .Select(async r =>
                     {
                         Uri fullPath = OnlinePathBuilder.Combine(_connectionSettings.StorageUri, r.Uri);
@@ -150,7 +151,7 @@ namespace WebDav.AudioPlayer.Client
                         notify(isSuccessful, resourceItem, idx, folder.Items.Count);
                         idx++;
                     }
-                    finally 
+                    finally
                     {
                         resourceItem.Stream.Dispose();
                         resourceItem.Stream = null;

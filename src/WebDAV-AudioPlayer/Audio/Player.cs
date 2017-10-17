@@ -113,7 +113,7 @@ namespace WebDav.AudioPlayer.Audio
 
             _resourceItemQueue.Enqueue(resourceItem);
 
-            string extension = new FileInfo(resourceItem.DisplayName).Extension;
+            string extension = new FileInfo(resourceItem.DisplayName).Extension.ToLowerInvariant();
             switch (extension)
             {
                 case ".wav":
