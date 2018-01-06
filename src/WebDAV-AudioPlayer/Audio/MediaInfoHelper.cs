@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using MediaInfo.DotNetWrapper.Enumerations;
 using MI = MediaInfo.DotNetWrapper;
 
 namespace WebDav.AudioPlayer.Audio
@@ -10,7 +11,7 @@ namespace WebDav.AudioPlayer.Audio
         private static readonly Func<MI.MediaInfo, string, int?> GetNullableIntValue = (info, parameter) =>
         {
             int result;
-            if (int.TryParse(info.Get(MI.StreamKind.Audio, 0, parameter), out result))
+            if (int.TryParse(info.Get(StreamKind.Audio, 0, parameter), out result))
                 return result;
 
             return null;
@@ -58,10 +59,10 @@ namespace WebDav.AudioPlayer.Audio
                         //Sending the buffer to MediaInfo
                         GCHandle gc = GCHandle.Alloc(buffer, GCHandleType.Pinned);
                         IntPtr fromBufferIntPtr = gc.AddrOfPinnedObject();
-                        MI.Status result = info.OpenBufferContinue(fromBufferIntPtr, (IntPtr)bufferSize);
+                        Status result = info.OpenBufferContinue(fromBufferIntPtr, (IntPtr)bufferSize);
                         gc.Free();
 
-                        if ((result & MI.Status.Finalized) == MI.Status.Finalized)
+                        if ((result & Status.Finalized) == Status.Finalized)
                             break;
 
                         //Testing if MediaInfo request to go elsewhere
@@ -72,10 +73,10 @@ namespace WebDav.AudioPlayer.Audio
                         }
                     } while (bufferSize > 0);
 
-                    //Finalizing
+                    // Finalizing
                     info.OpenBufferFinalize(); //This is the end of the stream, MediaInfo must finish some work
 
-                    string mode = info.Get(MI.StreamKind.Audio, 0, "BitRate_Mode");
+                    string mode = info.Get(StreamKind.Audio, 0, "BitRate_Mode");
                     mediaDetails.Mode = string.IsNullOrEmpty(mode) ? "CBR" : mode;
                     mediaDetails.Bitrate = GetNullableIntValue(info, "BitRate");
                     mediaDetails.Channels = GetNullableIntValue(info, "Channels");
