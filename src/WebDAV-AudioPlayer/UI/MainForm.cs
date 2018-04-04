@@ -38,11 +38,8 @@ namespace WebDav.AudioPlayer.UI
 
             Func<ResourceItem, string, string> updateTitle = (resourceItem, action) =>
             {
-                string bitrate = resourceItem.MediaDetails.Bitrate != null ?
-                    $"{resourceItem.MediaDetails.Bitrate / 1000}"
-                    : "?";
-                string text =
-                    $"{action} : '{resourceItem.Parent.DisplayName}\\{resourceItem.DisplayName}' ({resourceItem.MediaDetails.Mode} {bitrate} kbps)";
+                string bitrate = resourceItem.MediaDetails.Bitrate != null ? $"{resourceItem.MediaDetails.Bitrate / 1000}" : "?";
+                string text = $"{action} : '{resourceItem.Parent.DisplayName}\\{resourceItem.DisplayName}' ({resourceItem.MediaDetails.Mode} {bitrate} kbps)";
                 Text = @"WebDAV-AudioPlayer " + text;
 
                 return text;
@@ -54,9 +51,7 @@ namespace WebDav.AudioPlayer.UI
 
                 PlayStarted = (selectedIndex, resourceItem) =>
                 {
-                    string bitrate = resourceItem.MediaDetails.Bitrate != null ?
-                        $"{resourceItem.MediaDetails.Bitrate / 1000}"
-                        : "?";
+                    string bitrate = resourceItem.MediaDetails.Bitrate != null ? $"{resourceItem.MediaDetails.Bitrate / 1000}" : "?";
                     string text = updateTitle(resourceItem, "Playing");
                     textBoxSong.Text = text;
 
@@ -113,7 +108,7 @@ namespace WebDav.AudioPlayer.UI
             Cursor.Current = Cursors.WaitCursor;
 
             treeView.Nodes.Clear();
-            
+
             var root = new ResourceItem
             {
                 DisplayName = _config.RootFolder,
@@ -122,7 +117,9 @@ namespace WebDav.AudioPlayer.UI
 
             var result = await _client.FetchChildResourcesAsync(root, _cancelToken, 0);
             if (result != ResourceLoadStatus.Ok)
+            {
                 return;
+            }
 
             var rootNode = new TreeNode
             {
@@ -140,7 +137,9 @@ namespace WebDav.AudioPlayer.UI
         private void PopulateTree(ref TreeNode node, IList<ResourceItem> resourceItems)
         {
             if (resourceItems == null)
+            {
                 return;
+            }
 
             if (node == null)
             {
@@ -199,15 +198,15 @@ namespace WebDav.AudioPlayer.UI
 
                     await Task.Delay(TimeSpan.FromMilliseconds(500), _cancelToken);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    int i = 9;
                 }
                 finally
                 {
-                    if (status == ResourceLoadStatus.Ok)
-                        Log($"Folder '{resourceItem.DisplayName}' saved to '{folderBrowserDialog1.SelectedPath}'");
-                    else
-                        Log($"Folder '{resourceItem.DisplayName}' was not saved correctly : {status}");
+                    Log(status == ResourceLoadStatus.Ok
+                        ? $"Folder '{resourceItem.DisplayName}' saved to '{folderBrowserDialog1.SelectedPath}'"
+                        : $"Folder '{resourceItem.DisplayName}' was not saved correctly : {status}");
 
                     progress.Close();
                     InitCancellationTokenSource();

@@ -153,7 +153,7 @@ namespace WebDav.AudioPlayer.Client
                     }
                     finally
                     {
-                        resourceItem.Stream.Dispose();
+                        resourceItem.Stream?.Dispose();
                         resourceItem.Stream = null;
                     }
                 }

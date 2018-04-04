@@ -101,15 +101,15 @@ namespace WebDav.AudioPlayer.Audio
 
             Stop(false);
 
-            Log(string.Format(@"Reading : '{0}'", resourceItem.DisplayName));
+            Log($@"Reading : '{resourceItem.DisplayName}'");
             var status = await _client.GetStreamAsync(resourceItem, cancellationToken);
             if (status != ResourceLoadStatus.Ok && status != ResourceLoadStatus.StreamExisting)
             {
-                Log(string.Format(@"Reading error : {0}", status));
+                Log($@"Reading error : {status}");
                 return;
             }
 
-            Log(string.Format(@"Reading done : {0}", status));
+            Log($@"Reading done : {status}");
 
             _resourceItemQueue.Enqueue(resourceItem);
 
@@ -157,23 +157,27 @@ namespace WebDav.AudioPlayer.Audio
         private async void PreloadNext(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
+            {
                 return;
+            }
 
             int nextIndex = SelectedIndex + 1;
             if (nextIndex < Items.Count)
             {
                 var resourceItem = Items[nextIndex];
-                Log(string.Format("Preloading : '{0}'", resourceItem.DisplayName));
+                Log($"Preloading : '{resourceItem.DisplayName}'");
                 var status = await _client.GetStreamAsync(resourceItem, cancellationToken);
                 if (status != ResourceLoadStatus.Ok && status != ResourceLoadStatus.StreamExisting)
                 {
-                    Log(string.Format(@"Preloading error : {0}", status));
+                    Log($@"Preloading error : {status}");
                     return;
                 }
 
-                Log(string.Format(@"Preloading done : {0}", status));
+                Log($@"Preloading done : {status}");
                 _resourceItemQueue.Enqueue(resourceItem);
             }
+
+            // Try to open next folder
         }
 
         public void Next(CancellationToken cancelAction)
