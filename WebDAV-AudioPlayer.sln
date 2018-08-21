@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2003
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8A9BC34B-DF33-49C3-AB28-92AEEBD45F84}"
 EndProject
@@ -14,31 +14,65 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src-uwp", "src-uwp", "{2A2BCFF4-245B-4889-AA93-73D07402F460}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebDAV-AudioPlayer", "src-uw\WebDAV-AudioPlayer\WebDAV-AudioPlayer.csproj", "{E2785377-E964-4DBA-95BB-C95D659C09DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|ARM = Debug|ARM
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|ARM = Release|ARM
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{DE1CEC09-0A1E-4DDC-BD4A-8B9009C554AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DE1CEC09-0A1E-4DDC-BD4A-8B9009C554AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE1CEC09-0A1E-4DDC-BD4A-8B9009C554AD}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{DE1CEC09-0A1E-4DDC-BD4A-8B9009C554AD}.Debug|ARM.Build.0 = Debug|Any CPU
 		{DE1CEC09-0A1E-4DDC-BD4A-8B9009C554AD}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{DE1CEC09-0A1E-4DDC-BD4A-8B9009C554AD}.Debug|x86.ActiveCfg = Debug|x86
 		{DE1CEC09-0A1E-4DDC-BD4A-8B9009C554AD}.Debug|x86.Build.0 = Debug|x86
 		{DE1CEC09-0A1E-4DDC-BD4A-8B9009C554AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DE1CEC09-0A1E-4DDC-BD4A-8B9009C554AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE1CEC09-0A1E-4DDC-BD4A-8B9009C554AD}.Release|ARM.ActiveCfg = Release|Any CPU
+		{DE1CEC09-0A1E-4DDC-BD4A-8B9009C554AD}.Release|ARM.Build.0 = Release|Any CPU
 		{DE1CEC09-0A1E-4DDC-BD4A-8B9009C554AD}.Release|x64.ActiveCfg = Release|Any CPU
 		{DE1CEC09-0A1E-4DDC-BD4A-8B9009C554AD}.Release|x86.ActiveCfg = Release|x86
 		{DE1CEC09-0A1E-4DDC-BD4A-8B9009C554AD}.Release|x86.Build.0 = Release|x86
+		{E2785377-E964-4DBA-95BB-C95D659C09DC}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{E2785377-E964-4DBA-95BB-C95D659C09DC}.Debug|ARM.ActiveCfg = Debug|ARM
+		{E2785377-E964-4DBA-95BB-C95D659C09DC}.Debug|ARM.Build.0 = Debug|ARM
+		{E2785377-E964-4DBA-95BB-C95D659C09DC}.Debug|ARM.Deploy.0 = Debug|ARM
+		{E2785377-E964-4DBA-95BB-C95D659C09DC}.Debug|x64.ActiveCfg = Debug|x64
+		{E2785377-E964-4DBA-95BB-C95D659C09DC}.Debug|x64.Build.0 = Debug|x64
+		{E2785377-E964-4DBA-95BB-C95D659C09DC}.Debug|x64.Deploy.0 = Debug|x64
+		{E2785377-E964-4DBA-95BB-C95D659C09DC}.Debug|x86.ActiveCfg = Debug|x86
+		{E2785377-E964-4DBA-95BB-C95D659C09DC}.Debug|x86.Build.0 = Debug|x86
+		{E2785377-E964-4DBA-95BB-C95D659C09DC}.Debug|x86.Deploy.0 = Debug|x86
+		{E2785377-E964-4DBA-95BB-C95D659C09DC}.Release|Any CPU.ActiveCfg = Release|x86
+		{E2785377-E964-4DBA-95BB-C95D659C09DC}.Release|ARM.ActiveCfg = Release|ARM
+		{E2785377-E964-4DBA-95BB-C95D659C09DC}.Release|ARM.Build.0 = Release|ARM
+		{E2785377-E964-4DBA-95BB-C95D659C09DC}.Release|ARM.Deploy.0 = Release|ARM
+		{E2785377-E964-4DBA-95BB-C95D659C09DC}.Release|x64.ActiveCfg = Release|x64
+		{E2785377-E964-4DBA-95BB-C95D659C09DC}.Release|x64.Build.0 = Release|x64
+		{E2785377-E964-4DBA-95BB-C95D659C09DC}.Release|x64.Deploy.0 = Release|x64
+		{E2785377-E964-4DBA-95BB-C95D659C09DC}.Release|x86.ActiveCfg = Release|x86
+		{E2785377-E964-4DBA-95BB-C95D659C09DC}.Release|x86.Build.0 = Release|x86
+		{E2785377-E964-4DBA-95BB-C95D659C09DC}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{DE1CEC09-0A1E-4DDC-BD4A-8B9009C554AD} = {8A9BC34B-DF33-49C3-AB28-92AEEBD45F84}
+		{E2785377-E964-4DBA-95BB-C95D659C09DC} = {2A2BCFF4-245B-4889-AA93-73D07402F460}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EAF20B78-AB85-4483-86EA-369BC3869777}
 	EndGlobalSection
 EndGlobal
