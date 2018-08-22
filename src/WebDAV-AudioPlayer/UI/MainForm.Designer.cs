@@ -134,7 +134,7 @@
             this.btnRefresh.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(23, 22);
-            this.btnRefresh.Text = "toolStripButton1";
+            this.btnRefresh.Text = "Refresh";
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
             // panelRightMid
@@ -172,7 +172,7 @@
             // 
             this.DisplayName.Tag = "DisplayName";
             this.DisplayName.Text = "Title";
-            this.DisplayName.Width = 320;
+            this.DisplayName.Width = 300;
             // 
             // ContentLength
             // 

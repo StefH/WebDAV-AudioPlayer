@@ -1,5 +1,4 @@
-﻿using JetBrains.Annotations;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -33,13 +32,17 @@ namespace WebDav.AudioPlayer.Client
             });
         }
 
-        public async Task<ResourceLoadStatus> FetchChildResourcesAsync([NotNull] ResourceItem parent, CancellationToken cancellationToken, int maxLevel, int level)
+        public async Task<ResourceLoadStatus> FetchChildResourcesAsync(ResourceItem parent, CancellationToken cancellationToken, int maxLevel, int level)
         {
             if (cancellationToken.IsCancellationRequested)
+            {
                 return ResourceLoadStatus.OperationCanceled;
+            }
 
             if (level > maxLevel)
+            {
                 return ResourceLoadStatus.OperationCanceled;
+            }
 
             Debug.WriteLine("path=[" + parent.FullPath + "]");
 
