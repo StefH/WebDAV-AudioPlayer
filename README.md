@@ -12,8 +12,7 @@ The following codecs are supported:
 
 Used libraries:
 * [CSCore](https://github.com/filoe/cscore) for playing audio files.
-* [WebDAV-Client](https://github.com/StefH/WebDAV-Client) and [Portable-WebDAV-Library
-](https://github.com/DecaTec/Portable-WebDAV-Library) for access the WebDAV location.
+* [WebDAV-Client](https://github.com/StefH/WebDAV-Client) for accessing the WebDAV location.
 * [MediaInfo.DotNetWrapper](https://github.com/StefH/MediaInfo.DotNetWrapper) a C# .NET Wrapper for MediaInfo.Native and MediaInfo.dll
 * [MediaInfo.Native](https://www.nuget.org/packages/MediaInfo.Native/) and [MediaInfo.dll](https://mediaarea.net/en/MediaInfo) are used to get some more details like bitrate from the audio files.
 

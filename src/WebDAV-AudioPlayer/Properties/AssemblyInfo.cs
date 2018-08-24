@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("WebDAV-AudioPlayer")]
-[assembly: AssemblyCopyright("Copyright © Stef Heyenrath 2017")]
+[assembly: AssemblyCopyright("Copyright © Stef Heyenrath 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
