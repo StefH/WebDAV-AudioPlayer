@@ -29,6 +29,8 @@ namespace WebDav.AudioPlayer.UI
 
             InitializeComponent();
 
+            InitDpi();
+
             Icon = Resources.icon;
 
             InitCancellationTokenSource();
@@ -82,6 +84,21 @@ namespace WebDav.AudioPlayer.UI
             };
 
             Log($"Using : '{_player.SoundOut}-SoundOut'");
+        }
+
+        /// <summary>
+        /// https://stackoverflow.com/questions/22735174/how-to-write-winforms-code-that-auto-scales-to-system-font-and-dpi-settings/29766847#29766847
+        /// </summary>
+        private void InitDpi()
+        {
+            //var size = new SizeF(CreateGraphics().DpiX, CreateGraphics().DpiY).ToSize();
+            //toolStripRight.AutoSize = false;
+            //toolStripRight.ImageScalingSize = size;
+
+            //toolStripTreeView.AutoSize = false;
+            //toolStripRight.ImageScalingSize = size;
+
+            // treeView.ImageList.ImageSize = size;
         }
 
         private void InitCancellationTokenSource()
@@ -198,9 +215,9 @@ namespace WebDav.AudioPlayer.UI
 
                     await Task.Delay(TimeSpan.FromMilliseconds(500), _cancelToken);
                 }
-                catch (Exception e)
+                catch // (Exception e)
                 {
-                    int i = 9;
+                    // MessageBox.Show(e.Message, "Error saving folder.", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
                 finally
                 {
@@ -365,6 +382,21 @@ namespace WebDav.AudioPlayer.UI
                         _player.Next(_cancelToken);
                     }
                 }
+            }
+        }
+
+        protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
+        {
+            base.ScaleControl(factor, specified);
+
+            ScaleListViewColumns(listView, factor);
+        }
+
+        private void ScaleListViewColumns(ListView listview, SizeF factor)
+        {
+            foreach (ColumnHeader column in listview.Columns)
+            {
+                column.Width = (int)Math.Round(column.Width * factor.Width);
             }
         }
 
