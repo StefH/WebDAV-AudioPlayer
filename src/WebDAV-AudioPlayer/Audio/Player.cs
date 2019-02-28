@@ -8,6 +8,7 @@ using CSCore.Codecs.FLAC;
 using CSCore.Codecs.MP3;
 using CSCore.Codecs.WAV;
 using CSCore.Codecs.WMA;
+//using CSCore.Ffmpeg;
 using CSCore.SoundOut;
 using WebDav.AudioPlayer.Client;
 using WebDav.AudioPlayer.Models;
@@ -33,10 +34,7 @@ namespace WebDav.AudioPlayer.Audio
 
         public List<ResourceItem> Items
         {
-            get
-            {
-                return _items;
-            }
+            get => _items;
 
             set
             {
@@ -61,7 +59,7 @@ namespace WebDav.AudioPlayer.Audio
 
             _resourceItemQueue = new FixedSizedQueue<ResourceItem>(3, (resourceItem, size) =>
             {
-                Log(string.Format("Disposing : '{0}'", resourceItem.DisplayName));
+                Log($"Disposing : '{resourceItem.DisplayName}'");
                 if (resourceItem.Stream != null)
                 {
                     resourceItem.Stream.Close();
@@ -142,8 +140,12 @@ namespace WebDav.AudioPlayer.Audio
                     _waveSource = new AacDecoder(resourceItem.Stream);
                     break;
 
+                //case ".opus":
+                //    _waveSource = new FfmpegDecoder(resourceItem.Stream);
+                //    break;
+
                 default:
-                    throw new NotSupportedException(string.Format("Extension '{0}' is not supported", extension));
+                    throw new NotSupportedException($"Extension '{extension}' is not supported");
             }
 
             _soundOut.Initialize(_waveSource);
@@ -183,19 +185,29 @@ namespace WebDav.AudioPlayer.Audio
         public void Next(CancellationToken cancelAction)
         {
             int nextIndex = SelectedIndex + 1;
+
             if (nextIndex < Items.Count)
+            {
                 Play(nextIndex, cancelAction);
+            }
             else
+            {
                 Stop(true);
+            }
         }
 
         public void Previous(CancellationToken cancelAction)
         {
             int previousIndex = SelectedIndex - 1;
+
             if (previousIndex >= 0)
+            {
                 Play(previousIndex, cancelAction);
+            }
             else
+            {
                 Stop(true);
+            }
         }
 
         public void Stop(bool force)

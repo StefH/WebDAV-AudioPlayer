@@ -1,12 +1,12 @@
-﻿using System;
+﻿using ByteSizeLib;
+using CSCore.SoundOut;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using ByteSizeLib;
-using CSCore.SoundOut;
 using WebDav.AudioPlayer.Audio;
 using WebDav.AudioPlayer.Client;
 using WebDav.AudioPlayer.Models;
@@ -40,8 +40,7 @@ namespace WebDav.AudioPlayer.UI
 
             Func<ResourceItem, string, string> updateTitle = (resourceItem, action) =>
             {
-                string bitrate = resourceItem.MediaDetails.Bitrate != null ? $"{resourceItem.MediaDetails.Bitrate / 1000}" : "?";
-                string text = $"{action} : '{resourceItem.Parent.DisplayName}\\{resourceItem.DisplayName}' ({resourceItem.MediaDetails.Mode} {bitrate} kbps)";
+                string text = $"{action} : '{resourceItem.Parent.DisplayName}\\{resourceItem.DisplayName}' ({resourceItem.MediaDetails.Mode} {resourceItem.MediaDetails.BitrateKbps} kbps)";
                 Text = @"WebDAV-AudioPlayer " + text;
 
                 return text;
@@ -53,7 +52,7 @@ namespace WebDav.AudioPlayer.UI
 
                 PlayStarted = (selectedIndex, resourceItem) =>
                 {
-                    string bitrate = resourceItem.MediaDetails.Bitrate != null ? $"{resourceItem.MediaDetails.Bitrate / 1000}" : "?";
+                    string bitrate = $"{resourceItem.MediaDetails.BitrateKbps}";
                     string text = updateTitle(resourceItem, "Playing");
                     textBoxSong.Text = text;
 

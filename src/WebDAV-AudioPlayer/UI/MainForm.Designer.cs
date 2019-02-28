@@ -186,10 +186,10 @@
             this.Length.Text = "Length";
             this.Length.Width = 50;
             // 
-            // Bitrate
+            // BitrateKbps
             // 
-            this.Bitrate.Tag = "Bitrate";
-            this.Bitrate.Text = "Bitrate";
+            this.Bitrate.Tag = "BitrateKbps";
+            this.Bitrate.Text = "BitrateKbps";
             this.Bitrate.Width = 50;
             // 
             // panelRightBottom
