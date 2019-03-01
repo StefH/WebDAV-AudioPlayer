@@ -10,5 +10,7 @@
         public int Channels { get; set; }
 
         public double DurationMs { get; set; }
+
+        public bool IsLossless { get; set; }
     }
 }

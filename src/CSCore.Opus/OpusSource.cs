@@ -1,17 +1,22 @@
 ﻿using Concentus.Oggfile;
 using Concentus.Structs;
+using CSCore.Opus.Memory;
 using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CSCore.Opus
 {
     /// <seealso cref="IWaveSource" />
     public sealed class OpusSource : IWaveSource
     {
-        private readonly MemoryStream _memoryStream = new MemoryStream();
-        private readonly Stream _stream;
+        private readonly double _durationInMs;
+        private readonly MemoryStreamMultiplexer _memoryStreamMultiplexer = new MemoryStreamMultiplexer();
+        private readonly MemoryStreamReader _memoryStreamReader;
+        private readonly CancellationTokenSource _cts = new CancellationTokenSource();
 
-        public OpusSource(Stream stream, int sampleRate, int channels)
+        public OpusSource(Stream stream, int sampleRate, int channels, double durationInMs)
         {
             if (stream == null)
             {
@@ -20,45 +25,50 @@ namespace CSCore.Opus
 
             if (!stream.CanRead)
             {
-                throw new ArgumentException("OpusStream is not readable.", nameof(stream));
+                throw new ArgumentException("Stream is not readable.", nameof(stream));
             }
 
-            _stream = stream;
+            _durationInMs = durationInMs;
 
             WaveFormat = new WaveFormat(sampleRate, 16, channels);
+
+            _memoryStreamReader = _memoryStreamMultiplexer.GetReader();
+
+            DecodeAsync(stream);
         }
 
-        public void Decode()
+        private void DecodeAsync(Stream stream)
         {
             var decoder = new OpusDecoder(WaveFormat.SampleRate, WaveFormat.Channels);
-            var opus = new OpusOggReadStream(decoder, _stream);
+            var opus = new OpusOggReadStream(decoder, stream);
 
-            while (opus.HasNextPacket)
+            Task.Run(() =>
             {
-                short[] packets = opus.DecodeNextPacket();
-                if (packets != null && packets.Length > 0)
+                while (opus.HasNextPacket && !_cts.IsCancellationRequested)
                 {
-                    byte[] buffer = new byte[packets.Length * 2];
-                    Buffer.BlockCopy(packets, 0, buffer, 0, buffer.Length);
-                    _memoryStream.Write(buffer, 0, buffer.Length);
+                    short[] packets = opus.DecodeNextPacket();
+                    if (packets != null && packets.Length > 0)
+                    {
+                        byte[] buffer = new byte[packets.Length * 2];
+                        Buffer.BlockCopy(packets, 0, buffer, 0, buffer.Length);
+                        _memoryStreamMultiplexer.Write(buffer, 0, buffer.Length);
+                    }
                 }
-            }
-
-            _memoryStream.Seek(0, SeekOrigin.Begin);
+            }, _cts.Token);
         }
 
         public int Read(byte[] buffer, int offset, int count)
         {
-            return _memoryStream.Read(buffer, offset, count);
+            return _memoryStreamReader.Read(buffer, offset, count);
         }
 
         public WaveFormat WaveFormat { get; }
 
-        public bool CanSeek => _memoryStream.CanSeek;
+        public bool CanSeek => _memoryStreamReader.CanSeek;
 
         public long Position
         {
-            get => _memoryStream.Position;
+            get => _memoryStreamReader.Position;
 
             set
             {
@@ -67,15 +77,17 @@ namespace CSCore.Opus
                     throw new ArgumentOutOfRangeException(nameof(value));
                 }
 
-                _memoryStream.Position = value;
+                _memoryStreamReader.Position = value;
             }
         }
 
-        public long Length => _memoryStream.Length;
+        public long Length => (long)(_durationInMs / 1000.0 * WaveFormat.SampleRate * WaveFormat.Channels * WaveFormat.BitsPerSample / 8);
 
         public void Dispose()
         {
-            _memoryStream.Dispose();
+            _memoryStreamMultiplexer?.Dispose();
+            _memoryStreamReader?.Dispose();
+            _cts?.Dispose();
         }
     }
 }

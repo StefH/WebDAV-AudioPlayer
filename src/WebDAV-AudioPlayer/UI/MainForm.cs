@@ -20,7 +20,7 @@ namespace WebDav.AudioPlayer.UI
         private readonly IWebDavClient _client;
         private readonly Player _player;
 
-        private CancellationTokenSource _cancelationTokenSource;
+        private CancellationTokenSource _cancellationTokenSource;
         private CancellationToken _cancelToken;
 
         public MainForm(AssemblyConfig config)
@@ -29,13 +29,10 @@ namespace WebDav.AudioPlayer.UI
 
             InitializeComponent();
 
-            InitDpi();
-
             Icon = Resources.icon;
 
             InitCancellationTokenSource();
 
-            //_client = new DecaTecWebDavClient(config);
             _client = new MyWebDavClient(config);
 
             Func<ResourceItem, string, string> updateTitle = (resourceItem, action) =>
@@ -59,6 +56,7 @@ namespace WebDav.AudioPlayer.UI
                     labelTotalTime.Text = $@"{_player.TotalTime:hh\:mm\:ss}";
 
                     trackBarSong.Maximum = (int)_player.TotalTime.TotalSeconds;
+                    trackBarSong.Enabled = _player.CanSeek;
 
                     listView.SetSelectedIndex(selectedIndex);
                     listView.SetCells(selectedIndex, $@"{_player.TotalTime:h\:mm\:ss}", bitrate);
@@ -85,27 +83,12 @@ namespace WebDav.AudioPlayer.UI
             Log($"Using : '{_player.SoundOut}-SoundOut'");
         }
 
-        /// <summary>
-        /// https://stackoverflow.com/questions/22735174/how-to-write-winforms-code-that-auto-scales-to-system-font-and-dpi-settings/29766847#29766847
-        /// </summary>
-        private void InitDpi()
-        {
-            //var size = new SizeF(CreateGraphics().DpiX, CreateGraphics().DpiY).ToSize();
-            //toolStripRight.AutoSize = false;
-            //toolStripRight.ImageScalingSize = size;
-
-            //toolStripTreeView.AutoSize = false;
-            //toolStripRight.ImageScalingSize = size;
-
-            // treeView.ImageList.ImageSize = size;
-        }
-
         private void InitCancellationTokenSource()
         {
-            _cancelationTokenSource?.Cancel();
+            _cancellationTokenSource?.Cancel();
 
-            _cancelationTokenSource = new CancellationTokenSource();
-            _cancelToken = _cancelationTokenSource.Token;
+            _cancellationTokenSource = new CancellationTokenSource();
+            _cancelToken = _cancellationTokenSource.Token;
         }
 
         private void Log(string text)
@@ -235,7 +218,7 @@ namespace WebDav.AudioPlayer.UI
             var progress = new DownloadFolderForm
             {
                 Owner = this,
-                CancellationTokenSource = _cancelationTokenSource,
+                CancellationTokenSource = _cancellationTokenSource,
                 StartPosition = FormStartPosition.Manual
             };
             progress.Location = new Point(Location.X + (Width - progress.Width) / 2, Location.Y + (Height - progress.Height) / 2);
@@ -331,7 +314,7 @@ namespace WebDav.AudioPlayer.UI
 
         private void buttonStop_Click(object sender, EventArgs e)
         {
-            _cancelationTokenSource.Cancel();
+            _cancellationTokenSource.Cancel();
             _player.Stop(true);
             InitCancellationTokenSource();
         }
@@ -391,9 +374,9 @@ namespace WebDav.AudioPlayer.UI
             ScaleListViewColumns(listView, factor);
         }
 
-        private void ScaleListViewColumns(ListView listview, SizeF factor)
+        private void ScaleListViewColumns(ListView listView, SizeF factor)
         {
-            foreach (ColumnHeader column in listview.Columns)
+            foreach (ColumnHeader column in listView.Columns)
             {
                 column.Width = (int)Math.Round(column.Width * factor.Width);
             }
@@ -405,9 +388,9 @@ namespace WebDav.AudioPlayer.UI
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && components != null)
+            if (disposing)
             {
-                components.Dispose();
+                components?.Dispose();
             }
 
             _player.Dispose();

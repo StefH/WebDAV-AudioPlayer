@@ -11,10 +11,4 @@
     <PackageReference Include="System.Memory" Version="4.5.2" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="System.Memory">
-      <HintPath>..\..\packages\System.Memory.4.5.2\lib\netstandard2.0\System.Memory.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>

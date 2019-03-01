@@ -9,7 +9,6 @@ using CSCore.Codecs.MP3;
 using CSCore.Codecs.WAV;
 using CSCore.Codecs.WMA;
 using CSCore.Opus;
-//using CSCore.Ffmpeg;
 using CSCore.SoundOut;
 using WebDav.AudioPlayer.Client;
 using WebDav.AudioPlayer.Models;
@@ -32,6 +31,7 @@ namespace WebDav.AudioPlayer.Audio
         public Action<ResourceItem> PlayPaused;
         public Action<ResourceItem> PlayContinue;
         public Action PlayStopped;
+        public bool CanSeek => _waveSource.CanSeek;
 
         public List<ResourceItem> Items
         {
@@ -142,11 +142,7 @@ namespace WebDav.AudioPlayer.Audio
                     break;
 
                 case ".opus":
-                    var opusSource = new OpusSource(resourceItem.Stream, resourceItem.MediaDetails.SampleRate, resourceItem.MediaDetails.Channels);
-                    _waveSource = opusSource;
-                    Log($"Decoding : '{resourceItem.DisplayName}'");
-                    opusSource.Decode();
-                    Log("Decoding done : OK");
+                    _waveSource = new OpusSource(resourceItem.Stream, resourceItem.MediaDetails.SampleRate, resourceItem.MediaDetails.Channels, resourceItem.MediaDetails.DurationMs);
                     break;
 
                 default:
