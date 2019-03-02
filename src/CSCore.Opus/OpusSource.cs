@@ -2,6 +2,7 @@
 using Concentus.Structs;
 using CSCore.Opus.Memory;
 using System;
+using System.Buffers;
 using System.IO;
 using System.Threading;
 
@@ -10,8 +11,11 @@ namespace CSCore.Opus
     /// <seealso cref="IWaveSource" />
     public sealed class OpusSource : IWaveSource
     {
+        private const int BitsPerSample = 16;
+        private const int BytesPerSample = BitsPerSample / 8;
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         private readonly CircularByteQueue _circularByteQueue = new CircularByteQueue(1024 * 1024);
+        private readonly ArrayPool<byte> _buffer = ArrayPool<byte>.Shared;
 
         private readonly double _durationInMs;
         private readonly OpusOggReadStream _opusReadStream;
@@ -38,7 +42,7 @@ namespace CSCore.Opus
 
             _durationInMs = durationInMs;
 
-            WaveFormat = new WaveFormat(sampleRate, 16, channels);
+            WaveFormat = new WaveFormat(sampleRate, BitsPerSample, channels);
 
             var decoder = new OpusDecoder(WaveFormat.SampleRate, WaveFormat.Channels);
             _opusReadStream = new OpusOggReadStream(decoder, stream);
@@ -47,37 +51,30 @@ namespace CSCore.Opus
             {
                 decoder.ResetState();
             });
-
-            //Task.Run(() =>
-            //{
-            //    while (!_cts.IsCancellationRequested && opusReadStream.HasNextPacket)
-            //    {
-            //        short[] packets = opusReadStream.DecodeNextPacket();
-            //        if (packets != null && packets.Length > 0)
-            //        {
-            //            byte[] temp = new byte[packets.Length * 2];
-            //            Buffer.BlockCopy(packets, 0, temp, 0, temp.Length);
-
-            //            _circularByteQueue.Enqueue(temp, 0, temp.Length);
-            //        }
-            //    }
-            //}, _cts.Token);
         }
 
         public int Read(byte[] buffer, int offset, int count)
         {
             int pos = 0;
-            while (!_cts.IsCancellationRequested && _opusReadStream.HasNextPacket & pos < count)
+            while (!_cts.IsCancellationRequested && _opusReadStream.HasNextPacket && pos < count)
             {
                 short[] packets = _opusReadStream.DecodeNextPacket();
                 if (packets != null && packets.Length > 0)
                 {
-                    byte[] temp = new byte[packets.Length * 2];
-                    Buffer.BlockCopy(packets, 0, temp, 0, temp.Length);
+                    int length = packets.Length * 2;
+                    byte[] temp = _buffer.Rent(length);
+                    try
+                    {
+                        Buffer.BlockCopy(packets, 0, temp, 0, length);
 
-                    pos += temp.Length;
+                        pos += temp.Length;
 
-                    _circularByteQueue.Enqueue(temp, 0, temp.Length);
+                        _circularByteQueue.Enqueue(temp, 0, length);
+                    }
+                    finally
+                    {
+                        _buffer.Return(temp);
+                    }
                 }
             }
 
@@ -99,7 +96,7 @@ namespace CSCore.Opus
             set => throw new InvalidOperationException("Cannot set position on OpusSource.");
         }
 
-        public long Length => (long)(_durationInMs / 1000.0 * WaveFormat.SampleRate * WaveFormat.Channels * WaveFormat.BitsPerSample / 8);
+        public long Length => (long)(_durationInMs / 1000.0 * WaveFormat.SampleRate * WaveFormat.Channels * BytesPerSample);
 
         public void Dispose()
         {
