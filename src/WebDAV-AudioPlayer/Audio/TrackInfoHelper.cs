@@ -1,4 +1,6 @@
 ﻿using ATL;
+using ATL.AudioData;
+using System;
 using System.IO;
 
 namespace WebDav.AudioPlayer.Audio
@@ -15,7 +17,11 @@ namespace WebDav.AudioPlayer.Audio
                 return new MediaDetails
                 {
                     BitrateKbps = track.Bitrate,
-                    Mode = track.IsVBR ? "VBR" : "CBR"
+                    Mode = track.IsVBR ? "VBR" : "CBR",
+                    SampleRate = Convert.ToInt32(track.SampleRate),
+                    Channels = 2,
+                    DurationMs = track.DurationMs,
+                    IsLossless = track.CodecFamily == AudioDataIOFactory.CF_LOSSLESS
                 };
             }
             finally

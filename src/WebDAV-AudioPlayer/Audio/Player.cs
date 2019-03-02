@@ -8,7 +8,7 @@ using CSCore.Codecs.FLAC;
 using CSCore.Codecs.MP3;
 using CSCore.Codecs.WAV;
 using CSCore.Codecs.WMA;
-//using CSCore.Ffmpeg;
+using CSCore.Opus;
 using CSCore.SoundOut;
 using WebDav.AudioPlayer.Client;
 using WebDav.AudioPlayer.Models;
@@ -31,6 +31,7 @@ namespace WebDav.AudioPlayer.Audio
         public Action<ResourceItem> PlayPaused;
         public Action<ResourceItem> PlayContinue;
         public Action PlayStopped;
+        public bool CanSeek => _waveSource.CanSeek;
 
         public List<ResourceItem> Items
         {
@@ -140,9 +141,9 @@ namespace WebDav.AudioPlayer.Audio
                     _waveSource = new AacDecoder(resourceItem.Stream);
                     break;
 
-                //case ".opus":
-                //    _waveSource = new FfmpegDecoder(resourceItem.Stream);
-                //    break;
+                case ".opus":
+                    _waveSource = new OpusSource(resourceItem.Stream, resourceItem.MediaDetails.SampleRate, resourceItem.MediaDetails.Channels, resourceItem.MediaDetails.DurationMs);
+                    break;
 
                 default:
                     throw new NotSupportedException($"Extension '{extension}' is not supported");
@@ -218,7 +219,9 @@ namespace WebDav.AudioPlayer.Audio
                 PlayStopped();
 
                 if (force)
+                {
                     _resourceItemQueue.Clear();
+                }
             }
 
             if (_waveSource != null)
