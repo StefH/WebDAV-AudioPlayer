@@ -10,7 +10,9 @@ using CSCore.SoundOut;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using WebDav.AudioPlayer.Client;
 using WebDav.AudioPlayer.Models;
 using WebDav.AudioPlayer.Util;
@@ -27,12 +29,14 @@ namespace WebDav.AudioPlayer.Audio
         private IWaveSource _waveSource;
         private List<ResourceItem> _items;
 
+        public bool CanSeek => _waveSource.CanSeek;
+
         public Action<string> Log;
         public Action<int, ResourceItem> PlayStarted;
         public Action<ResourceItem> PlayPaused;
         public Action<ResourceItem> PlayContinue;
+        public Func<ResourceItem, Task> DoubleClickFolderAndPlayFirstSong;
         public Action PlayStopped;
-        public bool CanSeek => _waveSource.CanSeek;
 
         public List<ResourceItem> Items
         {
@@ -71,15 +75,21 @@ namespace WebDav.AudioPlayer.Audio
             });
 
             if (WasapiOut.IsSupportedOnCurrentPlatform)
+            {
                 _soundOut = new WasapiOut();
+            }
             else
+            {
                 _soundOut = new DirectSoundOut();
+            }
         }
 
-        public async void Play(int index, CancellationToken cancellationToken)
+        public async Task PlayAsync(int index, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
+            {
                 return;
+            }
 
             bool sameSong = index == SelectedIndex;
             SelectedIndex = index;
@@ -155,10 +165,10 @@ namespace WebDav.AudioPlayer.Audio
             PlayStarted(SelectedIndex, resourceItem);
 
             // Preload Next
-            PreloadNext(cancellationToken);
+            await PreloadNextAsync(cancellationToken);
         }
 
-        private async void PreloadNext(CancellationToken cancellationToken)
+        private async Task PreloadNextAsync(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -168,6 +178,7 @@ namespace WebDav.AudioPlayer.Audio
             int nextIndex = SelectedIndex + 1;
             if (nextIndex < Items.Count)
             {
+                // Loading next resourceItem from this folder
                 var resourceItem = Items[nextIndex];
                 Log($"Preloading : '{resourceItem.DisplayName}'");
                 var status = await _client.GetStreamAsync(resourceItem, cancellationToken);
@@ -180,31 +191,56 @@ namespace WebDav.AudioPlayer.Audio
                 Log($@"Preloading done : {status}");
                 _resourceItemQueue.Enqueue(resourceItem);
             }
-
-            // Try to open next folder
         }
 
-        public void Next(CancellationToken cancelAction)
+        private ResourceItem GetNextFolderFromParent(ResourceItem lastResourceItemFromFolder)
+        {
+            var parent = lastResourceItemFromFolder?.Parent?.Parent;
+            if (parent != null)
+            {
+                var folderFromLastResourceItem = lastResourceItemFromFolder.Parent;
+                int indexFromCurrentPlayingFolder = parent.Items.IndexOf(folderFromLastResourceItem);
+                int indexFromNextFolder = indexFromCurrentPlayingFolder + 1;
+                if (indexFromNextFolder < parent.Items.Count)
+                {
+                    return parent.Items.ElementAt(indexFromNextFolder);
+                }
+            }
+
+            return null;
+        }
+
+        public async Task PlayNextAsync(CancellationToken cancelAction)
         {
             int nextIndex = SelectedIndex + 1;
 
             if (nextIndex < Items.Count)
             {
-                Play(nextIndex, cancelAction);
+                await PlayAsync(nextIndex, cancelAction);
             }
             else
             {
-                Stop(true);
+                var currentResourceItem = Items[SelectedIndex];
+                var nextFolderToPlay = GetNextFolderFromParent(currentResourceItem);
+                if (nextFolderToPlay != null)
+                {
+                    await DoubleClickFolderAndPlayFirstSong(nextFolderToPlay);
+                    await PlayAsync(0, cancelAction);
+                }
+                else
+                {
+                    Stop(true);
+                }
             }
         }
 
-        public void Previous(CancellationToken cancelAction)
+        public async Task PlayPreviousAsync(CancellationToken cancelAction)
         {
             int previousIndex = SelectedIndex - 1;
 
             if (previousIndex >= 0)
             {
-                Play(previousIndex, cancelAction);
+                await PlayAsync(previousIndex, cancelAction);
             }
             else
             {

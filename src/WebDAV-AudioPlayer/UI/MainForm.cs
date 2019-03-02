@@ -58,8 +58,8 @@ namespace WebDav.AudioPlayer.UI
                     trackBarSong.Maximum = (int)_player.TotalTime.TotalSeconds;
                     trackBarSong.Enabled = _player.CanSeek;
 
-                    listView.SetSelectedIndex(selectedIndex);
                     listView.SetCells(selectedIndex, $@"{_player.TotalTime:h\:mm\:ss}", bitrate);
+                    listView.SetSelectedIndex(selectedIndex);
                 },
                 PlayContinue = resourceItem =>
                 {
@@ -77,6 +77,14 @@ namespace WebDav.AudioPlayer.UI
                     trackBarSong.Maximum = 1;
                     labelCurrentTime.Text = labelTotalTime.Text = @"00:00:00";
                     Text = @"WebDAV-AudioPlayer";
+                },
+                DoubleClickFolderAndPlayFirstSong = async resourceItem =>
+                {
+                    var nodeToDoubleClick = treeView.Nodes.Find(resourceItem.DisplayName, true).FirstOrDefault();
+                    if (nodeToDoubleClick != null)
+                    {
+                        await FetchChildResourcesAsync(nodeToDoubleClick, resourceItem);
+                    }
                 }
             };
 
@@ -130,6 +138,7 @@ namespace WebDav.AudioPlayer.UI
 
             treeView.Nodes.Add(rootNode);
             rootNode.Expand();
+
             Cursor.Current = current;
         }
 
@@ -154,6 +163,7 @@ namespace WebDav.AudioPlayer.UI
                 var childNode = new TreeNode
                 {
                     Text = resourceItem.DisplayName,
+                    Name = resourceItem.DisplayName,
                     Tag = resourceItem,
                     ImageKey = @"Folder",
                     SelectedImageKey = @"Folder",
@@ -230,11 +240,15 @@ namespace WebDav.AudioPlayer.UI
         {
             var hitTest = e.Node.TreeView.HitTest(e.Location);
             if (hitTest.Location == TreeViewHitTestLocations.PlusMinus)
+            {
                 return;
+            }
 
             var resourceItem = e.Node.Tag as ResourceItem;
             if (resourceItem == null)
+            {
                 return;
+            }
 
             if (e.Button == MouseButtons.Right)
             {
@@ -246,10 +260,16 @@ namespace WebDav.AudioPlayer.UI
             var current = Cursor.Current;
             Cursor.Current = Cursors.WaitCursor;
 
+            await FetchChildResourcesAsync(e.Node, resourceItem);
+
+            Cursor.Current = current;
+        }
+
+        private async Task FetchChildResourcesAsync(TreeNode node, ResourceItem resourceItem)
+        {
             var result = await _client.FetchChildResourcesAsync(resourceItem, _cancelToken, resourceItem.Level, resourceItem.Level);
             if (result == ResourceLoadStatus.Ok)
             {
-                var node = e.Node;
                 node.Nodes.Clear();
                 PopulateTree(ref node, resourceItem.Items);
                 node.Expand();
@@ -264,13 +284,11 @@ namespace WebDav.AudioPlayer.UI
                     listView.Items.Add(listViewItem);
                 }
             }
-
-            Cursor.Current = current;
         }
 
         private void listView_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            _player.Play(listView.SelectedIndices[0], _cancelToken);
+            _player.PlayAsync(listView.SelectedIndices[0], _cancelToken);
         }
 
         private void listView_KeyDown(object sender, KeyEventArgs e)
@@ -283,7 +301,7 @@ namespace WebDav.AudioPlayer.UI
             switch (e.KeyData)
             {
                 case Keys.Enter:
-                    _player.Play(listView.SelectedIndices[0], _cancelToken);
+                    _player.PlayAsync(listView.SelectedIndices[0], _cancelToken);
                     break;
 
                 case Keys.PageUp:
@@ -295,29 +313,27 @@ namespace WebDav.AudioPlayer.UI
                     break;
 
                 case Keys.Up:
+                    int upIndex = listView.SelectedIndices[0] - 1;
+                    if (upIndex > 0)
                     {
-                        int upIndex = listView.SelectedIndices[0] - 1;
-                        if (upIndex > 0)
-                        {
-                            listView.SetSelectedIndex(upIndex);
-                        }
-                        break;
+                        listView.SetSelectedIndex(upIndex);
                     }
+                    break;
+
                 case Keys.Down:
+
+                    int downIndex = listView.SelectedIndices[0] + 1;
+                    if (downIndex < listView.Items.Count)
                     {
-                        int downIndex = listView.SelectedIndices[0] + 1;
-                        if (downIndex < listView.Items.Count)
-                        {
-                            listView.SetSelectedIndex(downIndex);
-                        }
-                        break;
+                        listView.SetSelectedIndex(downIndex);
                     }
+                    break;
             }
         }
 
         private void buttonPlay_Click(object sender, EventArgs e)
         {
-            _player.Play(listView.SelectedIndices[0], _cancelToken);
+            _player.PlayAsync(listView.SelectedIndices[0], _cancelToken);
         }
 
         private void buttonPause_Click(object sender, EventArgs e)
@@ -334,12 +350,12 @@ namespace WebDav.AudioPlayer.UI
 
         private void btnPrevious_Click(object sender, EventArgs e)
         {
-            _player.Previous(_cancelToken);
+            _player.PlayPreviousAsync(_cancelToken);
         }
 
         private void btnNext_Click(object sender, EventArgs e)
         {
-            _player.Next(_cancelToken);
+            _player.PlayNextAsync(_cancelToken);
         }
 
         private void trackBarSong_Scroll(object sender, EventArgs e)
@@ -373,9 +389,12 @@ namespace WebDav.AudioPlayer.UI
                     trackBarSong.Value = (int)_player.CurrentTime.TotalSeconds;
                     // trackBarSong.Enabled = _player.CanSeek;
 
+                    // Always select the listView to make sure the selected song is highlighted.
+                    listView.Select();
+
                     if (_player.CurrentTime.Add(TimeSpan.FromMilliseconds(500)) > _player.TotalTime)
                     {
-                        _player.Next(_cancelToken);
+                        _player.PlayNextAsync(_cancelToken);
                     }
                 }
             }
@@ -388,9 +407,9 @@ namespace WebDav.AudioPlayer.UI
             ScaleListViewColumns(listView, factor);
         }
 
-        private void ScaleListViewColumns(ListView listView, SizeF factor)
+        private void ScaleListViewColumns(ListView lv, SizeF factor)
         {
-            foreach (ColumnHeader column in listView.Columns)
+            foreach (ColumnHeader column in lv.Columns)
             {
                 column.Width = (int)Math.Round(column.Width * factor.Width);
             }
