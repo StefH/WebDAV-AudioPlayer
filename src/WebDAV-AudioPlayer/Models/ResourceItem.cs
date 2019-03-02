@@ -23,6 +23,6 @@ namespace WebDav.AudioPlayer.Models
 
         public ResourceItem Parent { get; set; }
 
-        public IList<ResourceItem> Items { get; set; }
+        public List<ResourceItem> Items { get; set; }
     }
 }

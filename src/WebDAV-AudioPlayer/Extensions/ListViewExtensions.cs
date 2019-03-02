@@ -2,10 +2,12 @@
 {
     public static class ListViewExtensions
     {
-        public static void SetSelectedIndex(this ListView listView, int index)
+        public static void SetSelectedIndex(this ListView listView, int selectedIndex)
         {
-            listView.SelectedIndices.Clear();
-            listView.SelectedIndices.Add(index);
+            for (int index = 0; index < listView.Items.Count; index++)
+            {
+                listView.Items[index].Selected = index == selectedIndex;
+            }
         }
 
         public static void SetCells(this ListView listView, int index, string totalLength, string bitrate)
