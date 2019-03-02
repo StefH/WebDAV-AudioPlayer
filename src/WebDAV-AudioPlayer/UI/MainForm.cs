@@ -276,29 +276,42 @@ namespace WebDav.AudioPlayer.UI
         private void listView_KeyDown(object sender, KeyEventArgs e)
         {
             if (listView.Items.Count == 0)
-                return;
-
-            if (e.KeyData == Keys.Enter)
-                _player.Play(listView.SelectedIndices[0], _cancelToken);
-
-            if (e.KeyData == Keys.PageUp)
-                listView.SetSelectedIndex(0);
-
-            if (e.KeyData == Keys.PageDown)
-                listView.SetSelectedIndex(listView.Items.Count - 1);
-
-            if (e.KeyData == Keys.Up)
             {
-                int upIndex = listView.SelectedIndices[0] - 1;
-                if (upIndex > 0)
-                    listView.SetSelectedIndex(upIndex);
+                return;
             }
 
-            if (e.KeyData == Keys.Down)
+            switch (e.KeyData)
             {
-                int downIndex = listView.SelectedIndices[0] + 1;
-                if (downIndex < listView.Items.Count)
-                    listView.SetSelectedIndex(downIndex);
+                case Keys.Enter:
+                    _player.Play(listView.SelectedIndices[0], _cancelToken);
+                    break;
+
+                case Keys.PageUp:
+                    listView.SetSelectedIndex(0);
+                    break;
+
+                case Keys.PageDown:
+                    listView.SetSelectedIndex(listView.Items.Count - 1);
+                    break;
+
+                case Keys.Up:
+                    {
+                        int upIndex = listView.SelectedIndices[0] - 1;
+                        if (upIndex > 0)
+                        {
+                            listView.SetSelectedIndex(upIndex);
+                        }
+                        break;
+                    }
+                case Keys.Down:
+                    {
+                        int downIndex = listView.SelectedIndices[0] + 1;
+                        if (downIndex < listView.Items.Count)
+                        {
+                            listView.SetSelectedIndex(downIndex);
+                        }
+                        break;
+                    }
             }
         }
 
@@ -358,6 +371,7 @@ namespace WebDav.AudioPlayer.UI
                 if (_player.PlaybackState == PlaybackState.Playing)
                 {
                     trackBarSong.Value = (int)_player.CurrentTime.TotalSeconds;
+                    // trackBarSong.Enabled = _player.CanSeek;
 
                     if (_player.CurrentTime.Add(TimeSpan.FromMilliseconds(500)) > _player.TotalTime)
                     {

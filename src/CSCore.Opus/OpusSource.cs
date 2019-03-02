@@ -4,18 +4,26 @@ using CSCore.Opus.Memory;
 using System;
 using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace CSCore.Opus
 {
     /// <seealso cref="IWaveSource" />
     public sealed class OpusSource : IWaveSource
     {
-        private readonly double _durationInMs;
-        private readonly MemoryStreamMultiplexer _memoryStreamMultiplexer = new MemoryStreamMultiplexer();
-        private readonly MemoryStreamReader _memoryStreamReader;
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+        private readonly CircularByteQueue _circularByteQueue = new CircularByteQueue(1024 * 1024);
 
+        private readonly double _durationInMs;
+        private readonly OpusOggReadStream _opusReadStream;
+        private int _position;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OpusSource"/> class.
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        /// <param name="sampleRate">The sample rate.</param>
+        /// <param name="channels">The channels.</param>
+        /// <param name="durationInMs">The duration in ms.</param>
         public OpusSource(Stream stream, int sampleRate, int channels, double durationInMs)
         {
             if (stream == null)
@@ -32,61 +40,69 @@ namespace CSCore.Opus
 
             WaveFormat = new WaveFormat(sampleRate, 16, channels);
 
-            _memoryStreamReader = _memoryStreamMultiplexer.GetReader();
-
-            DecodeAsync(stream);
-        }
-
-        private void DecodeAsync(Stream stream)
-        {
             var decoder = new OpusDecoder(WaveFormat.SampleRate, WaveFormat.Channels);
-            var opus = new OpusOggReadStream(decoder, stream);
+            _opusReadStream = new OpusOggReadStream(decoder, stream);
 
-            Task.Run(() =>
+            _cts.Token.Register(() =>
             {
-                while (opus.HasNextPacket && !_cts.IsCancellationRequested)
-                {
-                    short[] packets = opus.DecodeNextPacket();
-                    if (packets != null && packets.Length > 0)
-                    {
-                        byte[] buffer = new byte[packets.Length * 2];
-                        Buffer.BlockCopy(packets, 0, buffer, 0, buffer.Length);
-                        _memoryStreamMultiplexer.Write(buffer, 0, buffer.Length);
-                    }
-                }
-            }, _cts.Token);
+                decoder.ResetState();
+            });
+
+            //Task.Run(() =>
+            //{
+            //    while (!_cts.IsCancellationRequested && opusReadStream.HasNextPacket)
+            //    {
+            //        short[] packets = opusReadStream.DecodeNextPacket();
+            //        if (packets != null && packets.Length > 0)
+            //        {
+            //            byte[] temp = new byte[packets.Length * 2];
+            //            Buffer.BlockCopy(packets, 0, temp, 0, temp.Length);
+
+            //            _circularByteQueue.Enqueue(temp, 0, temp.Length);
+            //        }
+            //    }
+            //}, _cts.Token);
         }
 
         public int Read(byte[] buffer, int offset, int count)
         {
-            return _memoryStreamReader.Read(buffer, offset, count);
+            int pos = 0;
+            while (!_cts.IsCancellationRequested && _opusReadStream.HasNextPacket & pos < count)
+            {
+                short[] packets = _opusReadStream.DecodeNextPacket();
+                if (packets != null && packets.Length > 0)
+                {
+                    byte[] temp = new byte[packets.Length * 2];
+                    Buffer.BlockCopy(packets, 0, temp, 0, temp.Length);
+
+                    pos += temp.Length;
+
+                    _circularByteQueue.Enqueue(temp, 0, temp.Length);
+                }
+            }
+
+            int bytesReadFromBuffer = _circularByteQueue.Dequeue(buffer, offset, count);
+
+            _position += bytesReadFromBuffer;
+
+            return bytesReadFromBuffer;
         }
 
         public WaveFormat WaveFormat { get; }
 
-        public bool CanSeek => _memoryStreamReader.CanSeek;
+        public bool CanSeek => false;
 
         public long Position
         {
-            get => _memoryStreamReader.Position;
+            get => _position;
 
-            set
-            {
-                if (value < 0 || value > Length)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value));
-                }
-
-                _memoryStreamReader.Position = value;
-            }
+            set => throw new InvalidOperationException("Cannot set position on OpusSource.");
         }
 
         public long Length => (long)(_durationInMs / 1000.0 * WaveFormat.SampleRate * WaveFormat.Channels * WaveFormat.BitsPerSample / 8);
 
         public void Dispose()
         {
-            _memoryStreamMultiplexer?.Dispose();
-            _memoryStreamReader?.Dispose();
             _cts?.Dispose();
         }
     }

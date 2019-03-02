@@ -219,7 +219,9 @@ namespace WebDav.AudioPlayer.Audio
                 PlayStopped();
 
                 if (force)
+                {
                     _resourceItemQueue.Clear();
+                }
             }
 
             if (_waveSource != null)
