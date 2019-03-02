@@ -1,12 +1,12 @@
-﻿using System;
+﻿using ByteSizeLib;
+using CSCore.SoundOut;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using ByteSizeLib;
-using CSCore.SoundOut;
 using WebDav.AudioPlayer.Audio;
 using WebDav.AudioPlayer.Client;
 using WebDav.AudioPlayer.Models;
@@ -20,7 +20,7 @@ namespace WebDav.AudioPlayer.UI
         private readonly IWebDavClient _client;
         private readonly Player _player;
 
-        private CancellationTokenSource _cancelationTokenSource;
+        private CancellationTokenSource _cancellationTokenSource;
         private CancellationToken _cancelToken;
 
         public MainForm(AssemblyConfig config)
@@ -29,19 +29,15 @@ namespace WebDav.AudioPlayer.UI
 
             InitializeComponent();
 
-            InitDpi();
-
             Icon = Resources.icon;
 
             InitCancellationTokenSource();
 
-            //_client = new DecaTecWebDavClient(config);
             _client = new MyWebDavClient(config);
 
             Func<ResourceItem, string, string> updateTitle = (resourceItem, action) =>
             {
-                string bitrate = resourceItem.MediaDetails.Bitrate != null ? $"{resourceItem.MediaDetails.Bitrate / 1000}" : "?";
-                string text = $"{action} : '{resourceItem.Parent.DisplayName}\\{resourceItem.DisplayName}' ({resourceItem.MediaDetails.Mode} {bitrate} kbps)";
+                string text = $"{action} : '{resourceItem.Parent.DisplayName}\\{resourceItem.DisplayName}' ({resourceItem.MediaDetails.Mode} {resourceItem.MediaDetails.BitrateKbps} kbps)";
                 Text = @"WebDAV-AudioPlayer " + text;
 
                 return text;
@@ -53,13 +49,14 @@ namespace WebDav.AudioPlayer.UI
 
                 PlayStarted = (selectedIndex, resourceItem) =>
                 {
-                    string bitrate = resourceItem.MediaDetails.Bitrate != null ? $"{resourceItem.MediaDetails.Bitrate / 1000}" : "?";
+                    string bitrate = $"{resourceItem.MediaDetails.BitrateKbps}";
                     string text = updateTitle(resourceItem, "Playing");
                     textBoxSong.Text = text;
 
                     labelTotalTime.Text = $@"{_player.TotalTime:hh\:mm\:ss}";
 
                     trackBarSong.Maximum = (int)_player.TotalTime.TotalSeconds;
+                    trackBarSong.Enabled = _player.CanSeek;
 
                     listView.SetSelectedIndex(selectedIndex);
                     listView.SetCells(selectedIndex, $@"{_player.TotalTime:h\:mm\:ss}", bitrate);
@@ -86,27 +83,12 @@ namespace WebDav.AudioPlayer.UI
             Log($"Using : '{_player.SoundOut}-SoundOut'");
         }
 
-        /// <summary>
-        /// https://stackoverflow.com/questions/22735174/how-to-write-winforms-code-that-auto-scales-to-system-font-and-dpi-settings/29766847#29766847
-        /// </summary>
-        private void InitDpi()
-        {
-            //var size = new SizeF(CreateGraphics().DpiX, CreateGraphics().DpiY).ToSize();
-            //toolStripRight.AutoSize = false;
-            //toolStripRight.ImageScalingSize = size;
-
-            //toolStripTreeView.AutoSize = false;
-            //toolStripRight.ImageScalingSize = size;
-
-            // treeView.ImageList.ImageSize = size;
-        }
-
         private void InitCancellationTokenSource()
         {
-            _cancelationTokenSource?.Cancel();
+            _cancellationTokenSource?.Cancel();
 
-            _cancelationTokenSource = new CancellationTokenSource();
-            _cancelToken = _cancelationTokenSource.Token;
+            _cancellationTokenSource = new CancellationTokenSource();
+            _cancelToken = _cancellationTokenSource.Token;
         }
 
         private void Log(string text)
@@ -236,7 +218,7 @@ namespace WebDav.AudioPlayer.UI
             var progress = new DownloadFolderForm
             {
                 Owner = this,
-                CancellationTokenSource = _cancelationTokenSource,
+                CancellationTokenSource = _cancellationTokenSource,
                 StartPosition = FormStartPosition.Manual
             };
             progress.Location = new Point(Location.X + (Width - progress.Width) / 2, Location.Y + (Height - progress.Height) / 2);
@@ -294,29 +276,42 @@ namespace WebDav.AudioPlayer.UI
         private void listView_KeyDown(object sender, KeyEventArgs e)
         {
             if (listView.Items.Count == 0)
-                return;
-
-            if (e.KeyData == Keys.Enter)
-                _player.Play(listView.SelectedIndices[0], _cancelToken);
-
-            if (e.KeyData == Keys.PageUp)
-                listView.SetSelectedIndex(0);
-
-            if (e.KeyData == Keys.PageDown)
-                listView.SetSelectedIndex(listView.Items.Count - 1);
-
-            if (e.KeyData == Keys.Up)
             {
-                int upIndex = listView.SelectedIndices[0] - 1;
-                if (upIndex > 0)
-                    listView.SetSelectedIndex(upIndex);
+                return;
             }
 
-            if (e.KeyData == Keys.Down)
+            switch (e.KeyData)
             {
-                int downIndex = listView.SelectedIndices[0] + 1;
-                if (downIndex < listView.Items.Count)
-                    listView.SetSelectedIndex(downIndex);
+                case Keys.Enter:
+                    _player.Play(listView.SelectedIndices[0], _cancelToken);
+                    break;
+
+                case Keys.PageUp:
+                    listView.SetSelectedIndex(0);
+                    break;
+
+                case Keys.PageDown:
+                    listView.SetSelectedIndex(listView.Items.Count - 1);
+                    break;
+
+                case Keys.Up:
+                    {
+                        int upIndex = listView.SelectedIndices[0] - 1;
+                        if (upIndex > 0)
+                        {
+                            listView.SetSelectedIndex(upIndex);
+                        }
+                        break;
+                    }
+                case Keys.Down:
+                    {
+                        int downIndex = listView.SelectedIndices[0] + 1;
+                        if (downIndex < listView.Items.Count)
+                        {
+                            listView.SetSelectedIndex(downIndex);
+                        }
+                        break;
+                    }
             }
         }
 
@@ -332,7 +327,7 @@ namespace WebDav.AudioPlayer.UI
 
         private void buttonStop_Click(object sender, EventArgs e)
         {
-            _cancelationTokenSource.Cancel();
+            _cancellationTokenSource.Cancel();
             _player.Stop(true);
             InitCancellationTokenSource();
         }
@@ -376,6 +371,7 @@ namespace WebDav.AudioPlayer.UI
                 if (_player.PlaybackState == PlaybackState.Playing)
                 {
                     trackBarSong.Value = (int)_player.CurrentTime.TotalSeconds;
+                    // trackBarSong.Enabled = _player.CanSeek;
 
                     if (_player.CurrentTime.Add(TimeSpan.FromMilliseconds(500)) > _player.TotalTime)
                     {
@@ -392,9 +388,9 @@ namespace WebDav.AudioPlayer.UI
             ScaleListViewColumns(listView, factor);
         }
 
-        private void ScaleListViewColumns(ListView listview, SizeF factor)
+        private void ScaleListViewColumns(ListView listView, SizeF factor)
         {
-            foreach (ColumnHeader column in listview.Columns)
+            foreach (ColumnHeader column in listView.Columns)
             {
                 column.Width = (int)Math.Round(column.Width * factor.Width);
             }
@@ -406,9 +402,9 @@ namespace WebDav.AudioPlayer.UI
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && components != null)
+            if (disposing)
             {
-                components.Dispose();
+                components?.Dispose();
             }
 
             _player.Dispose();

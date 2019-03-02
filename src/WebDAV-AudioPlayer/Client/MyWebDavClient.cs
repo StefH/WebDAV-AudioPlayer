@@ -13,7 +13,7 @@ namespace WebDav.AudioPlayer.Client
 {
     public class MyWebDavClient : IWebDavClient
     {
-        private static readonly string[] AudioExtensions = { ".wav", ".wma", ".mp3", ".mp4", ".m4a", ".aac", ".ogg", ".flac" };
+        private static readonly string[] AudioExtensions = { ".wav", ".wma", ".mp3", ".mp4", ".m4a", ".aac", ".ogg", ".flac", ".opus" };
         private static readonly Func<WebDavResource, bool> IsAudioFile = r => AudioExtensions.Any(e => r.Uri.ToLowerInvariant().EndsWith(e));
         private static readonly Func<WebDavResource, bool> IsFolder = r => r.IsCollection;
 
@@ -84,13 +84,19 @@ namespace WebDav.AudioPlayer.Client
         public async Task<ResourceLoadStatus> GetStreamAsync(ResourceItem resourceItem, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
+            {
                 return ResourceLoadStatus.OperationCanceled;
+            }
 
             if (resourceItem.IsCollection)
+            {
                 return ResourceLoadStatus.IsCollection;
+            }
 
             if (resourceItem.Stream != null && resourceItem.Stream.CanRead)
+            {
                 return ResourceLoadStatus.StreamExisting;
+            }
 
             try
             {
@@ -99,7 +105,7 @@ namespace WebDav.AudioPlayer.Client
                 {
                     resourceItem.Stream = webDavStreamResponse.Stream;
 
-                    resourceItem.MediaDetails = MediaInfoHelper.GetMediaDetails(resourceItem.Stream);
+                    resourceItem.MediaDetails = TrackInfoHelper.GetMediaDetails(resourceItem.Stream, new FileInfo(resourceItem.DisplayName).Extension.ToLowerInvariant());
 
                     return ResourceLoadStatus.Ok;
                 }

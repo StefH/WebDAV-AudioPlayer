@@ -8,6 +8,7 @@ using CSCore.Codecs.FLAC;
 using CSCore.Codecs.MP3;
 using CSCore.Codecs.WAV;
 using CSCore.Codecs.WMA;
+using CSCore.Opus;
 using CSCore.SoundOut;
 using WebDav.AudioPlayer.Client;
 using WebDav.AudioPlayer.Models;
@@ -30,13 +31,11 @@ namespace WebDav.AudioPlayer.Audio
         public Action<ResourceItem> PlayPaused;
         public Action<ResourceItem> PlayContinue;
         public Action PlayStopped;
+        public bool CanSeek => _waveSource.CanSeek;
 
         public List<ResourceItem> Items
         {
-            get
-            {
-                return _items;
-            }
+            get => _items;
 
             set
             {
@@ -61,7 +60,7 @@ namespace WebDav.AudioPlayer.Audio
 
             _resourceItemQueue = new FixedSizedQueue<ResourceItem>(3, (resourceItem, size) =>
             {
-                Log(string.Format("Disposing : '{0}'", resourceItem.DisplayName));
+                Log($"Disposing : '{resourceItem.DisplayName}'");
                 if (resourceItem.Stream != null)
                 {
                     resourceItem.Stream.Close();
@@ -142,8 +141,12 @@ namespace WebDav.AudioPlayer.Audio
                     _waveSource = new AacDecoder(resourceItem.Stream);
                     break;
 
+                case ".opus":
+                    _waveSource = new OpusSource(resourceItem.Stream, resourceItem.MediaDetails.SampleRate, resourceItem.MediaDetails.Channels, resourceItem.MediaDetails.DurationMs);
+                    break;
+
                 default:
-                    throw new NotSupportedException(string.Format("Extension '{0}' is not supported", extension));
+                    throw new NotSupportedException($"Extension '{extension}' is not supported");
             }
 
             _soundOut.Initialize(_waveSource);
@@ -183,19 +186,29 @@ namespace WebDav.AudioPlayer.Audio
         public void Next(CancellationToken cancelAction)
         {
             int nextIndex = SelectedIndex + 1;
+
             if (nextIndex < Items.Count)
+            {
                 Play(nextIndex, cancelAction);
+            }
             else
+            {
                 Stop(true);
+            }
         }
 
         public void Previous(CancellationToken cancelAction)
         {
             int previousIndex = SelectedIndex - 1;
+
             if (previousIndex >= 0)
+            {
                 Play(previousIndex, cancelAction);
+            }
             else
+            {
                 Stop(true);
+            }
         }
 
         public void Stop(bool force)
@@ -206,7 +219,9 @@ namespace WebDav.AudioPlayer.Audio
                 PlayStopped();
 
                 if (force)
+                {
                     _resourceItemQueue.Clear();
+                }
             }
 
             if (_waveSource != null)
