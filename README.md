@@ -18,6 +18,7 @@ Used code & libraries:
 * [concentus](https://github.com/lostromb/concentus) Pure Portable C# and Java implementations of the Opus audio codec
 * [concentus.oggfile](https://github.com/lostromb/concentus.oggfile) Implementing support for reading/writing .opus audio files using Concentus
 * [ByteQueue](https://github.com/Kelindar/circular-buffer/blob/master/Source/ByteQueue.cs) An efficient implementation of a resizeable circular byte buffer in C#
+* [CSCore with NVorbis](https://github.com/filoe/cscore/blob/master/Samples/NVorbisIntegration/Program.cs) NVorbisIntegration sample
 
 <br>
 <br>

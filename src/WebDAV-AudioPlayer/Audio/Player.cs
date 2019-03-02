@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using CSCore;
+﻿using CSCore;
 using CSCore.Codecs.AAC;
 using CSCore.Codecs.FLAC;
 using CSCore.Codecs.MP3;
+using CSCore.Codecs.OGG;
+using CSCore.Codecs.OPUS;
 using CSCore.Codecs.WAV;
 using CSCore.Codecs.WMA;
-using CSCore.Opus;
 using CSCore.SoundOut;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading;
 using WebDav.AudioPlayer.Client;
 using WebDav.AudioPlayer.Models;
 using WebDav.AudioPlayer.Util;
@@ -124,7 +125,7 @@ namespace WebDav.AudioPlayer.Audio
                     break;
 
                 case ".ogg":
-                    _waveSource = new NVorbisSource(resourceItem.Stream).ToWaveSource();
+                    _waveSource = new OggSource(resourceItem.Stream).ToWaveSource();
                     break;
 
                 case ".flac":

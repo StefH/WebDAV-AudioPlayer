@@ -1,7 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>OpusSource audio format support for CSCore</Description>
+    <Version>1.0.0.0-preview-01</Version>
+    <Title>OpusSource IWaveSource implementation for CSCore</Title>
+    <Description>OpusSource IWaveSource implementation for CSCore</Description>
     <Authors>Stef Heyenrath</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>CSCore.Opus</PackageId>

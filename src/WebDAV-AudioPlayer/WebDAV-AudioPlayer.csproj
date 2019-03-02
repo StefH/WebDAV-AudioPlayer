@@ -239,7 +239,6 @@
     <Compile Include="AssemblyConfig.cs" />
     <Compile Include="Audio\MediaDetails.cs" />
     <Compile Include="Audio\Player.cs" />
-    <Compile Include="Audio\NVorbisSource.cs" />
     <Compile Include="Audio\TrackInfoHelper.cs" />
     <Compile Include="Client\IConnectionSettings.cs" />
     <Compile Include="Client\IWebDavClient.cs" />
@@ -316,9 +315,13 @@
     <Content Include="Resources\Folder.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CSCore.Opus\CSCore.Opus.csproj">
-      <Project>{a370d25d-6188-428f-a694-2459d30ab56e}</Project>
-      <Name>CSCore.Opus</Name>
+    <ProjectReference Include="..\CSCore.Ogg\CSCore.Codecs.OGG.csproj">
+      <Project>{d3804221-91f4-4502-9595-39584e5a0122}</Project>
+      <Name>CSCore.Codecs.OGG</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CSCore.Opus\CSCore.Codecs.OPUS.csproj">
+      <Project>{d3804228-91f4-4502-9595-39584e5a0111}</Project>
+      <Name>CSCore.Codecs.OPUS</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

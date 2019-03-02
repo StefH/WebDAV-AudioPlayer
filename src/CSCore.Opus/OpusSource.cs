@@ -1,12 +1,12 @@
-﻿using Concentus.Oggfile;
-using Concentus.Structs;
-using CSCore.Opus.Memory;
-using System;
+﻿using System;
 using System.Buffers;
 using System.IO;
 using System.Threading;
+using Concentus.Oggfile;
+using Concentus.Structs;
+using CSCore.Opus.Memory;
 
-namespace CSCore.Opus
+namespace CSCore.Codecs.OPUS
 {
     /// <seealso cref="IWaveSource" />
     public sealed class OpusSource : IWaveSource

@@ -1,21 +1,21 @@
-﻿using CSCore;
-using NVorbis;
-using System;
+﻿using System;
 using System.IO;
+using NVorbis;
 
-namespace WebDav.AudioPlayer.Audio
+namespace CSCore.Codecs.OGG
 {
     /// <summary>
-    /// Copied from https://github.com/filoe/cscore/blob/master/Samples/NVorbisIntegration/Program.cs
+    /// Based on from https://github.com/filoe/cscore/blob/master/Samples/NVorbisIntegration/Program.cs
     /// </summary>
     /// <seealso cref="ISampleSource" />
-    public sealed class NVorbisSource : ISampleSource
+    public sealed class OggSource : ISampleSource
     {
+        private const int BitsPerSample = 32;
+
         private readonly Stream _stream;
         private readonly VorbisReader _vorbisReader;
-        private bool _disposed;
 
-        public NVorbisSource(Stream stream)
+        public OggSource(Stream stream)
         {
             if (stream == null)
             {
@@ -24,12 +24,12 @@ namespace WebDav.AudioPlayer.Audio
 
             if (!stream.CanRead)
             {
-                throw new ArgumentException(@"Stream is not readable.", nameof(stream));
+                throw new ArgumentException("Stream is not readable.", nameof(stream));
             }
 
             _stream = stream;
             _vorbisReader = new VorbisReader(stream, false);
-            WaveFormat = new WaveFormat(_vorbisReader.SampleRate, 32, _vorbisReader.Channels, AudioEncoding.IeeeFloat);
+            WaveFormat = new WaveFormat(_vorbisReader.SampleRate, BitsPerSample, _vorbisReader.Channels, AudioEncoding.IeeeFloat);
         }
 
         public bool CanSeek => _stream.CanSeek;
@@ -46,7 +46,7 @@ namespace WebDav.AudioPlayer.Audio
             {
                 if (!CanSeek)
                 {
-                    throw new InvalidOperationException("NVorbisSource is not seekable.");
+                    throw new InvalidOperationException("OggSource is not seekable.");
                 }
 
                 if (value < 0 || value > Length)
@@ -65,16 +65,7 @@ namespace WebDav.AudioPlayer.Audio
 
         public void Dispose()
         {
-            if (!_disposed)
-            {
-                _vorbisReader.Dispose();
-            }
-            else
-            {
-                throw new ObjectDisposedException("NVorbisSource");
-            }
-
-            _disposed = true;
+            _vorbisReader.Dispose();
         }
     }
 }
