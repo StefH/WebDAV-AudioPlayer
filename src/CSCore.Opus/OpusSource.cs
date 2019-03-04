@@ -95,6 +95,16 @@ namespace CSCore.Codecs.OPUS
 
             set
             {
+                if (!CanSeek)
+                {
+                    throw new InvalidOperationException("Stream is not seekable.");
+                }
+
+                if (value < 0 || value > Length)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value));
+                }
+
                 // Clear the queue to remove pending samples
                 _circularByteQueue.Clear();
 
@@ -106,7 +116,7 @@ namespace CSCore.Codecs.OPUS
             }
         }
 
-        public long Length => Convert.ToInt64(_opusReadStream.GranuleCount * WaveFormat.Channels * BytesPerSample);
+        public long Length => CanSeek ? Convert.ToInt64(_opusReadStream.GranuleCount * WaveFormat.Channels * BytesPerSample) : 0;
 
         public void Dispose()
         {
