@@ -49,9 +49,9 @@ namespace ConsoleAppPlayer
 
             soundOut.Pause();
 
-            double x = 0.994;
-            long pos = Convert.ToInt64(x * track.SampleRate * track.DurationMs / 1000);
-            Console.WriteLine("pos = {0}", pos);
+            //double x = 0.994;
+            //long pos = Convert.ToInt64(x * track.SampleRate * track.DurationMs / 1000);
+            //Console.WriteLine("pos = {0}", pos);
 
             waveSource.SetPosition(TimeSpan.FromMinutes(58));
 

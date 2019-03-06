@@ -109,14 +109,15 @@ namespace CSCore.Codecs.OPUS
                 _circularByteQueue.Clear();
 
                 // Jump to the new position in the stream
-                _opusReadStream.SeekTo(Convert.ToInt64(value / (1.0 * WaveFormat.Channels * BytesPerSample)));
+                var playtime = TimeSpan.FromSeconds((double)value / (WaveFormat.SampleRate * WaveFormat.Channels * BytesPerSample));
+                _opusReadStream.SeekTo(playtime);
 
                 // Update the position to the seek position
-                _position = Convert.ToInt64(1.0 * _opusReadStream.PageGranulePosition * WaveFormat.Channels * BytesPerSample);
+                _position = Convert.ToInt64(_opusReadStream.CurrentTime.TotalSeconds * WaveFormat.SampleRate * WaveFormat.Channels * BytesPerSample);
             }
         }
 
-        public long Length => CanSeek ? Convert.ToInt64(_opusReadStream.GranuleCount * WaveFormat.Channels * BytesPerSample) : 0;
+        public long Length => CanSeek ? Convert.ToInt64(_opusReadStream.TotalTime.TotalSeconds * WaveFormat.SampleRate * WaveFormat.Channels * BytesPerSample) : 0;
 
         public void Dispose()
         {
