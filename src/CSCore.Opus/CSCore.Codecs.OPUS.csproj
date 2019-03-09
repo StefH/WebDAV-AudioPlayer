@@ -35,13 +35,9 @@
     </PackageReference>
 
     <PackageReference Include="Concentus" Version="1.1.7" />
-    <!--<PackageReference Include="Concentus.OggFile" Version="1.0.3" />-->
+    <PackageReference Include="Concentus.OggFile" Version="1.0.4" />
     <PackageReference Include="CSCore" Version="1.2.1.2" />
     <PackageReference Include="System.Memory" Version="4.5.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\_forks\concentus.oggfile\Concentus.Oggfile\Concentus.Oggfile.csproj" />
   </ItemGroup>
 
 </Project>
