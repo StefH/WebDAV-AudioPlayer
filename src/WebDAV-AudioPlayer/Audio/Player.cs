@@ -153,7 +153,7 @@ namespace WebDav.AudioPlayer.Audio
                     break;
 
                 case ".opus":
-                    _waveSource = new OpusSource(resourceItem.Stream, resourceItem.MediaDetails.SampleRate, resourceItem.MediaDetails.Channels, resourceItem.MediaDetails.DurationMs);
+                    _waveSource = new OpusSource(resourceItem.Stream, resourceItem.MediaDetails.SampleRate, resourceItem.MediaDetails.Channels);
                     break;
 
                 default:
@@ -288,7 +288,9 @@ namespace WebDav.AudioPlayer.Audio
         {
             if (PlaybackState == PlaybackState.Playing)
             {
+                _soundOut.Stop();
                 _waveSource.SetPosition(position);
+                _soundOut.Play();
             }
         }
 

@@ -19,7 +19,7 @@ namespace WebDav.AudioPlayer.Audio
                     BitrateKbps = track.Bitrate,
                     Mode = track.IsVBR ? "VBR" : "CBR",
                     SampleRate = Convert.ToInt32(track.SampleRate),
-                    Channels = 2,
+                    Channels = track.ChannelsArrangement.NbChannels,
                     DurationMs = track.DurationMs,
                     IsLossless = track.CodecFamily == AudioDataIOFactory.CF_LOSSLESS
                 };

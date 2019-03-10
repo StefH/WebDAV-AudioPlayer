@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Concentus.Oggfile;
+using Concentus.Structs;
+using CSCore.Opus.Memory;
+using System;
 using System.Buffers;
 using System.IO;
 using System.Threading;
-using Concentus.Oggfile;
-using Concentus.Structs;
-using CSCore.Opus.Memory;
 
 namespace CSCore.Codecs.OPUS
 {
@@ -13,13 +13,14 @@ namespace CSCore.Codecs.OPUS
     {
         private const int BitsPerSample = 16;
         private const int BytesPerSample = BitsPerSample / 8;
+
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         private readonly CircularByteQueue _circularByteQueue = new CircularByteQueue(1024 * 1024);
         private readonly ArrayPool<byte> _buffer = ArrayPool<byte>.Shared;
-
-        private readonly double _durationInMs;
+        private readonly Stream _stream;
         private readonly OpusOggReadStream _opusReadStream;
-        private int _position;
+
+        private long _position;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OpusSource"/> class.
@@ -27,8 +28,7 @@ namespace CSCore.Codecs.OPUS
         /// <param name="stream">The stream.</param>
         /// <param name="sampleRate">The sample rate.</param>
         /// <param name="channels">The channels.</param>
-        /// <param name="durationInMs">The duration in ms.</param>
-        public OpusSource(Stream stream, int sampleRate, int channels, double durationInMs)
+        public OpusSource(Stream stream, int sampleRate, int channels)
         {
             if (stream == null)
             {
@@ -40,7 +40,7 @@ namespace CSCore.Codecs.OPUS
                 throw new ArgumentException("Stream is not readable.", nameof(stream));
             }
 
-            _durationInMs = durationInMs;
+            _stream = stream;
 
             WaveFormat = new WaveFormat(sampleRate, BitsPerSample, channels);
 
@@ -87,16 +87,37 @@ namespace CSCore.Codecs.OPUS
 
         public WaveFormat WaveFormat { get; }
 
-        public bool CanSeek => false;
+        public bool CanSeek => _stream.CanSeek;
 
         public long Position
         {
             get => _position;
 
-            set => throw new InvalidOperationException("Cannot set position on OpusSource.");
+            set
+            {
+                if (!CanSeek)
+                {
+                    throw new InvalidOperationException("Stream is not seekable.");
+                }
+
+                if (value < 0 || value > Length)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value));
+                }
+
+                // Clear the queue to remove pending samples
+                _circularByteQueue.Clear();
+
+                // Jump to the new position in the stream
+                var playtime = TimeSpan.FromSeconds((double)value / (WaveFormat.SampleRate * WaveFormat.Channels * BytesPerSample));
+                _opusReadStream.SeekTo(playtime);
+
+                // Update the position to the seek position
+                _position = Convert.ToInt64(_opusReadStream.CurrentTime.TotalSeconds * WaveFormat.SampleRate * WaveFormat.Channels * BytesPerSample);
+            }
         }
 
-        public long Length => (long)(_durationInMs / 1000.0 * WaveFormat.SampleRate * WaveFormat.Channels * BytesPerSample);
+        public long Length => CanSeek ? Convert.ToInt64(_opusReadStream.TotalTime.TotalSeconds * WaveFormat.SampleRate * WaveFormat.Channels * BytesPerSample) : 0;
 
         public void Dispose()
         {
