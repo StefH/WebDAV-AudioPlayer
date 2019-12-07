@@ -47,6 +47,11 @@ namespace WebDav.AudioPlayer.Client
             Debug.WriteLine("path=[" + parent.FullPath + "]");
 
             var result = await _client.Propfind(parent.FullPath, new PropfindParameters { CancellationToken = cancellationToken });
+            if (result.StatusCode == (int) HttpStatusCode.Unauthorized)
+            {
+                return ResourceLoadStatus.Unauthorized;
+            }
+
             if (result.Resources != null)
             {
                 var tasks = result.Resources.Skip(1)
@@ -122,7 +127,9 @@ namespace WebDav.AudioPlayer.Client
         public async Task<ResourceLoadStatus> DownloadFolderAsync(ResourceItem folder, string destinationFolder, Action<bool, ResourceItem, int, int> notify, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
+            {
                 return ResourceLoadStatus.OperationCanceled;
+            }
 
             try
             {
@@ -130,15 +137,21 @@ namespace WebDav.AudioPlayer.Client
                 {
                     var fetchResult = await FetchChildResourcesAsync(folder, cancellationToken, folder.Level + 1, folder.Level);
                     if (fetchResult != ResourceLoadStatus.Ok)
+                    {
                         return fetchResult;
+                    }
                 }
 
                 if (!folder.Items.Any(i => !i.IsCollection))
+                {
                     return ResourceLoadStatus.NoResourcesFound;
+                }
 
                 string folderPath = Path.Combine(destinationFolder, folder.DisplayName);
                 if (!Directory.Exists(folderPath))
+                {
                     Directory.CreateDirectory(folderPath);
+                }
 
                 int idx = 0;
                 foreach (var resourceItem in folder.Items)

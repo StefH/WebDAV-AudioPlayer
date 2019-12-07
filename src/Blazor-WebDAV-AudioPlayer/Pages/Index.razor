@@ -1,0 +1,43 @@
+﻿@page "/"
+@using WebDav.AudioPlayer.Client
+@using WebDav.AudioPlayer.Models
+@inherits IndexBase
+
+<button class="btn btn-primary oi oi-reload" @onclick="Refresh"></button>
+
+<!-- https://github.com/aspnet/AspNetCore/issues/10077 -->
+
+@if (Status != ResourceLoadStatus.Ok)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <p>@Status</p>
+    <Tree Nodes="Root.Items"
+          SelectedNodeChanged="@(async (ResourceItem item) => { await SelectedResourceItemChangedAsync(item); })"
+          ChildSelector="@(item => item.Items)"
+          HasChildNodes="@(item => item.Items?.Any() == true)">
+        <TitleTemplate>@context.DisplayName</TitleTemplate>
+    </Tree>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>DisplayName</th>
+                <th>ContentLength</th>
+                <th>FullPath</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var resource in Root.Items)
+            {
+                <tr>
+                    <td>@resource.DisplayName</td>
+                    <td>@resource.ContentLength</td>
+                    <td>@resource.FullPath</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
