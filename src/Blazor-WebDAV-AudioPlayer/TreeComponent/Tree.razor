@@ -1,42 +1,34 @@
-﻿
-@typeparam TNode
+﻿@using WebDav.AudioPlayer.Models
 
 <div class="uic-tree @(Visible ? "" : "uic-tree--hidden")">
 
-    @foreach (var node in Nodes ?? Enumerable.Empty<TNode>())
+    @foreach (var treeNode in (ResourceItems ?? Enumerable.Empty<TreeNode<ResourceItem>>()))
     {
-        var nodeExpanded = ExpandedNodes.Contains(node);
-        var nodeSelected = node.Equals(SelectedNode);
-        var hasChilds = HasChildNodes(node);
+        bool selected = treeNode.Equals(SelectedNode);
 
         <div>
-
-            @if (hasChilds)
+            @if (treeNode.Item.IsCollection)
             {
-                <span class="uic-tree__icon" @onclick="@(() => OnToggleNode(node, !nodeExpanded))">
-                    <i class="@(nodeExpanded ? Style.CollapseNodeIconClass : Style.ExpandNodeIconClass)"></i>
+                <span class="uic-tree__icon" @onclick="@(async () => await OnToggleNode(treeNode, !treeNode.IsExpanded))">
+                    <i class="@(treeNode.IsExpanded ? Style.CollapseNodeIconClass : Style.ExpandNodeIconClass)"></i>
                 </span>
             }
 
             <div class="uic-tree__title">
-                <span class="@Style.NodeTitleClass @(nodeSelected ? Style.NodeTitleSelectedClass : "")" @onclick="@(() => OnSelectNode(node))">
-                    @TitleTemplate(node)
+                <span class="@Style.NodeTitleClass @(selected ? Style.NodeTitleSelectedClass : "")" @onclick="@(async () => await OnSelectNode(treeNode))">
+                    @TitleTemplate(treeNode)
                 </span>
             </div>
 
-            @if (hasChilds)
+            @if (treeNode.Item.IsCollection)
             {
-                <Tree Nodes="ChildSelector(node)"
+                <Tree ResourceItems="treeNode.ChildNodes"
                       TitleTemplate="TitleTemplate"
-                      ChildSelector="ChildSelector"
-                      ExpandedNodes="ExpandedNodes"
-                      ExpandedNodesChanged="ExpandedNodesChanged"
                       SelectedNode="SelectedNode"
                       SelectedNodeChanged="SelectedNodeChanged"
-                      Visible="nodeExpanded"
-                      HasChildNodes="HasChildNodes" />
+                      LazyLoad="LazyLoad"
+                      Visible="treeNode.IsExpanded" />
             }
-
         </div>
     }
 
@@ -44,43 +36,55 @@
 
 @code {
 
-    [Parameter] public IEnumerable<TNode> Nodes { get; set; }
+    [Parameter] public IEnumerable<TreeNode<ResourceItem>> ResourceItems { get; set; }
 
-    [Parameter] public RenderFragment<TNode> TitleTemplate { get; set; }
+    [Parameter] public RenderFragment<TreeNode<ResourceItem>> TitleTemplate { get; set; }
 
-    [Parameter] public TNode SelectedNode { get; set; }
-    [Parameter] public EventCallback<TNode> SelectedNodeChanged { get; set; }
+    [Parameter] public TreeNode<ResourceItem> SelectedNode { get; set; }
+    //[Parameter] public EventCallback<TreeNode<ResourceItem>> SelectedNodeChanged { get; set; }
+    [Parameter] public Func<TreeNode<ResourceItem>, Task> SelectedNodeChanged { get; set; }
 
-    [Parameter] public Func<TNode, IEnumerable<TNode>> ChildSelector { get; set; }
-
-    [Parameter] public IList<TNode> ExpandedNodes { get; set; } = new List<TNode>();
-    [Parameter] public EventCallback<IList<TNode>> ExpandedNodesChanged { get; set; }
+    //[Parameter] public IList<TreeNode<ResourceItem>> ExpandedNodes { get; set; } = new List<TreeNode<ResourceItem>>();
+    //[Parameter] public EventCallback<IList<TreeNode<ResourceItem>>> ExpandedNodesChanged { get; set; }
 
     [Parameter] public TreeStyle Style { get; set; } = TreeStyle.Bootstrap;
 
     [Parameter] public bool Visible { get; set; } = true;
 
-    [Parameter] public Func<TNode, bool> HasChildNodes { get; set; } = node => true;
+    [Parameter] public Func<TreeNode<ResourceItem>, Task> LazyLoad { get; set; }
 
-    private void OnToggleNode(TNode node, bool expand)
+    private async Task OnToggleNode(TreeNode<ResourceItem> treeNode, bool expand)
     {
-        var expanded = ExpandedNodes.Contains(node);
+        //bool expanded = resourceItem.IsExpanded; // ExpandedNodes.Contains(resourceItem);
 
-        if (expanded && !expand)
+        if (treeNode.IsExpanded && !expand)
         {
-            ExpandedNodes.Remove(node);
-            ExpandedNodesChanged.InvokeAsync(ExpandedNodes);
+            //ExpandedNodes.Remove(resourceItem
+            treeNode.IsExpanded = false;
+            //ExpandedNodesChanged.InvokeAsync(ExpandedNodes);
         }
-        else if (!expanded && expand)
+        else if (!treeNode.IsExpanded && expand)
         {
-            ExpandedNodes.Add(node);
-            ExpandedNodesChanged.InvokeAsync(ExpandedNodes);
+            //ExpandedNodes.Add(resourceItem);
+            //ExpandedNodesChanged.InvokeAsync(ExpandedNodes);//
+
+            await LazyLoad(treeNode);
+
+            treeNode.IsExpanded = true;
+
+            //ExpandedNodes.Add(resourceItem);
         }
     }
 
-    private void OnSelectNode(TNode node)
+    private async Task OnSelectNode(TreeNode<ResourceItem> treeNode)
     {
-        SelectedNode = node;
-        SelectedNodeChanged.InvokeAsync(node);
+        SelectedNode = treeNode;
+
+        await SelectedNodeChanged(treeNode);
+
+        //if (resourceItem.IsCollection)
+        //{
+        //    OnToggleNode(resourceItem, true);
+        //}
     }
 }

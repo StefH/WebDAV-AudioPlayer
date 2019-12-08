@@ -3,41 +3,49 @@
 @using WebDav.AudioPlayer.Models
 @inherits IndexBase
 
-<button class="btn btn-primary oi oi-reload" @onclick="Refresh"></button>
+<div class="row">
+    <div class="col-4">
+        <button class="btn btn-primary oi oi-reload" @onclick="Refresh"></button>
 
-<!-- https://github.com/aspnet/AspNetCore/issues/10077 -->
+        @if (Status != ResourceLoadStatus.Ok)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            <p>ResourceLoadStatus = @Status</p>
 
-@if (Status != ResourceLoadStatus.Ok)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <p>@Status</p>
-    <Tree Nodes="Root.Items"
-          SelectedNodeChanged="@(async (ResourceItem item) => { await SelectedResourceItemChangedAsync(item); })"
-          ChildSelector="@(item => item.Items)"
-          HasChildNodes="@(item => item.Items?.Any() == true)">
-        <TitleTemplate>@context.DisplayName</TitleTemplate>
-    </Tree>
+            <Tree ResourceItems="Root.ChildNodes"
+                  SelectedNodeChanged="@(async item => await SelectedResourceItemChanged(item))"
+                  LazyLoad="@(async item => { await LazyLoad(item); })">
+                <TitleTemplate>@context.Item.DisplayName</TitleTemplate>
+            </Tree>
+        }
+    </div>
+    <div class="col-8">
+        play/stop/pause/previous/next/current time/total time
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>DisplayName</th>
-                <th>ContentLength</th>
-                <th>FullPath</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var resource in Root.Items)
-            {
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@resource.DisplayName</td>
-                    <td>@resource.ContentLength</td>
-                    <td>@resource.FullPath</td>
+                    <th>Title</th>
+                    <th>Size</th>
+                    <th>Length</th>
+                    <th>Bitrate (kbps)</th>
                 </tr>
-            }
-        </tbody>
-    </table>
-}
+            </thead>
+            <tbody>
+                @foreach (var item in PlayListItems)
+                {
+                    <tr>
+                        <td>@item.Title</td>
+                        <td>@item.Size</td>
+                        <td>@item.Length</td>
+                        <td>@item.Bitrate</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+</div>
