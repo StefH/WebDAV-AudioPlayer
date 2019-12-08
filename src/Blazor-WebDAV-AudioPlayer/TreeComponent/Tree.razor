@@ -2,7 +2,7 @@
 
 <div class="uic-tree @(Visible ? "" : "uic-tree--hidden")">
 
-    @foreach (var treeNode in (ResourceItems ?? Enumerable.Empty<TreeNode<ResourceItem>>()))
+    @foreach (var treeNode in ResourceItems ?? Enumerable.Empty<TreeNode<ResourceItem>>())
     {
         bool selected = treeNode.Equals(SelectedNode);
 
@@ -41,11 +41,8 @@
     [Parameter] public RenderFragment<TreeNode<ResourceItem>> TitleTemplate { get; set; }
 
     [Parameter] public TreeNode<ResourceItem> SelectedNode { get; set; }
-    //[Parameter] public EventCallback<TreeNode<ResourceItem>> SelectedNodeChanged { get; set; }
-    [Parameter] public Func<TreeNode<ResourceItem>, Task> SelectedNodeChanged { get; set; }
 
-    //[Parameter] public IList<TreeNode<ResourceItem>> ExpandedNodes { get; set; } = new List<TreeNode<ResourceItem>>();
-    //[Parameter] public EventCallback<IList<TreeNode<ResourceItem>>> ExpandedNodesChanged { get; set; }
+    [Parameter] public EventCallback<TreeNode<ResourceItem>> SelectedNodeChanged { get; set; }
 
     [Parameter] public TreeStyle Style { get; set; } = TreeStyle.Bootstrap;
 
@@ -55,36 +52,22 @@
 
     private async Task OnToggleNode(TreeNode<ResourceItem> treeNode, bool expand)
     {
-        //bool expanded = resourceItem.IsExpanded; // ExpandedNodes.Contains(resourceItem);
-
         if (treeNode.IsExpanded && !expand)
         {
-            //ExpandedNodes.Remove(resourceItem
             treeNode.IsExpanded = false;
-            //ExpandedNodesChanged.InvokeAsync(ExpandedNodes);
         }
         else if (!treeNode.IsExpanded && expand)
         {
-            //ExpandedNodes.Add(resourceItem);
-            //ExpandedNodesChanged.InvokeAsync(ExpandedNodes);//
-
             await LazyLoad(treeNode);
 
             treeNode.IsExpanded = true;
-
-            //ExpandedNodes.Add(resourceItem);
         }
     }
 
     private async Task OnSelectNode(TreeNode<ResourceItem> treeNode)
     {
+        await SelectedNodeChanged.InvokeAsync(treeNode);
+
         SelectedNode = treeNode;
-
-        await SelectedNodeChanged(treeNode);
-
-        //if (resourceItem.IsCollection)
-        //{
-        //    OnToggleNode(resourceItem, true);
-        //}
     }
 }

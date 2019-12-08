@@ -76,7 +76,7 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
 
         protected async Task SelectedResourceItemChanged(TreeNode<ResourceItem> treeNode)
         {
-            PlayListItems.Clear();
+            //PlayListItems.Clear();
 
             if (treeNode.Item.Items == null)
             {
