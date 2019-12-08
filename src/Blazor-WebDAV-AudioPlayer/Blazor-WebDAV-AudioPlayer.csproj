@@ -7,6 +7,9 @@
 
   <ItemGroup>
     <PackageReference Include="ByteSize" Version="1.3.0" />
+    <PackageReference Include="CSCore" Version="1.2.1.2" />
+    <PackageReference Include="CSCore.Ogg" Version="1.0.0" />
+    <PackageReference Include="CSCore.Opus" Version="1.0.1" />
     <PackageReference Include="DevExpress.Blazor" Version="19.1.10" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.0" />
@@ -17,6 +20,7 @@
 
   <ItemGroup>
     <Compile Include="..\WebDAV-AudioPlayer\Audio\MediaDetails.cs" Link="Audio\MediaDetails.cs" />
+    <Compile Include="..\WebDAV-AudioPlayer\Audio\Player.cs" Link="Audio\Player.cs" />
     <Compile Include="..\WebDAV-AudioPlayer\Audio\TrackInfoHelper.cs" Link="Audio\TrackInfoHelper.cs" />
     <Compile Include="..\WebDAV-AudioPlayer\Client\IConnectionSettings.cs" Link="Client\IConnectionSettings.cs" />
     <Compile Include="..\WebDAV-AudioPlayer\Client\IWebDavClient.cs" Link="Client\IWebDavClient.cs" />
@@ -26,12 +30,14 @@
     <Compile Include="..\WebDAV-AudioPlayer\Extensions\TaskExtensions.cs" Link="Extensions\TaskExtensions.cs" />
     <Compile Include="..\WebDAV-AudioPlayer\IO\SecurePasswordHelper.cs" Link="IO\SecurePasswordHelper.cs" />
     <Compile Include="..\WebDAV-AudioPlayer\Models\ResourceItem.cs" Link="Models\ResourceItem.cs" />
+    <Compile Include="..\WebDAV-AudioPlayer\Util\FixedSizedQueue.cs" Link="Util\FixedSizedQueue.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Audio\" />
     <Folder Include="IO\" />
     <Folder Include="Extensions\" />
+    <Folder Include="Util\" />
   </ItemGroup>
 
 </Project>

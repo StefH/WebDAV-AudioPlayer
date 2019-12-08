@@ -23,11 +23,19 @@
         }
     </div>
     <div class="col-8">
-        play/stop/pause/previous/next/current time/total time
+        <div>
+            <button class="btn btn-primary oi oi-media-play" @onclick="Play"></button>
+            <button class="btn btn-primary oi oi-media-stop" @onclick="Stop"></button>
+            <button class="btn btn-primary oi oi-media-pause" @onclick="Pause"></button>
+        </div>
+        
+        play/stop/pause/previous/next
+        <pre>Time : @CurrentTime / @TotalTime</pre>
 
         <table class="table">
             <thead>
                 <tr>
+                    <th>#</th>
                     <th>Title</th>
                     <th>Size</th>
                     <th>Length</th>
@@ -38,7 +46,8 @@
                 @foreach (var item in PlayListItems)
                 {
                     <tr>
-                        <td>@item.Title</td>
+                        <td>@(item.Index + 1)</td>
+                        <td><span @onclick="@(() => ClickSong(@item))">@item.Title</span></td>
                         <td>@item.Size</td>
                         <td>@item.Length</td>
                         <td>@item.Bitrate</td>
@@ -46,6 +55,12 @@
                 }
             </tbody>
         </table>
+
+        <textarea rows="2"
+                  placeholder="..."
+                  style="width:90%; resize:both;"
+                  oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';">@Logging
+        </textarea>
 
     </div>
 </div>

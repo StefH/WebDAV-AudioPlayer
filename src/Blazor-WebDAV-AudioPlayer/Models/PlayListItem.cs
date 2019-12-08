@@ -4,6 +4,8 @@ namespace Blazor.WebDAV.AudioPlayer.Models
 {
     public class PlayListItem
     {
+        public int Index { get; set; }
+
         public string Title { get; set; }
 
         public string Size { get; set; }
