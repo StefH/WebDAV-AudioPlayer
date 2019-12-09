@@ -104,7 +104,7 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
                 //}
             };
 
-            Log(_player.SoundOut);
+            Log($"Using : '{_player.SoundOut}-SoundOut'");
 
             _timer = new Timer(async state => { await InvokeAsync(OnTimerCallback); }, null, 0, 249);
 

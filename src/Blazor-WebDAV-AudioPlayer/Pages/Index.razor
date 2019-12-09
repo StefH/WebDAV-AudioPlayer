@@ -1,6 +1,5 @@
 ﻿@page "/"
 @using WebDav.AudioPlayer.Client
-@using WebDav.AudioPlayer.Models
 @inherits IndexBase
 
 <div class="row">
@@ -9,12 +8,10 @@
 
         @if (Status != ResourceLoadStatus.Ok)
         {
-            <p><em>Loading...</em></p>
+            <p><em>Loading folders and files from WebDAV ...</em></p>
         }
         else
         {
-            <p>ResourceLoadStatus = @Status</p>
-
             <Tree ResourceItems="Root.ChildNodes"
                   SelectedNodeChanged="@(async item => await SelectedResourceItemChanged(item))"
                   LazyLoad="@(async item => { await LazyLoad(item); })">
