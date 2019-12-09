@@ -1,0 +1,27 @@
+﻿<textarea style="width:100%;" rows="@Rows" @bind-value="Text" @bind-value:event="oninput" />
+
+@code {
+    private const int MIN_ROWS = 3;
+    private const int MAX_ROWS = 8;
+
+    private int Rows { get; set; }
+    private string _text;
+
+    [Parameter] 
+    public string Text
+    {
+        get => _text;
+        set
+        {
+            _text = value;
+            CalculateSize(value);
+        }
+    }
+
+    private void CalculateSize(string value)
+    {
+        Rows = Math.Max(value.Split('\n').Length, value.Split('\r').Length);
+        Rows = Math.Max(Rows, MIN_ROWS);
+        Rows = Math.Min(Rows, MAX_ROWS);
+    }
+}

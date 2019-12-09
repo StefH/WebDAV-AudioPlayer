@@ -5,7 +5,7 @@ using WebDav.AudioPlayer.Models;
 
 namespace WebDav.AudioPlayer.Client
 {
-    interface IWebDavClient : IDisposable
+    public interface IWebDavClient : IDisposable
     {
         Task<ResourceLoadStatus> FetchChildResourcesAsync(ResourceItem resourceItem, CancellationToken cancellationToken, int maxLevel, int level = 0);
 

@@ -27,7 +27,7 @@ namespace WebDav.AudioPlayer.Util
             Clear(Size);
         }
 
-        public void Clear()
+        public new void Clear()
         {
             Clear(0);
         }

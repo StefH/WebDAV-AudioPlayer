@@ -9,6 +9,7 @@ namespace WebDav.AudioPlayer.Client
         StreamFailedToLoad,
         IsCollection,
         NoResourcesFound,
-        OperationCanceled
+        OperationCanceled,
+        Unauthorized
     }
 }

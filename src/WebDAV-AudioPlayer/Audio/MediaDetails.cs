@@ -3,6 +3,7 @@
     public class MediaDetails
     {
         public string Mode { get; set; }
+
         public int BitrateKbps { get; set; }
 
         public int SampleRate { get; set; }
