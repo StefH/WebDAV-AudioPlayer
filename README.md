@@ -11,6 +11,14 @@ The following codecs are supported:
 * OGG-Vorbis
 * OPUS
 
+
+<br>
+## Blazor UI Screenshot:
+![Blazor-WebDAV-AudioPlayer](https://raw.githubusercontent.com/StefH/WebDAV-AudioPlayer/master/resources/blazor-webdav-audioplayer.png "Blazor-WebDAV-AudioPlayer")
+
+## Windows UI Screenshot:
+![WebDAV-AudioPlayer](https://raw.githubusercontent.com/StefH/WebDAV-AudioPlayer/master/resources/WebDAV-AudioPlayer.png "WebDAV-AudioPlayer")
+
 Used libraries:
 * [CSCore](https://github.com/filoe/cscore) for playing audio files.
 * [CSCore.Ogg](https://github.com/StefH/WebDAV-AudioPlayer) for playing OGG-Vorbis audio files.
@@ -24,11 +32,3 @@ Used code:
 * [concentus.oggfile](https://github.com/lostromb/concentus.oggfile) Implementing support for reading/writing .opus audio files using Concentus
 * [ByteQueue](https://github.com/Kelindar/circular-buffer/blob/master/Source/ByteQueue.cs) An efficient implementation of a resizeable circular byte buffer in C#
 * [CSCore with NVorbis](https://github.com/filoe/cscore/blob/master/Samples/NVorbisIntegration/Program.cs) NVorbisIntegration sample
-
-<br>
-<br>
-## Blazor UI Screenshot:
-![WebDAV-AudioPlayer](https://raw.githubusercontent.com/StefH/WebDAV-AudioPlayer/master/src//Resources/blazor-webdav-audioplayer "Blazor-WebDAV-AudioPlayer")
-
-## Windows UI Screenshot:
-![WebDAV-AudioPlayer](https://raw.githubusercontent.com/StefH/WebDAV-AudioPlayer/master/src//Resources/WebDAV-AudioPlayer.png "WebDAV-AudioPlayer")
