@@ -222,7 +222,7 @@ namespace WebDav.AudioPlayer.Audio
             {
                 var currentResourceItem = Items[SelectedIndex];
                 var nextFolderToPlay = GetNextFolderFromParent(currentResourceItem);
-                if (nextFolderToPlay != null)
+                if (nextFolderToPlay != null && DoubleClickFolderAndPlayFirstSong != null)
                 {
                     await DoubleClickFolderAndPlayFirstSong(nextFolderToPlay);
                     await PlayAsync(0, cancelAction);
