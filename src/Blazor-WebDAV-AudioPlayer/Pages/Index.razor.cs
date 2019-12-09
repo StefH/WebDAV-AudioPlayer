@@ -31,19 +31,27 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
 
         protected List<PlayListItem> PlayListItems { get; private set; } = new List<PlayListItem>();
 
+        protected PlayListItem SelectedPlayListItem { get; private set; }
+
         protected ResourceLoadStatus Status { get; private set; }
 
         protected string Logging { get; private set; } = string.Empty;
+
+        protected string CurrentTime { get; set; } = TIME_ZERO;
+
+        protected string TotalTime { get; set; } = TIME_ZERO;
+
+        protected int SliderMax { get; set; } = 1;
+
+        protected int SliderValue { get; set; }
+
+        protected bool SliderEnabled { get; set; } = false;
 
         private IWebDavClient _client;
 
         private Player _player;
 
         private Timer _timer;
-
-        public string CurrentTime { get; set; } = TIME_ZERO;
-
-        public string TotalTime { get; set; } = TIME_ZERO;
 
         protected override async Task OnInitializedAsync()
         {
@@ -58,18 +66,13 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
                 PlayStarted = (selectedIndex, resourceItem) =>
                 {
                     Log($"PlayStarted - {resourceItem.DisplayName}");
-                    //string bitrate = $"{resourceItem.MediaDetails.BitrateKbps}";
-                    //string text = updateTitle(resourceItem, "Playing");
-                    //textBoxSong.Text = text;
 
+                    SelectedPlayListItem = PlayListItems[selectedIndex];
                     CurrentTime = TIME_ZERO;
                     TotalTime = $@"{_player.TotalTime:hh\:mm\:ss}";
 
-                    //trackBarSong.Maximum = (int)_player.TotalTime.TotalSeconds;
-                    //trackBarSong.Enabled = _player.CanSeek;
-
-                    //listView.SetCells(selectedIndex, $@"{_player.TotalTime:h\:mm\:ss}", bitrate);
-                    //listView.SetSelectedIndex(selectedIndex);
+                    SliderMax = (int)_player.TotalTime.TotalSeconds;
+                    SliderEnabled = _player.CanSeek;
 
                     PlayListItems[selectedIndex].Bitrate = $"{resourceItem.MediaDetails.BitrateKbps}";
                     PlayListItems[selectedIndex].Length = $@"{_player.TotalTime:hh\:mm\:ss}";
@@ -77,22 +80,18 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
                 PlayContinue = resourceItem =>
                 {
                     Log($"PlayContinue - {resourceItem.DisplayName}");
-                    //string text = updateTitle(resourceItem, "Playing");
-                    //textBoxSong.Text = text;
                 },
                 PlayPaused = resourceItem =>
                 {
                     Log($"PlayPaused - {resourceItem.DisplayName}");
-                    //string text = updateTitle(resourceItem, "Pausing");
-                    //textBoxSong.Text = text;
                 },
                 PlayStopped = () =>
                 {
                     // Log($"PlayStopped");
-                    //trackBarSong.Value = 0;
-                    //trackBarSong.Maximum = 1;
+                    SliderMax = 1;
+                    SliderValue = 0;
+                    SliderEnabled = false;
                     CurrentTime = TIME_ZERO;
-                    //Text = @"WebDAV-AudioPlayer";
                 },
                 //DoubleClickFolderAndPlayFirstSong = async resourceItem =>
                 //{
@@ -107,7 +106,7 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
 
             Log(_player.SoundOut);
 
-            _timer = new Timer(async state => { await InvokeAsync(UpdateCounter); }, null, 0, 249);
+            _timer = new Timer(async state => { await InvokeAsync(OnTimerCallback); }, null, 0, 249);
 
             Root = new TreeNode<ResourceItem>
             {
@@ -149,6 +148,7 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
         protected async Task SelectedResourceItemChanged(TreeNode<ResourceItem> treeNode)
         {
             PlayListItems.Clear();
+            SelectedPlayListItem = null;
 
             if (treeNode.Item.Items == null)
             {
@@ -172,44 +172,66 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
             }
         }
 
-        public async Task ClickSong(PlayListItem item)
+        protected async Task ClickSong(PlayListItem item)
         {
             Log($"ClickSong - {item.Title}");
-            // _player.Stop(true);
 
             await _player.PlayAsync(item.Index, CancellationToken.None);
         }
 
-        public void Play()
+        protected void SliderValueChanged(int value)
         {
-            //_player.PlayAsync();
+            var time = TimeSpan.FromSeconds(value);
+            Log($@"Jump to '{time:hh\:mm\:ss}'");
+
+            _player.JumpTo(time);
         }
 
-        public void Stop()
+        protected async Task Play()
+        {
+            if (SelectedPlayListItem == null)
+            {
+                SelectedPlayListItem = PlayListItems.FirstOrDefault();
+            }
+
+            if (SelectedPlayListItem != null)
+            {
+                await _player.PlayAsync(SelectedPlayListItem.Index, CancellationToken.None);
+            }
+        }
+
+        protected void Stop()
         {
             _player.Stop(false);
         }
 
-        public void Pause()
+        protected void Pause()
         {
             _player.Pause();
         }
 
-        private void Log(string text)
+        protected async Task Previous()
         {
-            Logging += $"{DateTime.Now} - {text}\r\n";
+            await _player.PlayPreviousAsync(CancellationToken.None);
         }
 
-        private async Task UpdateCounter()
+        protected async Task Next()
+        {
+            await _player.PlayNextAsync(CancellationToken.None);
+        }
+
+        private void Log(string text)
+        {
+            Logging = $"{DateTime.Now} - {text}\r\n" + Logging;
+        }
+
+        private async Task OnTimerCallback()
         {
             CurrentTime = $@"{_player.CurrentTime:hh\:mm\:ss}";
 
             if (_player.PlaybackState == PlaybackState.Playing)
             {
-                //trackBarSong.Value = (int)_player.CurrentTime.TotalSeconds;
-
-                // Always select the listView to make sure the selected song is highlighted.
-                //listView.Select();
+                SliderValue = (int)_player.CurrentTime.TotalSeconds;
 
                 if (_player.CurrentTime.Add(TimeSpan.FromMilliseconds(500)) > _player.TotalTime)
                 {

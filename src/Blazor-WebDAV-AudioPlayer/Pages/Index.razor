@@ -27,10 +27,14 @@
             <button class="btn btn-primary oi oi-media-play" @onclick="Play"></button>
             <button class="btn btn-primary oi oi-media-stop" @onclick="Stop"></button>
             <button class="btn btn-primary oi oi-media-pause" @onclick="Pause"></button>
+            <button class="btn btn-primary oi oi-media-step-backward" @onclick="Previous"></button>
+            <button class="btn btn-primary oi oi-media-step-forward" @onclick="Next"></button>
+            <pre>Time : @CurrentTime / @TotalTime</pre>
+        </div>
+        <div>
+            <RangeSlider Max="@SliderMax" Value="@SliderValue" Enabled="@SliderEnabled" ValueChanged="@SliderValueChanged" />
         </div>
         
-        play/stop/pause/previous/next
-        <pre>Time : @CurrentTime / @TotalTime</pre>
 
         <table class="table">
             <thead>
@@ -45,7 +49,7 @@
             <tbody>
                 @foreach (var item in PlayListItems)
                 {
-                    <tr>
+                    <tr class="@(item == SelectedPlayListItem ? TreeStyle.Bootstrap.NodeTitleSelectedClass : "")">
                         <td>@(item.Index + 1)</td>
                         <td><span @onclick="@(() => ClickSong(@item))">@item.Title</span></td>
                         <td>@item.Size</td>
@@ -56,11 +60,12 @@
             </tbody>
         </table>
 
-        <textarea rows="2"
+        @*<textarea rows="2"
                   placeholder="..."
-                  style="width:90%; resize:both;"
-                  oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';">@Logging
-        </textarea>
+                  style="width:95%; resize:both;"
+                  oninput="this.style.height = '100px'; this.style.height = (this.scrollHeight) + 'px';">@Logging
+        </textarea>*@
+        <LogTextArea Text="@Logging" />
 
     </div>
 </div>
