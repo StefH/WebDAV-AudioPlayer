@@ -19,6 +19,8 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
 {
     public class IndexBase : ComponentBase
     {
+        private const string TIME_ZERO = "00:00:00";
+
         [Inject]
         protected IOptions<ConnectionSettings> Options { get; set; }
 
@@ -39,9 +41,9 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
 
         private Timer _timer;
 
-        public string CurrentTime { get; set; }
+        public string CurrentTime { get; set; } = TIME_ZERO;
 
-        public string TotalTime { get; set; }
+        public string TotalTime { get; set; } = TIME_ZERO;
 
         protected override async Task OnInitializedAsync()
         {
@@ -60,7 +62,7 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
                     //string text = updateTitle(resourceItem, "Playing");
                     //textBoxSong.Text = text;
 
-                    CurrentTime = "0:00:00";
+                    CurrentTime = TIME_ZERO;
                     TotalTime = $@"{_player.TotalTime:hh\:mm\:ss}";
 
                     //trackBarSong.Maximum = (int)_player.TotalTime.TotalSeconds;
@@ -89,19 +91,21 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
                     // Log($"PlayStopped");
                     //trackBarSong.Value = 0;
                     //trackBarSong.Maximum = 1;
-                    CurrentTime = @"00:00:00";
+                    CurrentTime = TIME_ZERO;
                     //Text = @"WebDAV-AudioPlayer";
                 },
-                DoubleClickFolderAndPlayFirstSong = async resourceItem =>
-                {
-                    Log($"DoubleClickFolderAndPlayFirstSong - {resourceItem.DisplayName}");
-                    //var nodeToDoubleClick = treeView.Nodes.Find(resourceItem.DisplayName, true).FirstOrDefault();
-                    //if (nodeToDoubleClick != null)
-                    //{
-                    //    await FetchChildResourcesAsync(nodeToDoubleClick, resourceItem);
-                    //}
-                }
+                //DoubleClickFolderAndPlayFirstSong = async resourceItem =>
+                //{
+                //    Log($"DoubleClickFolderAndPlayFirstSong - {resourceItem.DisplayName}");
+                //    //var nodeToDoubleClick = treeView.Nodes.Find(resourceItem.DisplayName, true).FirstOrDefault();
+                //    //if (nodeToDoubleClick != null)
+                //    //{
+                //    //    await FetchChildResourcesAsync(nodeToDoubleClick, resourceItem);
+                //    //}
+                //}
             };
+
+            Log(_player.SoundOut);
 
             _timer = new Timer(async state => { await InvokeAsync(UpdateCounter); }, null, 0, 249);
 

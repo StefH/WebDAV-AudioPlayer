@@ -21,15 +21,11 @@ namespace Blazor.WebDAV.AudioPlayer
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            // services.AddOptions();
-
             services.Configure<ConnectionSettings>(Configuration.GetSection("ConnectionSettings"));
 
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            //services.AddSingleton<WeatherForecastService>();
 
-            //services.AddSingleton<IConnectionSettings, ConnectionSettings>();
             services.AddSingleton<IWebDavClientFactory, WebDavClientFactory>();
         }
 
