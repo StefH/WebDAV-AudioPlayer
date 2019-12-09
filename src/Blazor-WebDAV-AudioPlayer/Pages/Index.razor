@@ -31,10 +31,10 @@
             <button class="btn btn-primary oi oi-media-step-forward" @onclick="Next"></button>
             <pre>Time : @CurrentTime / @TotalTime</pre>
         </div>
+
         <div>
             <RangeSlider Max="@SliderMax" Value="@SliderValue" Enabled="@SliderEnabled" ValueChanged="@SliderValueChanged" />
         </div>
-        
 
         <table class="table">
             <thead>
@@ -49,9 +49,9 @@
             <tbody>
                 @foreach (var item in PlayListItems)
                 {
-                    <tr class="@(item == SelectedPlayListItem ? TreeStyle.Bootstrap.NodeTitleSelectedClass : "")">
+                    <tr class="pointer @(item == SelectedPlayListItem ? TreeStyle.Bootstrap.NodeTitleSelectedClass : "")">
                         <td>@(item.Index + 1)</td>
-                        <td><span @onclick="@(() => ClickSong(@item))">@item.Title</span></td>
+                        <td><span @onclick="@(() => ClickSong(@item))" @onclick:preventDefault>@item.Title</span></td>
                         <td>@item.Size</td>
                         <td>@item.Length</td>
                         <td>@item.Bitrate</td>
@@ -60,12 +60,10 @@
             </tbody>
         </table>
 
-        @*<textarea rows="2"
-                  placeholder="..."
-                  style="width:95%; resize:both;"
-                  oninput="this.style.height = '100px'; this.style.height = (this.scrollHeight) + 'px';">@Logging
-        </textarea>*@
-        <LogTextArea Text="@Logging" />
+        <div class="row">
+            <div class="col"><LogTextArea Text="@Logging" /></div>
+            <div><button class="btn btn-secondary oi oi-trash" @onclick="ClearLogging"></button></div>
+        </div>
 
     </div>
 </div>

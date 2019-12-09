@@ -174,9 +174,14 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
 
         protected async Task ClickSong(PlayListItem item)
         {
-            Log($"ClickSong - {item.Title}");
+            if (item.Index != SelectedPlayListItem?.Index)
+            {
+                SelectedPlayListItem = item;
 
-            await _player.PlayAsync(item.Index, CancellationToken.None);
+                Log($"ClickSong - {item.Title}");
+
+                await _player.PlayAsync(item.Index, CancellationToken.None);
+            }
         }
 
         protected void SliderValueChanged(int value)
@@ -218,6 +223,11 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
         protected async Task Next()
         {
             await _player.PlayNextAsync(CancellationToken.None);
+        }
+
+        protected void ClearLogging()
+        {
+            Logging = string.Empty;
         }
 
         private void Log(string text)
