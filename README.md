@@ -11,12 +11,12 @@ The following codecs are supported:
 * OGG-Vorbis
 * OPUS
 
+## Blazor UI screenshot
 
-<br>
-## Blazor UI Screenshot:
 ![Blazor-WebDAV-AudioPlayer](https://raw.githubusercontent.com/StefH/WebDAV-AudioPlayer/master/resources/blazor-webdav-audioplayer.png "Blazor-WebDAV-AudioPlayer")
 
-## Windows UI Screenshot:
+## Windows UI screenshot
+
 ![WebDAV-AudioPlayer](https://raw.githubusercontent.com/StefH/WebDAV-AudioPlayer/master/resources/WebDAV-AudioPlayer.png "WebDAV-AudioPlayer")
 
 Used libraries:
