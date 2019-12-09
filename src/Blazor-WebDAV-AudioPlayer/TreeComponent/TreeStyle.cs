@@ -4,8 +4,10 @@
     {
         public static readonly TreeStyle Bootstrap = new TreeStyle
         {
-            ExpandNodeIconClass = "oi oi-plus cursor-pointer",
-            CollapseNodeIconClass = "oi oi-minus cursor-pointer",
+            //ExpandNodeIconClass = "oi oi-plus cursor-pointer",
+            //CollapseNodeIconClass = "oi oi-minus cursor-pointer",
+            ExpandNodeIconClass = "oi oi-chevron-right cursor-pointer",
+            CollapseNodeIconClass = "oi oi-chevron-bottom cursor-pointer",
             NodeTitleClass = "p-1 cursor-pointer",
             NodeTitleSelectedClass = "bg-primary text-white"
         };
