@@ -1,7 +1,5 @@
 # WebDAV-AudioPlayer
-A simple AudioPlayer to play audio files from a WebDAV location.
-
-The following codecs are supported:
+A simple AudioPlayer (web-based Blazor & Windows WinForms) to play audio files from a WebDAV location with support for these codecs:
 * MP3
 * WAV
 * FLAC
