@@ -1,7 +1,12 @@
 ﻿@page "/info"
 @inject IJSRuntime JSRuntime;
 
-<h1>Call JavaScript Function Example</h1>
+<div>
+    <button type="button" class="btn btn-primary" @onclick="HowlPlay">Howl:play</button>
+    <button type="button" class="btn btn-primary" @onclick="HowlNext">Howl:next</button>
+    <button type="button" class="btn btn-primary" @onclick="HowlStop">Howl:stop</button>
+    <pre>Time : @CurrentTime / @TotalTime</pre>
+</div>
 
 <button type="button" class="btn btn-primary" @onclick="ConvertArray">
     Convert Array
@@ -14,11 +19,39 @@
 </p>
 
 @code {
-    // Quote (c)2005 Universal Pictures: Serenity
-    // https://www.uphe.com/movies/serenity
-    // David Krumholtz on IMDB: https://www.imdb.com/name/nm0472710/
+    private const string TIME_ZERO = "00:00:00";
+    protected string CurrentTime { get; set; } = TIME_ZERO;
 
-    private MarkupString ConvertedText =  new MarkupString("Select the <b>Convert Array</b> button.");
+    protected string TotalTime { get; set; } = TIME_ZERO;
+
+    private DotNetObjectReference<Info> dotNetObjectReference;
+
+    protected override void OnInitialized()
+    {
+        var timer = new System.Threading.Timer(async state => { await InvokeAsync(OnTimerCallback); }, null, 0, 249);
+
+        dotNetObjectReference = DotNetObjectReference.Create<Info>(this);
+    }
+
+    private async Task OnTimerCallback()
+    {
+        var currentTime = await HowlCurrentTime();
+        CurrentTime = $@"{currentTime:hh\:mm\:ss}";
+
+        //if (_player.PlaybackState == PlaybackState.Playing)
+        //{
+        //    SliderValue = (int)_player.CurrentTime.TotalSeconds;
+
+        //    if (_player.CurrentTime.Add(TimeSpan.FromMilliseconds(500)) > _player.TotalTime)
+        //    {
+        //        await _player.PlayNextAsync(CancellationToken.None);
+        //    }
+        //}
+
+        StateHasChanged();
+    }
+
+    private MarkupString ConvertedText = new MarkupString("Select the <b>Convert Array</b> button.");
 
     private uint[] QuoteArray = new uint[]
         {
@@ -26,7 +59,7 @@
             116, 104, 101, 32, 115, 105, 103, 110, 97, 108, 44, 32, 77, 97,
             108, 46, 60, 47, 101, 109, 62, 32, 45, 32, 77, 114, 46, 32, 85, 110,
             105, 118, 101, 114, 115, 101, 10, 10,
-            };
+                            };
 
     private async Task ConvertArray()
     {
@@ -35,5 +68,39 @@
         ConvertedText = new MarkupString(text);
 
         StateHasChanged();
+    }
+
+    public int Duration { get; set; }
+
+    [JSInvokable]
+    public void OnPlay(int totalTime)
+    {
+        TotalTime = $@"{TimeSpan.FromSeconds(totalTime):hh\:mm\:ss}"; ;
+        StateHasChanged();
+    }
+
+    private async Task HowlPlay()
+    {
+        //var r = DotNetObjectReference.Create<Info>(this);
+
+        var id = await JSRuntime.InvokeAsync<dynamic>("howl.play", dotNetObjectReference, "opus.opus");
+        Console.WriteLine("id=" + id);
+    }
+
+    private async Task HowlNext()
+    {
+        var id2 = await JSRuntime.InvokeAsync<int>("howl.play", dotNetObjectReference, "2.mp3");
+        Console.WriteLine("id2=" + id2);
+    }
+
+    private async Task HowlStop()
+    {
+        await JSRuntime.InvokeAsync<dynamic>("howl.stop");
+    }
+
+    private async Task<TimeSpan> HowlCurrentTime()
+    {
+        int currentTime = await JSRuntime.InvokeAsync<int>("howl.getCurrentTime");
+        return TimeSpan.FromSeconds(currentTime);
     }
 }

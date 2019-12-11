@@ -33,4 +33,10 @@
     <Folder Include="Util\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\opus.opus">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

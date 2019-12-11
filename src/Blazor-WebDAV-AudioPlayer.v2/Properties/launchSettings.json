@@ -3,8 +3,8 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:60701",
-      "sslPort": 44369
+      "applicationUrl": "http://localhost:60702",
+      "sslPort": 44362
     }
   },
   "profiles": {
@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "Blazor-WebDAV-AudioPlayer": {
+    "Blazor-WebDAV-AudioPlayer.v2": {
       "commandName": "Project",
       "launchBrowser": true,
       "applicationUrl": "https://localhost:5001;http://localhost:5000",

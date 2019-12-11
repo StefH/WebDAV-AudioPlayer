@@ -2,6 +2,7 @@ using Blazor.WebDAV.AudioPlayer.Client;
 using Blazor.WebDAV.AudioPlayer.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -44,7 +45,10 @@ namespace Blazor.WebDAV.AudioPlayer
             }
 
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
+
+            app.UseStaticFiles(); // For the wwwroot folder
+
+            ConfigureContentTypes(app);
 
             app.UseRouting();
 
@@ -52,6 +56,24 @@ namespace Blazor.WebDAV.AudioPlayer
             {
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
+            });
+        }
+
+        private void ConfigureContentTypes(IApplicationBuilder app)
+        {
+            var provider = new FileExtensionContentTypeProvider();
+
+            // Replace an existing mapping
+            provider.Mappings[".ogg"] = "audio/ogg";
+
+            // Add new mapping
+            provider.Mappings[".opus"] = "audio/opus";
+
+            app.UseStaticFiles(); // For the wwwroot folder
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                ContentTypeProvider = provider,
             });
         }
     }

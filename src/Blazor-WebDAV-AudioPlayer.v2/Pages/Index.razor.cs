@@ -237,7 +237,7 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
 
         private async Task OnTimerCallback()
         {
-            CurrentTime = $@"{_player.CurrentTime:hh\:mm\:ss}";
+            //CurrentTime = $@"{_player.CurrentTime:hh\:mm\:ss}";
 
             //if (_player.PlaybackState == PlaybackState.Playing)
             //{
@@ -249,7 +249,7 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
             //    }
             //}
 
-            StateHasChanged();
+            //StateHasChanged();
         }
 
         private async Task RefreshTreeAsync()
