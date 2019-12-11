@@ -1,0 +1,73 @@
+﻿@using WebDav.AudioPlayer.Models
+
+<div class="uic-tree @(Visible ? "" : "uic-tree--hidden")">
+
+    @foreach (var treeNode in ResourceItems ?? Enumerable.Empty<TreeNode<ResourceItem>>())
+    {
+        // bool selected = treeNode.Equals(SelectedNode);
+
+        <div>
+            @if (treeNode.Item.IsCollection)
+            {
+                <span class="uic-tree__icon" @onclick="@(async () => await OnToggleNode(treeNode, !treeNode.IsExpanded))">
+                    <i class="@(treeNode.IsExpanded ? Style.CollapseNodeIconClass : Style.ExpandNodeIconClass)"></i>
+                </span>
+            }
+
+            <div class="uic-tree__title">
+                <span class="@Style.NodeTitleClass @(treeNode.Item.FullPath == SelectedNode?.Item.FullPath ? Style.NodeTitleSelectedClass : "")" @onclick="@(async () => await OnSelectNode(treeNode))">
+                    @TitleTemplate(treeNode)
+                </span>
+            </div>
+
+            @if (treeNode.Item.IsCollection)
+            {
+                <Tree ResourceItems="treeNode.ChildNodes"
+                      TitleTemplate="TitleTemplate"
+                      SelectedNode="SelectedNode"
+                      SelectedNodeChanged="SelectedNodeChanged"
+                      LazyLoad="LazyLoad"
+                      Visible="treeNode.IsExpanded" />
+            }
+        </div>
+    }
+
+</div>
+
+@code {
+
+    [Parameter] public IEnumerable<TreeNode<ResourceItem>> ResourceItems { get; set; }
+
+    [Parameter] public RenderFragment<TreeNode<ResourceItem>> TitleTemplate { get; set; }
+
+    [Parameter] public TreeNode<ResourceItem> SelectedNode { get; set; }
+
+    [Parameter] public EventCallback<TreeNode<ResourceItem>> SelectedNodeChanged { get; set; }
+
+    [Parameter] public TreeStyle Style { get; set; } = TreeStyle.Bootstrap;
+
+    [Parameter] public bool Visible { get; set; } = true;
+
+    [Parameter] public Func<TreeNode<ResourceItem>, Task> LazyLoad { get; set; }
+
+    private async Task OnToggleNode(TreeNode<ResourceItem> treeNode, bool expand)
+    {
+        if (treeNode.IsExpanded && !expand)
+        {
+            treeNode.IsExpanded = false;
+        }
+        else if (!treeNode.IsExpanded && expand)
+        {
+            await LazyLoad(treeNode);
+
+            treeNode.IsExpanded = true;
+        }
+    }
+
+    private async Task OnSelectNode(TreeNode<ResourceItem> treeNode)
+    {
+        SelectedNode = treeNode;
+
+        await SelectedNodeChanged.InvokeAsync(treeNode);
+    }
+}

@@ -1,0 +1,66 @@
+﻿@page "/"
+@using WebDav.AudioPlayer.Client
+@inherits IndexBase
+
+<div class="row">
+    <div class="col-4">
+        <button class="btn btn-primary oi oi-reload" @onclick="Refresh"></button>
+
+        @if (Status != ResourceLoadStatus.Ok)
+        {
+            <p><em>Loading folders and files from WebDAV ...</em></p>
+        }
+        else
+        {
+            <Tree ResourceItems="Root.ChildNodes"
+                  SelectedNodeChanged="@(async item => await SelectedResourceItemChanged(item))"
+                  LazyLoad="@(async item => { await LazyLoad(item); })">
+                <TitleTemplate>@context.Item.DisplayName</TitleTemplate>
+            </Tree>
+        }
+    </div>
+    <div class="col-8">
+        <div>
+            <button class="btn btn-primary oi oi-media-play" @onclick="Play"></button>
+            <button class="btn btn-primary oi oi-media-stop" @onclick="Stop"></button>
+            <button class="btn btn-primary oi oi-media-pause" @onclick="Pause"></button>
+            <button class="btn btn-primary oi oi-media-step-backward" @onclick="Previous"></button>
+            <button class="btn btn-primary oi oi-media-step-forward" @onclick="Next"></button>
+            <pre>Time : @CurrentTime / @TotalTime</pre>
+        </div>
+
+        <div>
+            <RangeSlider Max="@SliderMax" Value="@SliderValue" Enabled="@SliderEnabled" ValueChanged="@SliderValueChanged" />
+        </div>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Title</th>
+                    <th>Size</th>
+                    <th>Length</th>
+                    <th>Bitrate (kbps)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in PlayListItems)
+                {
+                    <tr class="pointer @(item == SelectedPlayListItem ? TreeStyle.Bootstrap.NodeTitleSelectedClass : "")">
+                        <td>@(item.Index + 1)</td>
+                        <td><span @onclick="@(() => ClickSong(@item))" @onclick:preventDefault>@item.Title</span></td>
+                        <td>@item.Size</td>
+                        <td>@item.Length</td>
+                        <td>@item.Bitrate</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="row">
+            <div class="col"><LogTextArea Text="@Logging" /></div>
+            <div><button class="btn btn-secondary oi oi-trash" @onclick="ClearLogging"></button></div>
+        </div>
+
+    </div>
+</div>
