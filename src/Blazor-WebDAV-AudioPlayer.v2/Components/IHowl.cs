@@ -17,7 +17,7 @@ namespace Blazor.WebDAV.AudioPlayer.Components
         #region 
         Task<bool> IsPlaying();
 
-        Task<int> Play(byte[] audio, string extension);
+        Task<int> Play(byte[] audio, string mimeType);
 
         Task<int> Play(string location);
 

@@ -40,11 +40,13 @@ namespace Blazor.WebDAV.AudioPlayer.Components
             return await _runtime.InvokeAsync<bool>("howl.getIsPlaying", dotNetObjectReference);
         }
 
-        public async Task<int> Play(byte[] audio, string extension)
+        public async Task<int> Play(byte[] audio, string mimetype)
         {
+            // http://www.iandevlin.com/blog/2012/09/html5/html5-media-and-data-uri/
             var audioAsBase64 = Convert.ToBase64String(audio);
+            string html5AudioUrl = $"data:{mimetype};base64,{audioAsBase64}";
 
-            return await _runtime.InvokeAsync<int>("howl.play", dotNetObjectReference, audioAsBase64, extension);
+            return await _runtime.InvokeAsync<int>("howl.play", dotNetObjectReference, html5AudioUrl);
         }
 
         public async Task<int> Play(string location)

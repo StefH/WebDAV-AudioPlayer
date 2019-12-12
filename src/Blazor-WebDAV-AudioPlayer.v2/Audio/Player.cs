@@ -1,4 +1,5 @@
-﻿using Blazor.WebDAV.AudioPlayer.Components;
+﻿using Blazor.WebDAV.AudioPlayer.Audio;
+using Blazor.WebDAV.AudioPlayer.Components;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -115,8 +116,9 @@ namespace WebDav.AudioPlayer.Audio
             _resourceItemQueue.Enqueue(resourceItem);
 
             string extension = new FileInfo(resourceItem.DisplayName).Extension.ToLowerInvariant();
+            string mimeType = MimeTypeMap.GetMimeType(extension);
             byte[] music = ReadFully(resourceItem.Stream);
-            await _howl.Play(music, extension);
+            await _howl.Play(music, mimeType);
 
             PlayStarted(SelectedIndex, resourceItem);
 

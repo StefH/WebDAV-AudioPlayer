@@ -1,7 +1,7 @@
 ﻿let howl = null;
 //let soundId = null;
 window.howl = {
-    play: function (dotnetReference, src, format) {
+    play: function (dotnetReference, src) {
         if (howl) {
             stop();
         }
@@ -10,7 +10,7 @@ window.howl = {
             // preload: false,
             // pool: 3,
             src: [src],
-            format: [format],
+            //format: [format],
             onplay: async function () {
                 try {
                     const duration = Math.round(howl.duration());
