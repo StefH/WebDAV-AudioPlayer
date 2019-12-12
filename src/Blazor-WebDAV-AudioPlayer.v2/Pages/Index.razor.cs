@@ -1,9 +1,9 @@
 ﻿using Blazor.WebDAV.AudioPlayer.Client;
+using Blazor.WebDAV.AudioPlayer.Components;
 using Blazor.WebDAV.AudioPlayer.Models;
 using Blazor.WebDAV.AudioPlayer.Options;
 using Blazor.WebDAV.AudioPlayer.TreeComponent;
 using ByteSizeLib;
-//using CSCore.SoundOut;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
 using System;
@@ -27,6 +27,9 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
         [Inject]
         protected IWebDavClientFactory Factory { get; set; }
 
+        [Inject]
+        protected IHowl Howl { get; set; }
+
         protected TreeNode<ResourceItem> Root { get; private set; }
 
         protected List<PlayListItem> PlayListItems { get; private set; } = new List<PlayListItem>();
@@ -40,6 +43,8 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
         protected string CurrentTime { get; set; } = TIME_ZERO;
 
         protected string TotalTime { get; set; } = TIME_ZERO;
+
+        protected bool IsPlaying { get; set; }
 
         protected int SliderMax { get; set; } = 1;
 
@@ -58,24 +63,53 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
             base.OnInitialized();
 
             _client = Factory.GetClient();
+            // Log($"Using : '{_player.SoundOut}-SoundOut'");
 
-            _player = new Player(_client)
+            _timer = new Timer(async state => { await InvokeAsync(OnTimerCallback); }, null, 0, 249);
+
+            Root = new TreeNode<ResourceItem>
+            {
+                Item = new ResourceItem
+                {
+                    DisplayName = Options.Value.RootFolder,
+                    FullPath = OnlinePathBuilder.Combine(Options.Value.StorageUri, Options.Value.RootFolder)
+                }
+            };
+
+            await RefreshTreeAsync();
+        }
+
+        /// <summary>
+        /// Unhandled exception. System.InvalidOperationException: JavaScript interop calls cannot be issued at this time. This is because the component is being statically rendererd. When prerendering is enabled, JavaScript interop calls can only be performed during the OnAfterRenderAsync lifecycle method.
+        /// </summary>
+        /// <param name="firstRender"></param>
+        /// <returns></returns>
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (!firstRender)
+            {
+                return;
+            }
+
+            _player = new Player(_client, Howl)
             {
                 Log = Log,
 
-                PlayStarted = (selectedIndex, resourceItem) =>
+                PlayStarted = async (selectedIndex, resourceItem) =>
                 {
                     Log($"PlayStarted - {resourceItem.DisplayName}");
 
                     SelectedPlayListItem = PlayListItems[selectedIndex];
                     CurrentTime = TIME_ZERO;
-                    TotalTime = $@"{_player.TotalTime:hh\:mm\:ss}";
 
-                    SliderMax = (int)_player.TotalTime.TotalSeconds;
+                    var totalTime = await _player.GetTotalTime();
+                    TotalTime = $@"{totalTime:hh\:mm\:ss}";
+
+                    SliderMax = (int)totalTime.TotalSeconds;
                     SliderEnabled = _player.CanSeek;
 
                     PlayListItems[selectedIndex].Bitrate = $"{resourceItem.MediaDetails.BitrateKbps}";
-                    PlayListItems[selectedIndex].Length = $@"{_player.TotalTime:hh\:mm\:ss}";
+                    PlayListItems[selectedIndex].Length = TotalTime;
                 },
                 PlayContinue = resourceItem =>
                 {
@@ -103,21 +137,6 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
                 //    //}
                 //}
             };
-
-            // Log($"Using : '{_player.SoundOut}-SoundOut'");
-
-            _timer = new Timer(async state => { await InvokeAsync(OnTimerCallback); }, null, 0, 249);
-
-            Root = new TreeNode<ResourceItem>
-            {
-                Item = new ResourceItem
-                {
-                    DisplayName = Options.Value.RootFolder,
-                    FullPath = OnlinePathBuilder.Combine(Options.Value.StorageUri, Options.Value.RootFolder)
-                }
-            };
-
-            await RefreshTreeAsync();
         }
 
         protected async Task Refresh()
@@ -189,7 +208,7 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
             var time = TimeSpan.FromSeconds(value);
             Log($@"Jump to '{time:hh\:mm\:ss}'");
 
-            _player.JumpTo(time);
+            _player.Seek(time);
         }
 
         protected async Task Play()
@@ -205,14 +224,14 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
             }
         }
 
-        protected void Stop()
+        protected async Task Stop()
         {
-            _player.Stop(false);
+            await _player.Stop(false);
         }
 
-        protected void Pause()
+        protected async Task Pause()
         {
-            _player.Pause();
+            await _player.Pause();
         }
 
         protected async Task Previous()
@@ -237,24 +256,32 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
 
         private async Task OnTimerCallback()
         {
-            //CurrentTime = $@"{_player.CurrentTime:hh\:mm\:ss}";
+            if (_player == null)
+            {
+                return;
+            }
 
-            //if (_player.PlaybackState == PlaybackState.Playing)
-            //{
-            //    SliderValue = (int)_player.CurrentTime.TotalSeconds;
+            var currentTime = await _player.GetCurrentTime();
+            CurrentTime = $@"{currentTime:hh\:mm\:ss}";
 
-            //    if (_player.CurrentTime.Add(TimeSpan.FromMilliseconds(500)) > _player.TotalTime)
-            //    {
-            //        await _player.PlayNextAsync(CancellationToken.None);
-            //    }
-            //}
+            if (await _player.GetIsPlaying())
+            {
+                SliderValue = (int)currentTime.TotalSeconds;
 
-            //StateHasChanged();
+                var totalTime = await _player.GetTotalTime();
+                if (currentTime.Add(TimeSpan.FromMilliseconds(500)) > totalTime)
+                {
+                    await _player.PlayNextAsync(CancellationToken.None);
+                }
+            }
+
+            StateHasChanged();
         }
 
         private async Task RefreshTreeAsync()
         {
-            _player.Stop(true);
+            // await _player?.Stop(true);
+
             Status = ResourceLoadStatus.Unknown;
             Status = await _client.FetchChildResourcesAsync(Root.Item, CancellationToken.None, 0);
             if (Status == ResourceLoadStatus.Ok)

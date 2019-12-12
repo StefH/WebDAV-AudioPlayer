@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Blazor.WebDAV.AudioPlayer.Components;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,11 +14,10 @@ namespace WebDav.AudioPlayer.Audio
     internal class Player : IDisposable
     {
         private readonly IWebDavClient _client;
+        private readonly IHowl _howl;
 
         private readonly FixedSizedQueue<ResourceItem> _resourceItemQueue;
 
-        //private readonly ISoundOut _soundOut;
-        //private IWaveSource _waveSource;
         private List<ResourceItem> _items;
 
         public bool CanSeek => true; // _waveSource.CanSeek;
@@ -42,17 +42,11 @@ namespace WebDav.AudioPlayer.Audio
 
         public int SelectedIndex { get; private set; } = -1;
 
-        //public PlaybackState PlaybackState => _soundOut?.PlaybackState ?? PlaybackState.Stopped;
 
-        public TimeSpan CurrentTime => TimeSpan.Zero; /*_waveSource?.GetPosition() ?? TimeSpan.Zero;*/
-
-        public TimeSpan TotalTime => TimeSpan.Zero; // _waveSource?.GetLength() ?? TimeSpan.Zero;
-
-        //public string SoundOut => _soundOut.GetType().Name;
-
-        public Player(IWebDavClient client)
+        public Player(IWebDavClient client, IHowl howl)
         {
             _client = client;
+            _howl = howl;
 
             _resourceItemQueue = new FixedSizedQueue<ResourceItem>(3, (resourceItem, size) =>
             {
@@ -64,15 +58,21 @@ namespace WebDav.AudioPlayer.Audio
                     resourceItem.Stream = null;
                 }
             });
+        }
 
-            //if (WasapiOut.IsSupportedOnCurrentPlatform)
-            //{
-            //    _soundOut = new WasapiOut();
-            //}
-            //else
-            //{
-            //    _soundOut = new DirectSoundOut();
-            //}
+        public async Task<bool> GetIsPlaying()
+        {
+            return await _howl?.IsPlaying() == true;
+        }
+
+        public async Task<TimeSpan> GetCurrentTime()
+        {
+            return _howl != null ? await _howl?.GetCurrentTime() : TimeSpan.Zero;
+        }
+
+        public async Task<TimeSpan> GetTotalTime()
+        {
+            return _howl != null ? await _howl?.GetTotalTime() : TimeSpan.Zero;
         }
 
         public async Task PlayAsync(int index, CancellationToken cancellationToken)
@@ -93,14 +93,14 @@ namespace WebDav.AudioPlayer.Audio
             //    return;
             //}
 
-            // If same song and stream is loaded, just JumpTo start and start play.
-            //if (sameSong && resourceItem.Stream != null && PlaybackState == PlaybackState.Playing)
-            //{
-            //    JumpTo(TimeSpan.Zero);
-            //    return;
-            //}
+            // If same song and stream is loaded, just Seek start and start play.
+            if (sameSong && resourceItem.Stream != null && await GetIsPlaying())
+            {
+                await Seek(TimeSpan.Zero);
+                return;
+            }
 
-            Stop(false);
+            await Stop(false);
 
             Log($@"Reading : '{resourceItem.DisplayName}'");
             var status = await _client.GetStreamAsync(resourceItem, cancellationToken);
@@ -115,48 +115,22 @@ namespace WebDav.AudioPlayer.Audio
             _resourceItemQueue.Enqueue(resourceItem);
 
             string extension = new FileInfo(resourceItem.DisplayName).Extension.ToLowerInvariant();
-            switch (extension)
-            {
-                //case ".wav":
-                //    _waveSource = new WaveFileReader(resourceItem.Stream);
-                //    break;
+            byte[] music = ReadFully(resourceItem.Stream);
+            await _howl.Play(music, extension);
 
-                //case ".mp3":
-                //    _waveSource = new DmoMp3Decoder(resourceItem.Stream);
-                //    break;
-
-                //case ".ogg":
-                //    _waveSource = new OggSource(resourceItem.Stream).ToWaveSource();
-                //    break;
-
-                //case ".flac":
-                //    _waveSource = new FlacFile(resourceItem.Stream);
-                //    break;
-
-                //case ".wma":
-                //    _waveSource = new WmaDecoder(resourceItem.Stream);
-                //    break;
-
-                //case ".aac":
-                //case ".m4a":
-                //case ".mp4":
-                //    _waveSource = new AacDecoder(resourceItem.Stream);
-                //    break;
-
-                //case ".opus":
-                //    _waveSource = new OpusSource(resourceItem.Stream, resourceItem.MediaDetails.SampleRate, resourceItem.MediaDetails.Channels);
-                //    break;
-
-                default:
-                    throw new NotSupportedException($"Extension '{extension}' is not supported");
-            }
-
-            //_soundOut.Initialize(_waveSource);
-            //_soundOut.Play();
             PlayStarted(SelectedIndex, resourceItem);
 
             // Preload Next
             await PreloadNextAsync(cancellationToken);
+        }
+
+        private byte[] ReadFully(Stream input)
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                input.CopyTo(ms);
+                return ms.ToArray();
+            }
         }
 
         private async Task PreloadNextAsync(CancellationToken cancellationToken)
@@ -235,68 +209,45 @@ namespace WebDav.AudioPlayer.Audio
             }
             else
             {
-                Stop(true);
+                await Stop(true);
             }
         }
 
-        public void Stop(bool force)
+        public async Task Stop(bool force)
         {
-        //    if (_soundOut != null)
-        //    {
-        //        _soundOut.Stop();
-        //        PlayStopped();
+            await _howl.Stop();
+            PlayStopped();
 
-        //        if (force)
-        //        {
-        //            _resourceItemQueue.Clear();
-        //        }
-        //    }
-
-        //    if (_waveSource != null)
-        //    {
-        //        _waveSource.Dispose();
-        //        _waveSource = null;
-        //    }
+            if (force)
+            {
+                _resourceItemQueue.Clear();
+            }
         }
 
-        public void Pause()
+        public async Task Pause()
         {
             var resourceItem = Items[SelectedIndex];
 
-            //if (PlaybackState == PlaybackState.Playing)
-            //{
-            //    _soundOut.Pause();
-            //    PlayPaused(resourceItem);
-            //}
-            //else if (PlaybackState == PlaybackState.Paused)
-            //{
-            //    _soundOut.Play();
-            //    PlayContinue(resourceItem);
-            //}
+            if (await _howl.IsPlaying())
+            {
+                PlayPaused(resourceItem);
+            }
+            else
+            {
+                PlayContinue(resourceItem);
+            }
+
+            await _howl.Pause();
         }
 
-        public void JumpTo(TimeSpan position)
+        public async Task Seek(TimeSpan position)
         {
-            //if (PlaybackState == PlaybackState.Playing)
-            //{
-            //    _soundOut.Stop();
-            //    _waveSource.SetPosition(position);
-            //    _soundOut.Play();
-            //}
-        }
-
-        public void SetVolume(float volume)
-        {
-            //if (PlaybackState == PlaybackState.Playing)
-            //{
-            //    _soundOut.Volume = volume;
-            //}
+            await _howl.Seek(position);
         }
 
         public void Dispose()
         {
             Stop(true);
-            //_soundOut.Dispose();
         }
     }
 }

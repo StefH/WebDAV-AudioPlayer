@@ -25,50 +25,50 @@
     }
 };
 
-let howl;
-const playlist = [];
-window.howl = {
-    create: function (sources) {
-        sources.forEach((src) => {
+//let howl;
+//const playlist = [];
+//window.howl = {
+//    create: function (sources) {
+//        sources.forEach((src) => {
 
-        });
-    },
-    play: function (dotnetReference, src) {
-        if (howl) {
-            howl.unload();
-        }
+//        });
+//    },
+//    play: function (dotnetReference, src) {
+//        if (howl) {
+//            howl.unload();
+//        }
 
-        howl = new Howl({
-            // preload: false,
-            pool: 3,
-            src: [src],
-            onplay: async function () {
-                const durationInSeconds = Math.round(howl.duration());
-                console.log(durationInSeconds);
+//        howl = new Howl({
+//            // preload: false,
+//            pool: 3,
+//            src: [src],
+//            onplay: async function () {
+//                const durationInSeconds = Math.round(howl.duration());
+//                console.log(durationInSeconds);
 
-                try {
-                    await dotnetReference.invokeMethodAsync('OnPlay', durationInSeconds);
-                }
-                catch (e) {
-                    console.log('e = ' + e);
-                }
+//                try {
+//                    await dotnetReference.invokeMethodAsync('OnPlay', durationInSeconds);
+//                }
+//                catch (e) {
+//                    console.log('e = ' + e);
+//                }
 
-                console.log('sent');
-            },
-            onstop: async function () {
-                await dotnetReference.invokeMethodAsync('OnPlay', 0);
-            }
-        });
-        return howl.play();
-    },
-    stop: function () {
-        howl.stop();
-    },
-    getCurrentTime: function () {
-        if (howl && howl.playing()) {
-            const seek = howl.seek();
-            return Math.round(seek || 0);
-        }
-        return 0;
-    }
-};
+//                console.log('sent');
+//            },
+//            onstop: async function () {
+//                await dotnetReference.invokeMethodAsync('OnPlay', 0);
+//            }
+//        });
+//        return howl.play();
+//    },
+//    stop: function () {
+//        howl.stop();
+//    },
+//    getCurrentTime: function () {
+//        if (howl && howl.playing()) {
+//            const seek = howl.seek();
+//            return Math.round(seek || 0);
+//        }
+//        return 0;
+//    }
+//};

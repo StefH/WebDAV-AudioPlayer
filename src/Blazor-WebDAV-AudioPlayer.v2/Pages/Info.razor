@@ -1,9 +1,10 @@
 ﻿@page "/info"
 @inject IJSRuntime JSRuntime;
+@inject IHowl howl;
 
 <div>
     <button type="button" class="btn btn-primary" @onclick="HowlPlay">Howl:play</button>
-    <button type="button" class="btn btn-primary" @onclick="HowlNext">Howl:next</button>
+    <button type="button" class="btn btn-primary" @onclick="HowlSeek">Howl:seek</button>
     <button type="button" class="btn btn-primary" @onclick="HowlStop">Howl:stop</button>
     <pre>Time : @CurrentTime / @TotalTime</pre>
 </div>
@@ -30,12 +31,19 @@
     {
         var timer = new System.Threading.Timer(async state => { await InvokeAsync(OnTimerCallback); }, null, 0, 249);
 
-        dotNetObjectReference = DotNetObjectReference.Create<Info>(this);
+        //dotNetObjectReference = DotNetObjectReference.Create<Info>(this);
+
+        howl.OnPlay = OnPlayEvent;
+    }
+
+    private void OnPlayEvent(TimeSpan totalTime)
+    {
+        TotalTime = $@"{totalTime:hh\:mm\:ss}";
     }
 
     private async Task OnTimerCallback()
     {
-        var currentTime = await HowlCurrentTime();
+        var currentTime = await howl.GetCurrentTime();
         CurrentTime = $@"{currentTime:hh\:mm\:ss}";
 
         //if (_player.PlaybackState == PlaybackState.Playing)
@@ -59,7 +67,7 @@
             116, 104, 101, 32, 115, 105, 103, 110, 97, 108, 44, 32, 77, 97,
             108, 46, 60, 47, 101, 109, 62, 32, 45, 32, 77, 114, 46, 32, 85, 110,
             105, 118, 101, 114, 115, 101, 10, 10,
-                            };
+                                };
 
     private async Task ConvertArray()
     {
@@ -72,35 +80,41 @@
 
     public int Duration { get; set; }
 
-    [JSInvokable]
-    public void OnPlay(int totalTime)
-    {
-        TotalTime = $@"{TimeSpan.FromSeconds(totalTime):hh\:mm\:ss}"; ;
-        StateHasChanged();
-    }
+    //[JSInvokable]
+    //public void OnPlay(int totalTime)
+    //{
+    //    TotalTime = $@"{TimeSpan.FromSeconds(totalTime):hh\:mm\:ss}"; ;
+    //    StateHasChanged();
+    //}
 
     private async Task HowlPlay()
     {
+        int id = await howl.Play("opus.opus");
         //var r = DotNetObjectReference.Create<Info>(this);
 
-        var id = await JSRuntime.InvokeAsync<dynamic>("howl.play", dotNetObjectReference, "opus.opus");
+        //var id = await JSRuntime.InvokeAsync<dynamic>("howl.play", dotNetObjectReference, "opus.opus");
         Console.WriteLine("id=" + id);
+
+        var totalTime = howl.TotalTime;
+        TotalTime = $@"{totalTime:hh\:mm\:ss}";
+
+        //StateHasChanged();
     }
 
-    private async Task HowlNext()
+    private async Task HowlSeek()
     {
-        var id2 = await JSRuntime.InvokeAsync<int>("howl.play", dotNetObjectReference, "2.mp3");
-        Console.WriteLine("id2=" + id2);
+        await howl.Seek(TimeSpan.FromSeconds(55));
     }
 
     private async Task HowlStop()
     {
-        await JSRuntime.InvokeAsync<dynamic>("howl.stop");
+        //await JSRuntime.InvokeAsync<dynamic>("howl.stop");
+        await howl.Stop();
     }
 
-    private async Task<TimeSpan> HowlCurrentTime()
-    {
-        int currentTime = await JSRuntime.InvokeAsync<int>("howl.getCurrentTime");
-        return TimeSpan.FromSeconds(currentTime);
-    }
+    //private async Task<TimeSpan> HowlCurrentTime()
+    //{
+    //    int currentTime = await JSRuntime.InvokeAsync<int>("howl.getCurrentTime");
+    //    return TimeSpan.FromSeconds(currentTime);
+    //}
 }
