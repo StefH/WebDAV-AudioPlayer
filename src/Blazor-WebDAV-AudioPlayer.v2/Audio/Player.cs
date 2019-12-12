@@ -21,6 +21,8 @@ namespace WebDav.AudioPlayer.Audio
 
         private List<ResourceItem> _items;
 
+        public ResourceItem SelectedResourceItem;
+
         public bool CanSeek => true; // _waveSource.CanSeek;
 
         public Action<string> Log;
@@ -43,6 +45,14 @@ namespace WebDav.AudioPlayer.Audio
 
         public int SelectedIndex { get; private set; } = -1;
 
+        private TimeSpan _totalTime = TimeSpan.Zero;
+        public TimeSpan TotalTime
+        {
+            get
+            {
+                return _totalTime;
+            }
+        }
 
         public Player(IWebDavClient client, IHowl howl)
         {
@@ -59,6 +69,13 @@ namespace WebDav.AudioPlayer.Audio
                     resourceItem.Stream = null;
                 }
             });
+
+            _howl.OnPlay = (totalTime) =>
+            {
+                _totalTime = totalTime;
+
+                PlayStarted(SelectedIndex, SelectedResourceItem);
+            };
         }
 
         public async Task<bool> GetIsPlaying()
@@ -71,10 +88,10 @@ namespace WebDav.AudioPlayer.Audio
             return _howl != null ? await _howl?.GetCurrentTime() : TimeSpan.Zero;
         }
 
-        public async Task<TimeSpan> GetTotalTime()
-        {
-            return _howl != null ? await _howl?.GetTotalTime() : TimeSpan.Zero;
-        }
+        //public async Task<TimeSpan> GetTotalTime()
+        //{
+        //    return _howl != null ? await _howl?.GetTotalTime() : TimeSpan.Zero;
+        //}
 
         public async Task PlayAsync(int index, CancellationToken cancellationToken)
         {
@@ -85,7 +102,7 @@ namespace WebDav.AudioPlayer.Audio
 
             bool sameSong = index == SelectedIndex;
             SelectedIndex = index;
-            var resourceItem = Items[index];
+            SelectedResourceItem = Items[index];
 
             // If paused, just unpause and play
             //if (PlaybackState == PlaybackState.Paused)
@@ -95,7 +112,7 @@ namespace WebDav.AudioPlayer.Audio
             //}
 
             // If same song and stream is loaded, just Seek start and start play.
-            if (sameSong && resourceItem.Stream != null && await GetIsPlaying())
+            if (sameSong && SelectedResourceItem.Stream != null && await GetIsPlaying())
             {
                 await Seek(TimeSpan.Zero);
                 return;
@@ -103,8 +120,8 @@ namespace WebDav.AudioPlayer.Audio
 
             await Stop(false);
 
-            Log($@"Reading : '{resourceItem.DisplayName}'");
-            var status = await _client.GetStreamAsync(resourceItem, cancellationToken);
+            Log($@"Reading : '{SelectedResourceItem.DisplayName}'");
+            var status = await _client.GetStreamAsync(SelectedResourceItem, cancellationToken);
             if (status != ResourceLoadStatus.Ok && status != ResourceLoadStatus.StreamExisting)
             {
                 Log($@"Reading error : {status}");
@@ -113,24 +130,23 @@ namespace WebDav.AudioPlayer.Audio
 
             Log($@"Reading done : {status}");
 
-            _resourceItemQueue.Enqueue(resourceItem);
+            _resourceItemQueue.Enqueue(SelectedResourceItem);
 
-            string extension = new FileInfo(resourceItem.DisplayName).Extension.ToLowerInvariant();
+            string extension = new FileInfo(SelectedResourceItem.DisplayName).Extension.ToLowerInvariant();
             string mimeType = MimeTypeMap.GetMimeType(extension);
-            byte[] music = ReadFully(resourceItem.Stream);
+            byte[] music = ReadStreamAsBytes(SelectedResourceItem.Stream);
             await _howl.Play(music, mimeType);
-
-            PlayStarted(SelectedIndex, resourceItem);
 
             // Preload Next
             await PreloadNextAsync(cancellationToken);
         }
 
-        private byte[] ReadFully(Stream input)
+        private byte[] ReadStreamAsBytes(Stream input)
         {
-            using (MemoryStream ms = new MemoryStream())
+            using (var ms = new MemoryStream())
             {
                 input.CopyTo(ms);
+                input.Seek(0, SeekOrigin.Begin);
                 return ms.ToArray();
             }
         }

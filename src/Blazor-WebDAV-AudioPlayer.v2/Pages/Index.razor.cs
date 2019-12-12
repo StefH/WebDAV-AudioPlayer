@@ -17,7 +17,7 @@ using WebDav.AudioPlayer.Models;
 
 namespace Blazor.WebDAV.AudioPlayer.Pages
 {
-    public class IndexBase : ComponentBase
+    public class IndexBase : ComponentBase, IDisposable
     {
         private const string TIME_ZERO = "00:00:00";
 
@@ -95,14 +95,14 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
             {
                 Log = Log,
 
-                PlayStarted = async (selectedIndex, resourceItem) =>
+                PlayStarted = (selectedIndex, resourceItem) =>
                 {
                     Log($"PlayStarted - {resourceItem.DisplayName}");
 
                     SelectedPlayListItem = PlayListItems[selectedIndex];
                     CurrentTime = TIME_ZERO;
 
-                    var totalTime = await _player.GetTotalTime();
+                    var totalTime = _player.TotalTime;
                     TotalTime = $@"{totalTime:hh\:mm\:ss}";
 
                     SliderMax = (int)totalTime.TotalSeconds;
@@ -203,12 +203,12 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
             }
         }
 
-        protected void SliderValueChanged(int value)
+        protected async Task SliderValueChanged(int value)
         {
             var time = TimeSpan.FromSeconds(value);
             Log($@"Jump to '{time:hh\:mm\:ss}'");
 
-            _player.Seek(time);
+            await _player.Seek(time);
         }
 
         protected async Task Play()
@@ -267,9 +267,8 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
             if (await _player.GetIsPlaying())
             {
                 SliderValue = (int)currentTime.TotalSeconds;
-
-                var totalTime = await _player.GetTotalTime();
-                if (currentTime.Add(TimeSpan.FromMilliseconds(500)) > totalTime)
+                
+                if (currentTime.Add(TimeSpan.FromMilliseconds(500)) > _player.TotalTime)
                 {
                     await _player.PlayNextAsync(CancellationToken.None);
                 }
@@ -291,6 +290,11 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
                     Item = resourceItem
                 }).ToList();
             }
+        }
+
+        public void Dispose()
+        {
+            _timer?.Dispose();
         }
     }
 }

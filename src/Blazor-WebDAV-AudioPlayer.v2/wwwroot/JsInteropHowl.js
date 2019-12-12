@@ -1,5 +1,5 @@
 ﻿let howl = null;
-//let soundId = null;
+let soundId = null;
 window.howl = {
     play: function (dotnetReference, src) {
         if (howl) {
@@ -25,7 +25,8 @@ window.howl = {
             }
         });
 
-        return howl.play();
+        soundId = howl.play();
+        return soundId;
     },
     stop: function () {
         if (howl) {
@@ -33,11 +34,16 @@ window.howl = {
             howl.unload();
         }
 
+        soundId = null;
         howl = null;
     },
     pause: function () {
         if (howl) {
-            howl.pause();
+            if (howl.playing()) {
+                howl.pause();
+            } else {
+                howl.play(soundId);
+            }
         }
     },
     seek: function (position) {
