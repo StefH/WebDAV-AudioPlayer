@@ -6,6 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Audio\IPlayerFactory.cs" />
+    <Compile Remove="Audio\PlayerFactory.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="ByteSize" Version="1.3.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.0" />

@@ -7,21 +7,13 @@ window.howl = {
         }
 
         howl = new Howl({
-            // preload: false,
-            // pool: 3,
             src: [src],
-            //format: [format],
-            onplay: async function () {
-                try {
-                    const duration = Math.round(howl.duration());
-                    await dotnetReference.invokeMethodAsync('OnPlayCallback', duration);
-                }
-                catch (e) {
-                    console.log('Error = ' + e);
-                }
+            onplay: async function (id) {
+                const duration = Math.round(howl.duration());
+                await dotnetReference.invokeMethodAsync('OnPlayCallback', id, duration);
             },
-            onstop: async function () {
-                await dotnetReference.invokeMethodAsync('OnStopCallback');
+            onstop: async function (id) {
+                await dotnetReference.invokeMethodAsync('OnStopCallback', id);
             }
         });
 

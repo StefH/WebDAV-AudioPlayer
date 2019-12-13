@@ -28,8 +28,8 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
         [Inject]
         protected IWebDavClientFactory Factory { get; set; }
 
-        [Inject]
-        protected IPlayerFactory PlayerFactory { get; set; }
+        //[Inject]
+        //protected IPlayerFactory PlayerFactory { get; set; }
 
         [Inject]
         protected IHowl Howl { get; set; }
@@ -96,7 +96,7 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
 
             _client = Factory.GetClient(codecs);
 
-            Player = PlayerFactory.GetPlayer(_client, Howl);
+            Player = new Player(_client, Howl);
             Player.Log = Log;
             Player.PlayStarted = (selectedIndex, resourceItem) =>
             {

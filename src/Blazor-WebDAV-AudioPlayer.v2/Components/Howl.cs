@@ -13,7 +13,9 @@ namespace Blazor.WebDAV.AudioPlayer.Components
 
         public TimeSpan TotalTime { get; private set; } = TimeSpan.Zero;
 
-        public Action<TimeSpan> OnPlay { get; set; }
+        public event Action<HowlPlayEventArgs> OnPlay;
+
+        public event Action<HowlEventArgs> OnStop;
 
         public Howl(IJSRuntime runtime)
         {
@@ -23,16 +25,19 @@ namespace Blazor.WebDAV.AudioPlayer.Components
         }
 
         [JSInvokable]
-        public void OnPlayCallback(int durationInSeconds)
+        public void OnPlayCallback(int soundId, int durationInSeconds)
         {
             TotalTime = TimeSpan.FromSeconds(durationInSeconds);
 
-            OnPlay?.Invoke(TotalTime);
+            OnPlay?.Invoke(new HowlPlayEventArgs { SoundId = soundId, TotalTime = TotalTime });
         }
 
         [JSInvokable]
-        public void OnStopCallback()
+        public void OnStopCallback(int soundId)
         {
+            TotalTime = TimeSpan.Zero;
+
+            OnStop?.Invoke(new HowlEventArgs { SoundId = soundId });
         }
 
         public async Task<bool> IsPlaying()

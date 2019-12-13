@@ -1,5 +1,4 @@
 ﻿using Blazor.WebDAV.AudioPlayer.Audio;
-using Blazor.WebDAV.AudioPlayer.Client;
 using Blazor.WebDAV.AudioPlayer.Components;
 using System;
 using System.Collections.Generic;
@@ -15,7 +14,6 @@ namespace WebDav.AudioPlayer.Audio
 {
     internal class Player : IPlayer
     {
-        //private readonly IWebDavClientFactory _factory;
         private readonly IHowl _howl;
         private readonly IWebDavClient _client;
 
@@ -70,9 +68,9 @@ namespace WebDav.AudioPlayer.Audio
                 }
             });
 
-            _howl.OnPlay = (totalTime) =>
+            _howl.OnPlay += (e) =>
             {
-                _totalTime = totalTime;
+                _totalTime = e.TotalTime;
 
                 PlayStarted(SelectedIndex, SelectedResourceItem);
             };
@@ -88,11 +86,6 @@ namespace WebDav.AudioPlayer.Audio
             return _howl != null ? await _howl?.GetCurrentTime() : TimeSpan.Zero;
         }
 
-        //public async Task<TimeSpan> GetTotalTime()
-        //{
-        //    return _howl != null ? await _howl?.GetTotalTime() : TimeSpan.Zero;
-        //}
-
         public async Task PlayAsync(int index, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
@@ -100,22 +93,9 @@ namespace WebDav.AudioPlayer.Audio
                 return;
             }
 
-            //if (_client == null)
-            //{
-            //    string[] codecs = await _howl.GetCodecs();
-            //    _client = _factory.GetClient(codecs);
-            //}
-
             bool sameSong = index == SelectedIndex;
             SelectedIndex = index;
             SelectedResourceItem = Items[index];
-
-            // If paused, just unpause and play
-            //if (PlaybackState == PlaybackState.Paused)
-            //{
-            //    Pause();
-            //    return;
-            //}
 
             // If same song and stream is loaded, just Seek start and start play.
             if (sameSong && SelectedResourceItem.Stream != null && await GetIsPlaying())
@@ -149,11 +129,11 @@ namespace WebDav.AudioPlayer.Audio
 
         private byte[] ReadStreamAsBytes(Stream input)
         {
-            using (var ms = new MemoryStream())
+            using (var memoryStream = new MemoryStream())
             {
-                input.CopyTo(ms);
+                input.CopyTo(memoryStream);
                 input.Seek(0, SeekOrigin.Begin);
-                return ms.ToArray();
+                return memoryStream.ToArray();
             }
         }
 

@@ -32,7 +32,7 @@ namespace Blazor.WebDAV.AudioPlayer
 
             services.AddSingleton<IWebDavClientFactory, WebDavClientFactory>();
             services.AddScoped<IHowl, Howl>();
-            services.AddScoped<IPlayerFactory, PlayerFactory>();
+            //services.AddScoped<IPlayerFactory, PlayerFactory>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

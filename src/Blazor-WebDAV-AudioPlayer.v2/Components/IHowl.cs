@@ -1,15 +1,10 @@
-﻿using Microsoft.AspNetCore.Components;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 
 namespace Blazor.WebDAV.AudioPlayer.Components
 {
-    public interface IHowl
+    public interface IHowl : IHowlEvents
     {
-        #region Events
-        Action<TimeSpan> OnPlay { get; set; }
-        #endregion
-
         #region Properties
         TimeSpan TotalTime { get; }
         #endregion
