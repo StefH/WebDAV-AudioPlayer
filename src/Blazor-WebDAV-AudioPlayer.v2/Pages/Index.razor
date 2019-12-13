@@ -33,29 +33,36 @@
             <RangeSlider Max="@SliderMax" Value="@SliderValue" Enabled="@SliderEnabled" ValueChanged="@SliderValueChanged" />
         </div>
 
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Title</th>
-                    <th>Size</th>
-                    <th>Length</th>
-                    <th>Bitrate (kbps)</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in PlayListItems)
-                {
-                    <tr class="pointer @(item == SelectedPlayListItem ? TreeStyle.Bootstrap.NodeTitleSelectedClass : "")">
-                        <td>@(item.Index + 1)</td>
-                        <td><span @onclick="@(() => ClickSong(@item))" @onclick:preventDefault>@item.Title</span></td>
-                        <td>@item.Size</td>
-                        <td>@item.Length</td>
-                        <td>@item.Bitrate</td>
+        @if (!PlayListItems.Any())
+        {
+            <span>No compatible audio files found.</span>
+        }
+        else
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Title</th>
+                        <th>Size</th>
+                        <th>Length</th>
+                        <th>Bitrate (kbps)</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var item in PlayListItems)
+                    {
+                        <tr class="pointer @(item == SelectedPlayListItem ? TreeStyle.Bootstrap.NodeTitleSelectedClass : "")">
+                            <td>@(item.Index + 1)</td>
+                            <td><span @onclick="@(() => ClickSong(@item))" @onclick:preventDefault>@item.Title</span></td>
+                            <td>@item.Size</td>
+                            <td>@item.Length</td>
+                            <td>@item.Bitrate</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
 
         <div class="row">
             <div class="col"><LogTextArea Text="@Logging" /></div>

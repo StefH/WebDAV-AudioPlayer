@@ -81,6 +81,11 @@ namespace Blazor.WebDAV.AudioPlayer.Components
             return TimeSpan.FromSeconds(timeInSeconds);
         }
 
+        public async Task<bool> IsCodecSupported(string extension)
+        {
+            return await _runtime.InvokeAsync<bool>("howl.isCodecSupported", extension);
+        }
+
         public async Task<string[]> GetCodecs()
         {
             return await _runtime.InvokeAsync<string[]>("howl.getCodecs");

@@ -1,4 +1,5 @@
-﻿using Blazor.WebDAV.AudioPlayer.Client;
+﻿using Blazor.WebDAV.AudioPlayer.Audio;
+using Blazor.WebDAV.AudioPlayer.Client;
 using Blazor.WebDAV.AudioPlayer.Components;
 using Blazor.WebDAV.AudioPlayer.Models;
 using Blazor.WebDAV.AudioPlayer.Options;
@@ -28,7 +29,12 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
         protected IWebDavClientFactory Factory { get; set; }
 
         [Inject]
+        protected IPlayerFactory PlayerFactory { get; set; }
+
+        [Inject]
         protected IHowl Howl { get; set; }
+
+        protected IPlayer Player { get; set; }
 
         protected TreeNode<ResourceItem> Root { get; private set; }
 
@@ -54,18 +60,14 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
 
         private IWebDavClient _client;
 
-        private Player _player;
-
         private Timer _timer;
 
         protected override async Task OnInitializedAsync()
         {
-            base.OnInitialized();
+            // await base.OnInitializedAsync();
 
-            _client = Factory.GetClient();
+            //_client = Factory.GetClient();
             // Log($"Using : '{_player.SoundOut}-SoundOut'");
-
-            _timer = new Timer(async state => { await InvokeAsync(OnTimerCallback); }, null, 0, 249);
 
             Root = new TreeNode<ResourceItem>
             {
@@ -75,8 +77,6 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
                     FullPath = OnlinePathBuilder.Combine(Options.Value.StorageUri, Options.Value.RootFolder)
                 }
             };
-
-            await RefreshTreeAsync();
         }
 
         /// <summary>
@@ -91,55 +91,100 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
                 return;
             }
 
-            _player = new Player(_client, Howl)
+            var codecs = await Howl.GetCodecs();
+            Log($"Supported codecs: {string.Join(", ", codecs)}");
+
+            _client = Factory.GetClient(codecs);
+
+            Player = PlayerFactory.GetPlayer(_client, Howl);
+            Player.Log = Log;
+            Player.PlayStarted = (selectedIndex, resourceItem) =>
             {
-                Log = Log,
+                Log($"PlayStarted - {resourceItem.DisplayName}");
 
-                PlayStarted = (selectedIndex, resourceItem) =>
-                {
-                    Log($"PlayStarted - {resourceItem.DisplayName}");
+                SelectedPlayListItem = PlayListItems[selectedIndex];
+                CurrentTime = TIME_ZERO;
 
-                    SelectedPlayListItem = PlayListItems[selectedIndex];
-                    CurrentTime = TIME_ZERO;
+                var totalTime = Player.TotalTime;
+                TotalTime = $@"{totalTime:hh\:mm\:ss}";
 
-                    var totalTime = _player.TotalTime;
-                    TotalTime = $@"{totalTime:hh\:mm\:ss}";
+                SliderMax = (int)totalTime.TotalSeconds;
+                SliderEnabled = true;
 
-                    SliderMax = (int)totalTime.TotalSeconds;
-                    SliderEnabled = _player.CanSeek;
-
-                    PlayListItems[selectedIndex].Bitrate = $"{resourceItem.MediaDetails.BitrateKbps}";
-                    PlayListItems[selectedIndex].Length = TotalTime;
-                },
-                PlayContinue = resourceItem =>
-                {
-                    Log($"PlayContinue - {resourceItem.DisplayName}");
-                },
-                PlayPaused = resourceItem =>
-                {
-                    Log($"PlayPaused - {resourceItem.DisplayName}");
-                },
-                PlayStopped = () =>
-                {
-                    // Log($"PlayStopped");
-                    SliderMax = 1;
-                    SliderValue = 0;
-                    SliderEnabled = false;
-                    CurrentTime = TIME_ZERO;
-                },
-                //DoubleClickFolderAndPlayFirstSong = async resourceItem =>
-                //{
-                //    Log($"DoubleClickFolderAndPlayFirstSong - {resourceItem.DisplayName}");
-                //    //var nodeToDoubleClick = treeView.Nodes.Find(resourceItem.DisplayName, true).FirstOrDefault();
-                //    //if (nodeToDoubleClick != null)
-                //    //{
-                //    //    await FetchChildResourcesAsync(nodeToDoubleClick, resourceItem);
-                //    //}
-                //}
+                PlayListItems[selectedIndex].Bitrate = $"{resourceItem.MediaDetails.BitrateKbps}";
+                PlayListItems[selectedIndex].Length = TotalTime;
+            };
+            Player.PlayContinue = resourceItem =>
+            {
+                Log($"PlayContinue - {resourceItem.DisplayName}");
+            };
+            Player.PlayPaused = resourceItem =>
+            {
+                Log($"PlayPaused - {resourceItem.DisplayName}");
+            };
+            Player.PlayStopped = () =>
+            {
+                // Log($"PlayStopped");
+                SliderMax = 1;
+                SliderValue = 0;
+                SliderEnabled = false;
+                CurrentTime = TIME_ZERO;
             };
 
-            var codecs = await _player.GetCodecs();
-            Log($"Supported codecs: {string.Join(", ", codecs)}");
+            //_player = new Player(_client, Howl)
+            //{
+            //    Log = Log,
+
+            //    PlayStarted = (selectedIndex, resourceItem) =>
+            //    {
+            //        Log($"PlayStarted - {resourceItem.DisplayName}");
+
+            //        SelectedPlayListItem = PlayListItems[selectedIndex];
+            //        CurrentTime = TIME_ZERO;
+
+            //        var totalTime = _player.TotalTime;
+            //        TotalTime = $@"{totalTime:hh\:mm\:ss}";
+
+            //        SliderMax = (int)totalTime.TotalSeconds;
+            //        SliderEnabled = _player.CanSeek;
+
+            //        PlayListItems[selectedIndex].Bitrate = $"{resourceItem.MediaDetails.BitrateKbps}";
+            //        PlayListItems[selectedIndex].Length = TotalTime;
+            //    },
+            //    PlayContinue = resourceItem =>
+            //    {
+            //        Log($"PlayContinue - {resourceItem.DisplayName}");
+            //    },
+            //    PlayPaused = resourceItem =>
+            //    {
+            //        Log($"PlayPaused - {resourceItem.DisplayName}");
+            //    },
+            //    PlayStopped = () =>
+            //    {
+            //        // Log($"PlayStopped");
+            //        SliderMax = 1;
+            //        SliderValue = 0;
+            //        SliderEnabled = false;
+            //        CurrentTime = TIME_ZERO;
+            //    },
+            //    //DoubleClickFolderAndPlayFirstSong = async resourceItem =>
+            //    //{
+            //    //    Log($"DoubleClickFolderAndPlayFirstSong - {resourceItem.DisplayName}");
+            //    //    //var nodeToDoubleClick = treeView.Nodes.Find(resourceItem.DisplayName, true).FirstOrDefault();
+            //    //    //if (nodeToDoubleClick != null)
+            //    //    //{
+            //    //    //    await FetchChildResourcesAsync(nodeToDoubleClick, resourceItem);
+            //    //    //}
+            //    //}
+            //};
+
+            
+
+            
+
+            _timer = new Timer(async state => { await InvokeAsync(OnTimerCallback); }, null, 0, 249);
+
+            await RefreshTreeAsync();
         }
 
         protected async Task Refresh()
@@ -179,7 +224,7 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
 
             if (Status == ResourceLoadStatus.Ok)
             {
-                _player.Items = treeNode.Item.Items;
+                Player.Items = treeNode.Item.Items;
                 PlayListItems = treeNode.Item.Items
                     .Where(resourceItem => !resourceItem.IsCollection)
                     .Select((resourceItem, index) => new PlayListItem
@@ -202,7 +247,7 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
 
                 Log($"ClickSong - {item.Title}");
 
-                await _player.PlayAsync(item.Index, CancellationToken.None);
+                await Player.PlayAsync(item.Index, CancellationToken.None);
             }
         }
 
@@ -211,7 +256,7 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
             var time = TimeSpan.FromSeconds(value);
             Log($@"Jump to '{time:hh\:mm\:ss}'");
 
-            await _player.Seek(time);
+            await Player.Seek(time);
         }
 
         protected async Task Play()
@@ -223,28 +268,28 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
 
             if (SelectedPlayListItem != null)
             {
-                await _player.PlayAsync(SelectedPlayListItem.Index, CancellationToken.None);
+                await Player.PlayAsync(SelectedPlayListItem.Index, CancellationToken.None);
             }
         }
 
         protected async Task Stop()
         {
-            await _player.Stop(false);
+            await Player.Stop(false);
         }
 
         protected async Task Pause()
         {
-            await _player.Pause();
+            await Player.Pause();
         }
 
         protected async Task Previous()
         {
-            await _player.PlayPreviousAsync(CancellationToken.None);
+            await Player.PlayPreviousAsync(CancellationToken.None);
         }
 
         protected async Task Next()
         {
-            await _player.PlayNextAsync(CancellationToken.None);
+            await Player.PlayNextAsync(CancellationToken.None);
         }
 
         protected void ClearLogging()
@@ -259,21 +304,21 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
 
         private async Task OnTimerCallback()
         {
-            if (_player == null)
+            if (Player == null)
             {
                 return;
             }
 
-            var currentTime = await _player.GetCurrentTime();
+            var currentTime = await Player.GetCurrentTime();
             CurrentTime = $@"{currentTime:hh\:mm\:ss}";
 
-            if (await _player.GetIsPlaying())
+            if (await Player.GetIsPlaying())
             {
                 SliderValue = (int)currentTime.TotalSeconds;
-                
-                if (currentTime.Add(TimeSpan.FromMilliseconds(500)) > _player.TotalTime)
+
+                if (currentTime.Add(TimeSpan.FromMilliseconds(500)) > Player.TotalTime)
                 {
-                    await _player.PlayNextAsync(CancellationToken.None);
+                    await Player.PlayNextAsync(CancellationToken.None);
                 }
             }
 

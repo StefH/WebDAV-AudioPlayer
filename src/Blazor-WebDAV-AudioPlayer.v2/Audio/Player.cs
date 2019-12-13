@@ -1,4 +1,5 @@
 ﻿using Blazor.WebDAV.AudioPlayer.Audio;
+using Blazor.WebDAV.AudioPlayer.Client;
 using Blazor.WebDAV.AudioPlayer.Components;
 using System;
 using System.Collections.Generic;
@@ -12,25 +13,24 @@ using WebDav.AudioPlayer.Util;
 
 namespace WebDav.AudioPlayer.Audio
 {
-    internal class Player : IDisposable
+    internal class Player : IPlayer
     {
-        private readonly IWebDavClient _client;
+        //private readonly IWebDavClientFactory _factory;
         private readonly IHowl _howl;
+        private readonly IWebDavClient _client;
 
         private readonly FixedSizedQueue<ResourceItem> _resourceItemQueue;
 
         private List<ResourceItem> _items;
 
-        public ResourceItem SelectedResourceItem;
+        public ResourceItem SelectedResourceItem { get; set; }
 
-        public bool CanSeek => true; // _waveSource.CanSeek;
-
-        public Action<string> Log;
-        public Action<int, ResourceItem> PlayStarted;
-        public Action<ResourceItem> PlayPaused;
-        public Action<ResourceItem> PlayContinue;
-        public Func<ResourceItem, Task> DoubleClickFolderAndPlayFirstSong;
-        public Action PlayStopped;
+        public Action<string> Log { get; set; }
+        public Action<int, ResourceItem> PlayStarted { get; set; }
+        public Action<ResourceItem> PlayPaused { get; set; }
+        public Action<ResourceItem> PlayContinue { get; set; }
+        public Func<ResourceItem, Task> DoubleClickFolderAndPlayFirstSong { get; set; }
+        public Action PlayStopped { get; set; }
 
         public List<ResourceItem> Items
         {
@@ -99,6 +99,12 @@ namespace WebDav.AudioPlayer.Audio
             {
                 return;
             }
+
+            //if (_client == null)
+            //{
+            //    string[] codecs = await _howl.GetCodecs();
+            //    _client = _factory.GetClient(codecs);
+            //}
 
             bool sameSong = index == SelectedIndex;
             SelectedIndex = index;

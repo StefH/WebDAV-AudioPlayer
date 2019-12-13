@@ -1,3 +1,4 @@
+using Blazor.WebDAV.AudioPlayer.Audio;
 using Blazor.WebDAV.AudioPlayer.Client;
 using Blazor.WebDAV.AudioPlayer.Components;
 using Blazor.WebDAV.AudioPlayer.Options;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using WebDav.AudioPlayer.Audio;
 
 namespace Blazor.WebDAV.AudioPlayer
 {
@@ -30,6 +32,7 @@ namespace Blazor.WebDAV.AudioPlayer
 
             services.AddSingleton<IWebDavClientFactory, WebDavClientFactory>();
             services.AddScoped<IHowl, Howl>();
+            services.AddScoped<IPlayerFactory, PlayerFactory>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

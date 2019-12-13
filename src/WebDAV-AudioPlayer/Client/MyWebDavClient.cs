@@ -13,16 +13,17 @@ namespace WebDav.AudioPlayer.Client
 {
     public class MyWebDavClient : IWebDavClient
     {
-        private static readonly string[] AudioExtensions = { ".wav", ".wma", ".mp3", ".mp4", ".m4a", ".aac", ".ogg", ".flac", ".opus" };
-        private static readonly Func<WebDavResource, bool> IsAudioFile = r => AudioExtensions.Any(e => r.Uri.ToLowerInvariant().EndsWith(e));
+        private static readonly string[] DefaultAudioExtensions = { "aac", "flac", "m4a", "mp3", "mp4", "ogg", "opus", "wav", "wma" };
         private static readonly Func<WebDavResource, bool> IsFolder = r => r.IsCollection;
 
         private readonly WebDavClient _client;
         private readonly IConnectionSettings _connectionSettings;
+        private readonly string[] _audioExtensions;
 
-        public MyWebDavClient(IConnectionSettings connectionSettings)
+        public MyWebDavClient(IConnectionSettings connectionSettings, string[] audioExtensions = null)
         {
             _connectionSettings = connectionSettings;
+            _audioExtensions = audioExtensions ?? DefaultAudioExtensions;
 
             _client = new WebDavClient(new WebDavClientParams
             {
@@ -186,6 +187,11 @@ namespace WebDav.AudioPlayer.Client
             {
                 return ResourceLoadStatus.OperationCanceled;
             }
+        }
+
+        private bool IsAudioFile(WebDavResource r)
+        {
+            return _audioExtensions.Any(e => r.Uri.ToLowerInvariant().EndsWith($".{e}"));
         }
 
         public void Dispose()

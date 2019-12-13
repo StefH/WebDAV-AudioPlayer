@@ -4,6 +4,6 @@ namespace Blazor.WebDAV.AudioPlayer.Client
 {
     public interface IWebDavClientFactory
     {
-        IWebDavClient GetClient();
+        IWebDavClient GetClient(string[] audioExtensions);
     }
 }

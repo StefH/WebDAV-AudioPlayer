@@ -14,7 +14,7 @@ namespace Blazor.WebDAV.AudioPlayer.Client
             _options = options;
         }
 
-        public IWebDavClient GetClient()
+        public IWebDavClient GetClient(string[] audioExtensions)
         {
             var con = new ConnectionSettings
             {
@@ -23,7 +23,7 @@ namespace Blazor.WebDAV.AudioPlayer.Client
                 RootFolder = _options.Value.RootFolder,
                 StorageUri = _options.Value.StorageUri
             };
-            return new MyWebDavClient(con);
+            return new MyWebDavClient(con, audioExtensions);
         }
     }
 }
