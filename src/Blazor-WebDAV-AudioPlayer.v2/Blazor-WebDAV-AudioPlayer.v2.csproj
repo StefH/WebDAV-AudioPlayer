@@ -8,6 +8,12 @@
   <ItemGroup>
     <Compile Remove="Audio\IPlayerFactory.cs" />
     <Compile Remove="Audio\PlayerFactory.cs" />
+    <Compile Remove="Components\Howl.cs" />
+    <Compile Remove="Components\HowlErrorEventArgs.cs" />
+    <Compile Remove="Components\HowlEventArgs.cs" />
+    <Compile Remove="Components\HowlPlayEventArgs.cs" />
+    <Compile Remove="Components\IHowl.cs" />
+    <Compile Remove="Components\IHowlEvents.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,6 +42,10 @@
     <Folder Include="IO\" />
     <Folder Include="Extensions\" />
     <Folder Include="Util\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Blazor.Howler\Blazor.Howler.csproj" />
   </ItemGroup>
 
 </Project>

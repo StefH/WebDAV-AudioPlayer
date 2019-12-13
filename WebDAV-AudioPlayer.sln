@@ -32,6 +32,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor-WebDAV-AudioPlayer.v
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src-serverside-blazor", "src-serverside-blazor", "{BAD54432-3613-4FC8-B979-0F9C2950E9C9}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Howler", "src\Blazor.Howler\Blazor.Howler.csproj", "{D0D06579-D341-4447-BB80-BDC679C6514B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,6 +64,10 @@ Global
 		{FD0636A6-34DF-4004-A143-D7B620272A3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD0636A6-34DF-4004-A143-D7B620272A3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FD0636A6-34DF-4004-A143-D7B620272A3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0D06579-D341-4447-BB80-BDC679C6514B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0D06579-D341-4447-BB80-BDC679C6514B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0D06579-D341-4447-BB80-BDC679C6514B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0D06579-D341-4447-BB80-BDC679C6514B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -73,6 +79,7 @@ Global
 		{E0430C60-1BDA-4122-9EDE-D502613D37A0} = {0964E94F-387A-45EA-9FED-0C86CFA4B8FF}
 		{7787F05A-6791-4B52-A004-3E70AAE2248D} = {BAD54432-3613-4FC8-B979-0F9C2950E9C9}
 		{FD0636A6-34DF-4004-A143-D7B620272A3A} = {BAD54432-3613-4FC8-B979-0F9C2950E9C9}
+		{D0D06579-D341-4447-BB80-BDC679C6514B} = {BAD54432-3613-4FC8-B979-0F9C2950E9C9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B6A8922C-F54E-40FD-B26A-0E636A9EE552}
