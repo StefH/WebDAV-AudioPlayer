@@ -80,5 +80,10 @@ namespace Blazor.WebDAV.AudioPlayer.Components
             int timeInSeconds = await _runtime.InvokeAsync<int>("howl.getTotalTime");
             return TimeSpan.FromSeconds(timeInSeconds);
         }
+
+        public async Task<string[]> GetCodecs()
+        {
+            return await _runtime.InvokeAsync<string[]>("howl.getCodecs");
+        }
     }
 }

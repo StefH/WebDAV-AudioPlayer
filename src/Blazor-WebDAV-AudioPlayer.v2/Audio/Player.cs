@@ -263,6 +263,11 @@ namespace WebDav.AudioPlayer.Audio
             await _howl.Seek(position);
         }
 
+        public async Task<string[]> GetCodecs()
+        {
+            return await _howl.GetCodecs();
+        }
+
         public void Dispose()
         {
             Stop(true);

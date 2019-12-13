@@ -137,6 +137,9 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
                 //    //}
                 //}
             };
+
+            var codecs = await _player.GetCodecs();
+            Log($"Supported codecs: {string.Join(", ", codecs)}");
         }
 
         protected async Task Refresh()

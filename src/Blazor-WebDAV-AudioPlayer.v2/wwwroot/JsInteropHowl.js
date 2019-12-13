@@ -76,5 +76,18 @@ window.howl = {
         }
 
         return 0;
+    },
+    getCodecs: function () {
+        const codecs = [];
+        for (let [key, value] of Object.entries(Howler._codecs)) {
+            if (value) {
+                codecs.push(key);
+            }
+        }
+
+        return codecs.sort();
+    },
+    isCodecSupported: function (extension) {
+        return extension ? Howler._codecs[extension.replace(/^x-/, '')] : false;
     }
 };

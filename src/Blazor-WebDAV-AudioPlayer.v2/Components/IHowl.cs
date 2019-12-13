@@ -14,7 +14,7 @@ namespace Blazor.WebDAV.AudioPlayer.Components
         TimeSpan TotalTime { get; }
         #endregion
 
-        #region 
+        #region  Methods
         Task<bool> IsPlaying();
 
         Task<int> Play(byte[] audio, string mimeType);
@@ -30,6 +30,10 @@ namespace Blazor.WebDAV.AudioPlayer.Components
         Task<TimeSpan> GetCurrentTime();
 
         Task<TimeSpan> GetTotalTime();
+        #endregion
+
+        #region Global Methods
+        Task<string[]> GetCodecs();
         #endregion
     }
 }
