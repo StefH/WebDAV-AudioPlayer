@@ -5,11 +5,11 @@
     <Title>Howler.Blazor</Title>
     <Description>A Blazor JSInterop wrapper for Howler.js</Description>
     <Authors>Stef Heyenrath</Authors>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>Howler.Blazor</PackageId>
     <PackageTags>Blazor;Howler;Howler.js;audio;jsinterop</PackageTags>
     <PackageReleaseNotes>See CHANGELOG.md</PackageReleaseNotes>
-    <PackageIconUrl>https://raw.githubusercontent.com/StefH/WebDAV-AudioPlayer/master/resources/CSCore_Ogg.png</PackageIconUrl>
+    <PackageIconUrl>https://i.ibb.co/Sxyn93T/Howler-Blazor-240x240.png</PackageIconUrl>
     <PackageProjectUrl>https://github.com/StefH/WebDAV-AudioPlayer</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
