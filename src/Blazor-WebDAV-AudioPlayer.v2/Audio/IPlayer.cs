@@ -19,8 +19,7 @@ namespace WebDav.AudioPlayer.Audio
         ResourceItem SelectedResourceItem { get; set; }
         TimeSpan TotalTime { get; }
 
-        
-        //Task<string[]> GetCodecs();
+        Task<string[]> GetCodecs();
         Task<TimeSpan> GetCurrentTime();
         Task<bool> GetIsPlaying();
         Task Pause();

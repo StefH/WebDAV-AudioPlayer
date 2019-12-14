@@ -1,8 +1,9 @@
-﻿using Microsoft.JSInterop;
+﻿using Howler.Blazor.Components.Events;
+using Microsoft.JSInterop;
 using System;
 using System.Threading.Tasks;
 
-namespace Blazor.WebDAV.AudioPlayer.Components
+namespace Howler.Blazor.Components
 {
     public partial class Howl : IHowl
     {

@@ -1,14 +1,14 @@
-using Blazor.WebDAV.AudioPlayer.Audio;
-using Blazor.WebDAV.AudioPlayer.Client;
-using Blazor.WebDAV.AudioPlayer.Components;
 using Blazor.WebDAV.AudioPlayer.Options;
+using Howler.Blazor.Components;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 using WebDav.AudioPlayer.Audio;
+using WebDav.AudioPlayer.Client;
 
 namespace Blazor.WebDAV.AudioPlayer
 {
@@ -25,14 +25,26 @@ namespace Blazor.WebDAV.AudioPlayer
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<ConnectionSettings>(Configuration.GetSection("ConnectionSettings"));
+            //services.Configure<ConnectionSettings>(Configuration.GetSection("ConnectionSettings"));
 
             services.AddRazorPages();
             services.AddServerSideBlazor();
 
-            services.AddSingleton<IWebDavClientFactory, WebDavClientFactory>();
+            services.AddSingleton<IConnectionSettings>((serviceProvider) =>
+            {
+                var section = Configuration.GetSection("ConnectionSettings");
+
+                return new ConnectionSettings
+                {
+                    Password = section["Password"],
+                    RootFolder = section["RootFolder"],
+                    StorageUri = new Uri(section["StorageUri"]),
+                    UserName = section["UserName"]
+                };
+            });
+            services.AddSingleton<IWebDavClient, MyWebDavClient>();
             services.AddScoped<IHowl, Howl>();
-            //services.AddScoped<IPlayerFactory, PlayerFactory>();
+            services.AddScoped<IPlayer, Player>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

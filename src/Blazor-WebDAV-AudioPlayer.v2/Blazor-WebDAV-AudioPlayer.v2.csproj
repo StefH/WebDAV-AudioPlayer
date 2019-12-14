@@ -8,6 +8,8 @@
   <ItemGroup>
     <Compile Remove="Audio\IPlayerFactory.cs" />
     <Compile Remove="Audio\PlayerFactory.cs" />
+    <Compile Remove="Client\IWebDavClientFactory.cs" />
+    <Compile Remove="Client\WebDavClientFactory.cs" />
     <Compile Remove="Components\Howl.cs" />
     <Compile Remove="Components\HowlErrorEventArgs.cs" />
     <Compile Remove="Components\HowlEventArgs.cs" />
@@ -45,7 +47,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Blazor.Howler\Blazor.Howler.csproj" />
+    <ProjectReference Include="..\Howler.Blazor\Howler.Blazor.csproj" />
   </ItemGroup>
 
 </Project>

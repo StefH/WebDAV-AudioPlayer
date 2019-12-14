@@ -1,9 +1,8 @@
-﻿using Microsoft.JSInterop;
+﻿using Howler.Blazor.Components.Events;
+using Microsoft.JSInterop;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Blazor.Howler.Components
+namespace Howler.Blazor.Components
 {
     public partial class Howl
     {

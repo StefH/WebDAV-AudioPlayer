@@ -1,5 +1,5 @@
 ﻿using Blazor.WebDAV.AudioPlayer.Audio;
-using Blazor.WebDAV.AudioPlayer.Components;
+using Howler.Blazor.Components;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,6 +20,7 @@ namespace WebDav.AudioPlayer.Audio
         private readonly FixedSizedQueue<ResourceItem> _resourceItemQueue;
 
         private List<ResourceItem> _items;
+        private string[] _codecs;
 
         public ResourceItem SelectedResourceItem { get; set; }
 

@@ -21,6 +21,8 @@ namespace WebDav.AudioPlayer.Audio
 {
     internal class Player : IDisposable
     {
+        private static readonly string[] DefaultAudioExtensions = { "aac", "flac", "m4a", "mp3", "mp4", "ogg", "opus", "wav", "wma" };
+
         private readonly IWebDavClient _client;
 
         private readonly FixedSizedQueue<ResourceItem> _resourceItemQueue;
@@ -45,7 +47,7 @@ namespace WebDav.AudioPlayer.Audio
             set
             {
                 Stop(true);
-                _items = value;
+                _items = value.Where(r => IsAudioFile(r)).ToList();
             }
         }
 
@@ -306,6 +308,11 @@ namespace WebDav.AudioPlayer.Audio
         {
             Stop(true);
             _soundOut.Dispose();
+        }
+
+        private static bool IsAudioFile(ResourceItem r)
+        {
+            return DefaultAudioExtensions.Any(e => r.FullPath.ToString().ToLowerInvariant().EndsWith($".{e}"));
         }
     }
 }

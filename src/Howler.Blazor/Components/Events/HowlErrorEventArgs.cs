@@ -1,4 +1,4 @@
-﻿namespace Blazor.WebDAV.AudioPlayer.Components
+﻿namespace Howler.Blazor.Components.Events
 {
     public class HowlErrorEventArgs : HowlEventArgs
     {

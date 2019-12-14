@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Howler.Blazor.Components.Events;
+using System;
 
-namespace Blazor.WebDAV.AudioPlayer.Components
+namespace Howler.Blazor.Components
 {
     public interface IHowlEvents
     {

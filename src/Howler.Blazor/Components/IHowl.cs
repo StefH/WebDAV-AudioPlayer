@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Blazor.WebDAV.AudioPlayer.Components
+namespace Howler.Blazor.Components
 {
     public interface IHowl : IHowlEvents
     {

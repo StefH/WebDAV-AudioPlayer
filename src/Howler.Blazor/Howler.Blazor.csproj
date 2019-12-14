@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <Version>0.0.1</Version>
+    <Title>Howler.Blazor</Title>
+    <Description>A Blazor JSInterop wrapper for Howler.js</Description>
+    <Authors>Stef Heyenrath</Authors>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <PackageId>Howler.Blazor</PackageId>
+    <PackageTags>Blazor;Howler;Howler.js;audio;jsinterop</PackageTags>
+    <PackageReleaseNotes>See CHANGELOG.md</PackageReleaseNotes>
+    <PackageIconUrl>https://raw.githubusercontent.com/StefH/WebDAV-AudioPlayer/master/resources/CSCore_Ogg.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/StefH/WebDAV-AudioPlayer</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/StefH/WebDAV-AudioPlayer</RepositoryUrl>
+    <ProjectGuid>{D3804221-1234-4502-9595-39584E5A0000}</ProjectGuid>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+
+    <RazorLangVersion>3.0</RazorLangVersion>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <OutputType>Library</OutputType>
+    <IsPackable>true</IsPackable>
+    <BlazorLinkOnBuild>false</BlazorLinkOnBuild>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- .js files will be referenced via <script> tags -->
+    <EmbeddedResource Include="content\**\*.js" LogicalName="blazor:js:%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.JSInterop" Version="3.1.0" />
+  </ItemGroup>
+
+</Project>

@@ -1,7 +1,4 @@
-﻿using Blazor.WebDAV.AudioPlayer.Audio;
-using Blazor.WebDAV.AudioPlayer.Client;
-using Blazor.WebDAV.AudioPlayer.Components;
-using Blazor.WebDAV.AudioPlayer.Models;
+﻿using Blazor.WebDAV.AudioPlayer.Models;
 using Blazor.WebDAV.AudioPlayer.Options;
 using Blazor.WebDAV.AudioPlayer.TreeComponent;
 using ByteSizeLib;
@@ -22,19 +19,22 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
     {
         private const string TIME_ZERO = "00:00:00";
 
-        [Inject]
-        protected IOptions<ConnectionSettings> Options { get; set; }
+        //[Inject]
+        //protected IOptions<ConnectionSettings> Options { get; set; }
 
         [Inject]
-        protected IWebDavClientFactory Factory { get; set; }
+        protected IConnectionSettings ConnectionSettings { get; set; }
+
+        [Inject]
+        protected IWebDavClient _client { get; set; }
+
+        [Inject]
+        protected IPlayer Player { get; set; }
 
         //[Inject]
-        //protected IPlayerFactory PlayerFactory { get; set; }
+        //protected IHowl Howl { get; set; }
 
-        [Inject]
-        protected IHowl Howl { get; set; }
-
-        protected IPlayer Player { get; set; }
+        //protected IPlayer Player { get; set; }
 
         protected TreeNode<ResourceItem> Root { get; private set; }
 
@@ -58,9 +58,11 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
 
         protected bool SliderEnabled { get; set; } = false;
 
-        private IWebDavClient _client;
+        //private IWebDavClient _client;
 
         private Timer _timer;
+
+        private string[] _codecs;
 
         protected override async Task OnInitializedAsync()
         {
@@ -73,8 +75,8 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
             {
                 Item = new ResourceItem
                 {
-                    DisplayName = Options.Value.RootFolder,
-                    FullPath = OnlinePathBuilder.Combine(Options.Value.StorageUri, Options.Value.RootFolder)
+                    DisplayName = ConnectionSettings.RootFolder,
+                    FullPath = OnlinePathBuilder.Combine(ConnectionSettings.StorageUri, ConnectionSettings.RootFolder)
                 }
             };
         }
@@ -91,12 +93,12 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
                 return;
             }
 
-            var codecs = await Howl.GetCodecs();
-            Log($"Supported codecs: {string.Join(", ", codecs)}");
+            _codecs = await Player.GetCodecs();
+            Log($"Supported codecs: {string.Join(", ", _codecs)}");
 
-            _client = Factory.GetClient(codecs);
+            //_client = Factory.GetClient(codecs);
 
-            Player = new Player(_client, Howl);
+            //Player = new Player(_client, Howl);
             Player.Log = Log;
             Player.PlayStarted = (selectedIndex, resourceItem) =>
             {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Blazor.WebDAV.AudioPlayer.Components
+namespace Howler.Blazor.Components.Events
 {
     public class HowlPlayEventArgs : HowlEventArgs
     {
