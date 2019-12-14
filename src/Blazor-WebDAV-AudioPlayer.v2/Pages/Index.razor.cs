@@ -19,9 +19,6 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
     {
         private const string TIME_ZERO = "00:00:00";
 
-        //[Inject]
-        //protected IOptions<ConnectionSettings> Options { get; set; }
-
         [Inject]
         protected IConnectionSettings ConnectionSettings { get; set; }
 
@@ -30,11 +27,6 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
 
         [Inject]
         protected IPlayer Player { get; set; }
-
-        //[Inject]
-        //protected IHowl Howl { get; set; }
-
-        //protected IPlayer Player { get; set; }
 
         protected TreeNode<ResourceItem> Root { get; private set; }
 
@@ -58,19 +50,12 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
 
         protected bool SliderEnabled { get; set; } = false;
 
-        //private IWebDavClient _client;
-
         private Timer _timer;
 
         private string[] _codecs;
 
         protected override async Task OnInitializedAsync()
         {
-            // await base.OnInitializedAsync();
-
-            //_client = Factory.GetClient();
-            // Log($"Using : '{_player.SoundOut}-SoundOut'");
-
             Root = new TreeNode<ResourceItem>
             {
                 Item = new ResourceItem
@@ -96,9 +81,6 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
             _codecs = await Player.GetCodecs();
             Log($"Supported codecs: {string.Join(", ", _codecs)}");
 
-            //_client = Factory.GetClient(codecs);
-
-            //Player = new Player(_client, Howl);
             Player.Log = Log;
             Player.PlayStarted = (selectedIndex, resourceItem) =>
             {
@@ -132,57 +114,6 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
                 SliderEnabled = false;
                 CurrentTime = TIME_ZERO;
             };
-
-            //_player = new Player(_client, Howl)
-            //{
-            //    Log = Log,
-
-            //    PlayStarted = (selectedIndex, resourceItem) =>
-            //    {
-            //        Log($"PlayStarted - {resourceItem.DisplayName}");
-
-            //        SelectedPlayListItem = PlayListItems[selectedIndex];
-            //        CurrentTime = TIME_ZERO;
-
-            //        var totalTime = _player.TotalTime;
-            //        TotalTime = $@"{totalTime:hh\:mm\:ss}";
-
-            //        SliderMax = (int)totalTime.TotalSeconds;
-            //        SliderEnabled = _player.CanSeek;
-
-            //        PlayListItems[selectedIndex].Bitrate = $"{resourceItem.MediaDetails.BitrateKbps}";
-            //        PlayListItems[selectedIndex].Length = TotalTime;
-            //    },
-            //    PlayContinue = resourceItem =>
-            //    {
-            //        Log($"PlayContinue - {resourceItem.DisplayName}");
-            //    },
-            //    PlayPaused = resourceItem =>
-            //    {
-            //        Log($"PlayPaused - {resourceItem.DisplayName}");
-            //    },
-            //    PlayStopped = () =>
-            //    {
-            //        // Log($"PlayStopped");
-            //        SliderMax = 1;
-            //        SliderValue = 0;
-            //        SliderEnabled = false;
-            //        CurrentTime = TIME_ZERO;
-            //    },
-            //    //DoubleClickFolderAndPlayFirstSong = async resourceItem =>
-            //    //{
-            //    //    Log($"DoubleClickFolderAndPlayFirstSong - {resourceItem.DisplayName}");
-            //    //    //var nodeToDoubleClick = treeView.Nodes.Find(resourceItem.DisplayName, true).FirstOrDefault();
-            //    //    //if (nodeToDoubleClick != null)
-            //    //    //{
-            //    //    //    await FetchChildResourcesAsync(nodeToDoubleClick, resourceItem);
-            //    //    //}
-            //    //}
-            //};
-
-            
-
-            
 
             _timer = new Timer(async state => { await InvokeAsync(OnTimerCallback); }, null, 0, 249);
 
@@ -226,8 +157,11 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
 
             if (Status == ResourceLoadStatus.Ok)
             {
-                Player.Items = treeNode.Item.Items;
-                PlayListItems = treeNode.Item.Items
+                var filteredItems = treeNode.Item.Items.Where(r => IsAudioFile(r).Result).ToList();
+
+                Player.Items = filteredItems;
+
+                PlayListItems = filteredItems
                     .Where(resourceItem => !resourceItem.IsCollection)
                     .Select((resourceItem, index) => new PlayListItem
                     {
@@ -329,7 +263,7 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
 
         private async Task RefreshTreeAsync()
         {
-            // await _player?.Stop(true);
+            await Player?.Stop(true);
 
             Status = ResourceLoadStatus.Unknown;
             Status = await _client.FetchChildResourcesAsync(Root.Item, CancellationToken.None, 0);
@@ -340,6 +274,11 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
                     Item = resourceItem
                 }).ToList();
             }
+        }
+
+        private async Task<bool> IsAudioFile(ResourceItem r)
+        {
+            return (await Player.GetCodecs()).Any(e => r.FullPath.ToString().ToLowerInvariant().EndsWith($".{e}"));
         }
 
         public void Dispose()

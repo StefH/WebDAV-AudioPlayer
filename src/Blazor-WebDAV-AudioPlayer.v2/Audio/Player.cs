@@ -252,7 +252,12 @@ namespace WebDav.AudioPlayer.Audio
 
         public async Task<string[]> GetCodecs()
         {
-            return await _howl.GetCodecs();
+            if (_codecs == null)
+            {
+                _codecs = await _howl.GetCodecs();
+            }
+
+            return _codecs;
         }
 
         public void Dispose()
