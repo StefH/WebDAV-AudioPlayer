@@ -60,6 +60,7 @@ namespace WebDav.AudioPlayer.Client
                         {
                             Id = Guid.NewGuid(),
                             DisplayName = r.DisplayName,
+                            Extension = new FileInfo(r.DisplayName).Extension.ToLowerInvariant(),
                             IsCollection = r.IsCollection,
                             FullPath = fullPath,
                             ContentLength = r.ContentLength,

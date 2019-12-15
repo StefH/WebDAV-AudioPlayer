@@ -1,10 +1,8 @@
 ﻿using Blazor.WebDAV.AudioPlayer.Audio;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Caching.Memory;
 using System;
-using System.IO;
-using System.Text;
-using System.Threading;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using WebApiContrib.Core.Results;
 using WebDav.AudioPlayer.Client;
@@ -14,34 +12,34 @@ namespace Blazor.WebDAV.AudioPlayer.Middlewares
 {
     public class HelloFileProviderMiddleware
     {
+        private const string Prefix = "/sounds/";
+        private readonly Regex GuidRegex = new Regex("([a-z0-9]{8}[-][a-z0-9]{4}[-][a-z0-9]{4}[-][a-z0-9]{4}[-][a-z0-9]{12})");
+
         private readonly RequestDelegate _next;
         private readonly IWebDavClient _client;
         private readonly IConnectionSettings _settings;
+        private readonly IMemoryCache _cache;
 
-        public HelloFileProviderMiddleware(RequestDelegate next, IWebDavClient client, IConnectionSettings settings)
+        public HelloFileProviderMiddleware(RequestDelegate next, IWebDavClient client, IConnectionSettings settings, IMemoryCache cache)
         {
             _next = next;
             _client = client;
             _settings = settings;
+            _cache = cache;
         }
 
         public async Task Invoke(HttpContext context)
         {
             string requestPath = context.Request.Path.ToString();
 
-            if (requestPath.Contains("_sounds_"))
+            if (requestPath.StartsWith(Prefix) && Guid.TryParse(GuidRegex.Match(requestPath).Value, out Guid id))
             {
-                string path = requestPath.Replace("/_sounds_", _settings.StorageUri.ToString());
+                if (_cache.TryGetValue(id, out ResourceItem cachedResourceItem))
+                {
+                    await context.File(cachedResourceItem.Stream, MimeTypeMap.GetMimeType(cachedResourceItem.Extension), true);
+                }
 
-                var fi = new FileInfo(path);
-
-                var ri = new ResourceItem();
-                ri.DisplayName = fi.Name;
-                ri.FullPath = new Uri(path);
-
-                await _client.GetStreamAsync(ri, CancellationToken.None);
-
-                await context.File(ri.Stream, MimeTypeMap.GetMimeType(fi.Extension), true);
+                //await _client.GetStreamAsync(ri, CancellationToken.None);
             }
             else
             {

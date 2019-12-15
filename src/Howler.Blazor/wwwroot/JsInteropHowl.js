@@ -8,6 +8,7 @@ window.howl = {
 
         howl = new Howl({
             src: [src],
+            html5: true,
             onplay: async function (id) {
                 const duration = Math.round(howl.duration());
                 await dotnetReference.invokeMethodAsync('OnPlayCallback', id, duration);

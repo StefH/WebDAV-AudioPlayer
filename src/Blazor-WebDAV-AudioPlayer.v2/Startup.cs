@@ -30,6 +30,11 @@ namespace Blazor.WebDAV.AudioPlayer
             services.AddRazorPages();
             services.AddServerSideBlazor();
 
+            services.AddMemoryCache(memoryCacheOptions =>
+            {
+                memoryCacheOptions.SizeLimit = 5;
+            });
+
             services.AddSingleton<IConnectionSettings>((serviceProvider) =>
             {
                 var section = Configuration.GetSection("ConnectionSettings");
@@ -42,6 +47,7 @@ namespace Blazor.WebDAV.AudioPlayer
                     UserName = section["UserName"]
                 };
             });
+
             services.AddSingleton<IWebDavClient, MyWebDavClient>();
             services.AddScoped<IHowl, Howl>();
             services.AddScoped<IPlayer, Player>();

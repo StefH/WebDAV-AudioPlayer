@@ -17,6 +17,8 @@ namespace WebDav.AudioPlayer.Models
 
         public Uri FullPath { get; set; }
 
+        public string Extension { get; set; }
+
         public bool IsCollection { get; set; }
 
         public long? ContentLength { get; set; }
