@@ -28,6 +28,16 @@ namespace Howler.Blazor.Components
             return await _runtime.InvokeAsync<bool>("howl.getIsPlaying", dotNetObjectReference);
         }
 
+        public async Task<int> Play(Uri location)
+        {
+            return await Play(location.ToString());
+        }
+
+        public async Task<int> Play(string location)
+        {
+            return await _runtime.InvokeAsync<int>("howl.play", dotNetObjectReference, location);
+        }
+
         public async Task<int> Play(byte[] audio, string mimetype)
         {
             // http://www.iandevlin.com/blog/2012/09/html5/html5-media-and-data-uri/
@@ -35,11 +45,6 @@ namespace Howler.Blazor.Components
             string html5AudioUrl = $"data:{mimetype};base64,{audioAsBase64}";
 
             return await _runtime.InvokeAsync<int>("howl.play", dotNetObjectReference, html5AudioUrl);
-        }
-
-        public async Task<int> Play(string location)
-        {
-            return await _runtime.InvokeAsync<int>("howl.play", dotNetObjectReference, location);
         }
 
         public async Task Stop()

@@ -16,24 +16,32 @@ namespace Blazor.WebDAV.AudioPlayer.Middlewares
     {
         private readonly RequestDelegate _next;
         private readonly IWebDavClient _client;
+        private readonly IConnectionSettings _settings;
 
-        public HelloFileProviderMiddleware(RequestDelegate next, IWebDavClient client)
+        public HelloFileProviderMiddleware(RequestDelegate next, IWebDavClient client, IConnectionSettings settings)
         {
             _next = next;
             _client = client;
+            _settings = settings;
         }
 
         public async Task Invoke(HttpContext context)
         {
-            if (context.Request.Path.ToString().Contains("sheyenrath"))
+            string requestPath = context.Request.Path.ToString();
+
+            if (requestPath.Contains("_sounds_"))
             {
+                string path = requestPath.Replace("/_sounds_", _settings.StorageUri.ToString());
+
+                var fi = new FileInfo(path);
+
                 var ri = new ResourceItem();
-                ri.DisplayName = "sheyenrath.mp3";
-                ri.FullPath = new Uri("https://sheyenrath.stackstorage.com/remote.php/webdav/mp3-sync/Chillout/Amethystium/Amethystium%20-%20Half%20a%20World%20Away%20%28with%20Caroline%20Lavelle%29.mp3");
+                ri.DisplayName = fi.Name;
+                ri.FullPath = new Uri(path);
 
                 await _client.GetStreamAsync(ri, CancellationToken.None);
 
-                await context.File(ri.Stream, MimeTypeMap.GetMimeType(".mp3"), true);
+                await context.File(ri.Stream, MimeTypeMap.GetMimeType(fi.Extension), true);
             }
             else
             {

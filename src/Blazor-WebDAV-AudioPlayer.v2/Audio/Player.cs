@@ -14,8 +14,9 @@ namespace WebDav.AudioPlayer.Audio
 {
     internal class Player : IPlayer
     {
-        private readonly IHowl _howl;
+        private readonly IConnectionSettings _settings;
         private readonly IWebDavClient _client;
+        private readonly IHowl _howl;        
 
         private readonly FixedSizedQueue<ResourceItem> _resourceItemQueue;
 
@@ -53,8 +54,9 @@ namespace WebDav.AudioPlayer.Audio
             }
         }
 
-        public Player(IWebDavClient client, IHowl howl)
+        public Player(IConnectionSettings settings, IWebDavClient client, IHowl howl)
         {
+            _settings = settings;
             _client = client;
             _howl = howl;
 
@@ -108,23 +110,24 @@ namespace WebDav.AudioPlayer.Audio
             await Stop(false);
 
             Log($@"Reading : '{SelectedResourceItem.DisplayName}'");
-            var status = await _client.GetStreamAsync(SelectedResourceItem, cancellationToken);
-            if (status != ResourceLoadStatus.Ok && status != ResourceLoadStatus.StreamExisting)
-            {
-                Log($@"Reading error : {status}");
-                return;
-            }
+            //var status = await _client.GetStreamAsync(SelectedResourceItem, cancellationToken);
+            //if (status != ResourceLoadStatus.Ok && status != ResourceLoadStatus.StreamExisting)
+            //{
+            //    Log($@"Reading error : {status}");
+            //    return;
+            //}
 
-            Log($@"Reading done : {status}");
+            //Log($@"Reading done : {status}");
 
             _resourceItemQueue.Enqueue(SelectedResourceItem);
 
-            string extension = new FileInfo(SelectedResourceItem.DisplayName).Extension.ToLowerInvariant();
-            string mimeType = MimeTypeMap.GetMimeType(extension);
-            byte[] music = ReadStreamAsBytes(SelectedResourceItem.Stream);
+            //string extension = new FileInfo(SelectedResourceItem.DisplayName).Extension.ToLowerInvariant();
+            //string mimeType = MimeTypeMap.GetMimeType(extension);
+            //byte[] music = ReadStreamAsBytes(SelectedResourceItem.Stream);
 
             //await _howl.Play(music, mimeType);
-            await _howl.Play("sheyenrath.mp3");
+            string path = SelectedResourceItem.FullPath.ToString().Replace(_settings.StorageUri.ToString(), "_sounds_");
+            await _howl.Play(path);
 
             // Preload Next
             await PreloadNextAsync(cancellationToken);
@@ -153,14 +156,14 @@ namespace WebDav.AudioPlayer.Audio
                 // Loading next resourceItem from this folder
                 var resourceItem = Items[nextIndex];
                 Log($"Preloading : '{resourceItem.DisplayName}'");
-                var status = await _client.GetStreamAsync(resourceItem, cancellationToken);
-                if (status != ResourceLoadStatus.Ok && status != ResourceLoadStatus.StreamExisting)
-                {
-                    Log($@"Preloading error : {status}");
-                    return;
-                }
+                //var status = await _client.GetStreamAsync(resourceItem, cancellationToken);
+                //if (status != ResourceLoadStatus.Ok && status != ResourceLoadStatus.StreamExisting)
+                //{
+                //    Log($@"Preloading error : {status}");
+                //    return;
+                //}
 
-                Log($@"Preloading done : {status}");
+                //Log($@"Preloading done : {status}");
                 _resourceItemQueue.Enqueue(resourceItem);
             }
         }

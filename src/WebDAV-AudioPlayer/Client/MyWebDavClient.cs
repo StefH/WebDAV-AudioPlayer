@@ -58,6 +58,7 @@ namespace WebDav.AudioPlayer.Client
                         Uri fullPath = OnlinePathBuilder.Combine(_connectionSettings.StorageUri, r.Uri);
                         var resourceItem = new ResourceItem
                         {
+                            Id = Guid.NewGuid(),
                             DisplayName = r.DisplayName,
                             IsCollection = r.IsCollection,
                             FullPath = fullPath,
