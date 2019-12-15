@@ -241,16 +241,14 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
 
         private async Task OnTimerCallback()
         {
-            if (!(await Player.GetIsPlaying()))
+            if (await Player.GetIsPlaying())
             {
-                return;
+                var currentTime = await Player.GetCurrentTime();
+                CurrentTime = $@"{currentTime:hh\:mm\:ss}";
+                SliderValue = (int)currentTime.TotalSeconds;
+
+                StateHasChanged();
             }
-
-            var currentTime = await Player.GetCurrentTime();
-            CurrentTime = $@"{currentTime:hh\:mm\:ss}";
-            SliderValue = (int)currentTime.TotalSeconds;
-
-            StateHasChanged();
         }
 
         private async Task RefreshTreeAsync()
@@ -266,6 +264,8 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
                     Item = resourceItem
                 }).ToList();
             }
+
+            StateHasChanged();
         }
 
         private async Task<bool> IsAudioFile(ResourceItem r)
