@@ -122,7 +122,9 @@ namespace WebDav.AudioPlayer.Audio
             string extension = new FileInfo(SelectedResourceItem.DisplayName).Extension.ToLowerInvariant();
             string mimeType = MimeTypeMap.GetMimeType(extension);
             byte[] music = ReadStreamAsBytes(SelectedResourceItem.Stream);
-            await _howl.Play(music, mimeType);
+
+            //await _howl.Play(music, mimeType);
+            await _howl.Play("sheyenrath.mp3");
 
             // Preload Next
             await PreloadNextAsync(cancellationToken);

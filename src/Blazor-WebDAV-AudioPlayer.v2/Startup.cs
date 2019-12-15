@@ -1,3 +1,5 @@
+using Blazor.WebDAV.AudioPlayer.FileProviders;
+using Blazor.WebDAV.AudioPlayer.Middlewares;
 using Blazor.WebDAV.AudioPlayer.Options;
 using Howler.Blazor.Components;
 using Microsoft.AspNetCore.Builder;
@@ -25,8 +27,6 @@ namespace Blazor.WebDAV.AudioPlayer
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.Configure<ConnectionSettings>(Configuration.GetSection("ConnectionSettings"));
-
             services.AddRazorPages();
             services.AddServerSideBlazor();
 
@@ -63,9 +63,9 @@ namespace Blazor.WebDAV.AudioPlayer
 
             app.UseHttpsRedirection();
 
-            app.UseStaticFiles(); // For the wwwroot folder
+            app.UseMiddleware<HelloFileProviderMiddleware>();
 
-            ConfigureContentTypes(app);
+            ConfigureStaticFiles(app);
 
             app.UseRouting();
 
@@ -76,8 +76,10 @@ namespace Blazor.WebDAV.AudioPlayer
             });
         }
 
-        private void ConfigureContentTypes(IApplicationBuilder app)
+        private void ConfigureStaticFiles(IApplicationBuilder app)
         {
+            app.UseStaticFiles(); // For the wwwroot folder
+
             var provider = new FileExtensionContentTypeProvider();
 
             // Replace an existing mapping
@@ -86,11 +88,10 @@ namespace Blazor.WebDAV.AudioPlayer
             // Add new mapping
             provider.Mappings[".opus"] = "audio/opus";
 
-            app.UseStaticFiles(); // For the wwwroot folder
-
             app.UseStaticFiles(new StaticFileOptions
             {
                 ContentTypeProvider = provider,
+                //FileProvider = new MyFileProvider()
             });
         }
     }
