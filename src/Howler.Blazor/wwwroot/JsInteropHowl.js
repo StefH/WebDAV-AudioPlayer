@@ -1,20 +1,23 @@
 ﻿let howl = null;
 let soundId = null;
 window.howl = {
-    play: function (dotnetReference, src) {
+    play: function (dotnetReference, options) {
         if (howl) {
             stop();
         }
 
         howl = new Howl({
-            src: [src],
-            html5: true,
+            src: options.sources,
+            html5: options.html5,
             onplay: async function (id) {
                 const duration = Math.round(howl.duration());
                 await dotnetReference.invokeMethodAsync('OnPlayCallback', id, duration);
             },
             onstop: async function (id) {
                 await dotnetReference.invokeMethodAsync('OnStopCallback', id);
+            },
+            onend: async function (id) {
+                await dotnetReference.invokeMethodAsync('OnEndCallback', id);
             }
         });
 

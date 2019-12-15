@@ -1,8 +1,8 @@
-﻿using Howler.Blazor.Components;
+﻿using Blazor.WebDAV.AudioPlayer.Constants;
+using Howler.Blazor.Components;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,12 +13,9 @@ namespace WebDav.AudioPlayer.Audio
 {
     internal class Player : IPlayer
     {
-        private readonly IConnectionSettings _settings;
         private readonly IMemoryCache _cache;
         private readonly IWebDavClient _client;
         private readonly IHowl _howl;
-
-        // private readonly FixedSizedQueue<ResourceItem> _resourceItemQueue;
 
         private List<ResourceItem> _items;
         private string[] _codecs;
@@ -26,11 +23,12 @@ namespace WebDav.AudioPlayer.Audio
         public ResourceItem SelectedResourceItem { get; set; }
 
         public Action<string> Log { get; set; }
-        public Action<int, ResourceItem> PlayStarted { get; set; }
-        public Action<ResourceItem> PlayPaused { get; set; }
+        public Action<int, ResourceItem> PlayStart { get; set; }
+        public Action<int, ResourceItem> PlayEnd { get; set; }
+        public Action<ResourceItem> PlayPause { get; set; }
         public Action<ResourceItem> PlayContinue { get; set; }
         public Func<ResourceItem, Task> DoubleClickFolderAndPlayFirstSong { get; set; }
-        public Action PlayStopped { get; set; }
+        public Action PlayStop { get; set; }
 
         public List<ResourceItem> Items
         {
@@ -45,38 +43,24 @@ namespace WebDav.AudioPlayer.Audio
 
         public int SelectedIndex { get; private set; } = -1;
 
-        private TimeSpan _totalTime = TimeSpan.Zero;
-        public TimeSpan TotalTime
-        {
-            get
-            {
-                return _totalTime;
-            }
-        }
+        public TimeSpan TotalTime { get; private set; } = TimeSpan.Zero;
 
-        public Player(IConnectionSettings settings, IMemoryCache cache, IWebDavClient client, IHowl howl)
+        public Player(IMemoryCache cache, IWebDavClient client, IHowl howl)
         {
-            _settings = settings;
             _cache = cache;
             _client = client;
             _howl = howl;
 
-            //_resourceItemQueue = new FixedSizedQueue<ResourceItem>(3, (resourceItem, size) =>
-            //{
-            //    Log($"Disposing : '{resourceItem.DisplayName}'");
-            //    if (resourceItem.Stream != null)
-            //    {
-            //        resourceItem.Stream.Close();
-            //        resourceItem.Stream.Dispose();
-            //        resourceItem.Stream = null;
-            //    }
-            //});
-
             _howl.OnPlay += (e) =>
             {
-                _totalTime = e.TotalTime;
+                TotalTime = e.TotalTime;
 
-                PlayStarted(SelectedIndex, SelectedResourceItem);
+                PlayStart(SelectedIndex, SelectedResourceItem);
+            };
+
+            _howl.OnEnd += (e) =>
+            {
+                PlayEnd(SelectedIndex, SelectedResourceItem);
             };
         }
 
@@ -110,49 +94,35 @@ namespace WebDav.AudioPlayer.Audio
 
             await Stop(false);
 
-            Log($@"Reading : '{SelectedResourceItem.DisplayName}'");
+            Log($@"Loading : '{SelectedResourceItem.DisplayName}'");
 
             if (!_cache.TryGetValue(SelectedResourceItem.Id, out ResourceItem cachedResourceItem))
             {
                 var status = await _client.GetStreamAsync(SelectedResourceItem, cancellationToken);
                 if (status != ResourceLoadStatus.Ok && status != ResourceLoadStatus.StreamExisting)
                 {
-                    Log($@"Reading error : {status}");
+                    Log($@"Loading error : {status}");
                     return;
                 }
 
-                Log($@"Reading done : {status}");
+                Log($@"Loading : '{SelectedResourceItem.DisplayName}' is done");
 
-                _cache.Set(SelectedResourceItem.Id, SelectedResourceItem, new MemoryCacheEntryOptions { Size = 1 });
+                if (status == ResourceLoadStatus.Ok)
+                {
+                    _cache.Set(SelectedResourceItem.Id, SelectedResourceItem, new MemoryCacheEntryOptions { Size = 1 });
+                }
             }
 
-            //var status = await _client.GetStreamAsync(SelectedResourceItem, cancellationToken);
-            //if (status != ResourceLoadStatus.Ok && status != ResourceLoadStatus.StreamExisting)
+            //var options = new HowlOptions
             //{
-            //    Log($@"Reading error : {status}");
-            //    return;
-            //}
-
-            //Log($@"Reading done : {status}");
-
-            //_resourceItemQueue.Enqueue(SelectedResourceItem);
-
-            //string path = SelectedResourceItem.FullPath.ToString().Replace(_settings.StorageUri.ToString(), "_sounds_");
-            await _howl.Play($"sounds/{SelectedResourceItem.Id}{SelectedResourceItem.Extension}");
+            //    Html5 = true,
+            //    Sources = new[] { $"{AudioPlayerConstants.SoundPrefix}{SelectedResourceItem.Id}{SelectedResourceItem.Extension}" }
+            //};
+            await _howl.Play($"{AudioPlayerConstants.SoundPrefix}{SelectedResourceItem.Id}{SelectedResourceItem.Extension}");
 
             // Preload Next
             await PreloadNextAsync(cancellationToken);
         }
-
-        //private byte[] ReadStreamAsBytes(Stream input)
-        //{
-        //    using (var memoryStream = new MemoryStream())
-        //    {
-        //        input.CopyTo(memoryStream);
-        //        input.Seek(0, SeekOrigin.Begin);
-        //        return memoryStream.ToArray();
-        //    }
-        //}
 
         private async Task PreloadNextAsync(CancellationToken cancellationToken)
         {
@@ -173,24 +143,17 @@ namespace WebDav.AudioPlayer.Audio
                     var status = await _client.GetStreamAsync(resourceItem, cancellationToken);
                     if (status != ResourceLoadStatus.Ok && status != ResourceLoadStatus.StreamExisting)
                     {
-                        Log($@"Preloading error : {status}");
+                        Log($"Preloading error : {status}");
                         return;
                     }
 
-                    Log($@"Preloading done : {status}");
+                    Log($"Preloading : '{resourceItem.DisplayName}' is done");
 
-                    _cache.Set(resourceItem.Id, resourceItem, new MemoryCacheEntryOptions { Size = 1 });
+                    if (status == ResourceLoadStatus.Ok)
+                    {
+                        _cache.Set(resourceItem.Id, resourceItem, new MemoryCacheEntryOptions { Size = 1 });
+                    }
                 }
-
-                //var status = await _client.GetStreamAsync(resourceItem, cancellationToken);
-                //if (status != ResourceLoadStatus.Ok && status != ResourceLoadStatus.StreamExisting)
-                //{
-                //    Log($@"Preloading error : {status}");
-                //    return;
-                //}
-
-                //Log($@"Preloading done : {status}");
-                //_resourceItemQueue.Enqueue(resourceItem);
             }
         }
 
@@ -252,7 +215,7 @@ namespace WebDav.AudioPlayer.Audio
         public async Task Stop(bool force)
         {
             await _howl.Stop();
-            PlayStopped();
+            PlayStop();
 
             if (force)
             {
@@ -267,7 +230,7 @@ namespace WebDav.AudioPlayer.Audio
 
             if (await _howl.IsPlaying())
             {
-                PlayPaused(resourceItem);
+                PlayPause(resourceItem);
             }
             else
             {

@@ -15,7 +15,6 @@ namespace WebDav.AudioPlayer.Client
     {
         private readonly WebDavClient _client;
         private readonly IConnectionSettings _connectionSettings;
-        private readonly string[] _audioExtensions;
 
         public MyWebDavClient(IConnectionSettings connectionSettings)
         {

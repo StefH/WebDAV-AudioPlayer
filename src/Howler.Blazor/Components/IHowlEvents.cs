@@ -15,6 +15,11 @@ namespace Howler.Blazor.Components
         /// </summary>
         event Action<HowlEventArgs> OnStop;
 
+        /// <summary>
+        /// Fires when the sound finishes playing (if it is looping, it'll fire at the end of each loop).
+        /// </summary>
+        event Action<HowlEventArgs> OnEnd;
+
         /*
          * onload Function
 Fires when the sound is loaded.
@@ -24,9 +29,6 @@ Fires when the sound is unable to load. The first parameter is the ID of the sou
 
 onplayerror Function
 Fires when the sound is unable to play. The first parameter is the ID of the sound and the second is the error message/code.
-
-onend Function
-Fires when the sound finishes playing (if it is looping, it'll fire at the end of each loop). The first parameter is the ID of the sound.
 
 onpause Function
 Fires when the sound has been paused. The first parameter is the ID of the sound.

@@ -1,30 +1,25 @@
 ﻿using Blazor.WebDAV.AudioPlayer.Audio;
+using Blazor.WebDAV.AudioPlayer.Constants;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using WebApiContrib.Core.Results;
-using WebDav.AudioPlayer.Client;
 using WebDav.AudioPlayer.Models;
 
 namespace Blazor.WebDAV.AudioPlayer.Middlewares
 {
-    public class HelloFileProviderMiddleware
+    public class SoundFileProviderMiddleware
     {
-        private const string Prefix = "/sounds/";
-        private readonly Regex GuidRegex = new Regex("([a-z0-9]{8}[-][a-z0-9]{4}[-][a-z0-9]{4}[-][a-z0-9]{4}[-][a-z0-9]{12})");
+        private readonly Regex RegexGuid = new Regex("([a-z0-9]{8}[-][a-z0-9]{4}[-][a-z0-9]{4}[-][a-z0-9]{4}[-][a-z0-9]{12})");
 
         private readonly RequestDelegate _next;
-        private readonly IWebDavClient _client;
-        private readonly IConnectionSettings _settings;
         private readonly IMemoryCache _cache;
 
-        public HelloFileProviderMiddleware(RequestDelegate next, IWebDavClient client, IConnectionSettings settings, IMemoryCache cache)
+        public SoundFileProviderMiddleware(RequestDelegate next, IMemoryCache cache)
         {
             _next = next;
-            _client = client;
-            _settings = settings;
             _cache = cache;
         }
 
@@ -32,14 +27,17 @@ namespace Blazor.WebDAV.AudioPlayer.Middlewares
         {
             string requestPath = context.Request.Path.ToString();
 
-            if (requestPath.StartsWith(Prefix) && Guid.TryParse(GuidRegex.Match(requestPath).Value, out Guid id))
+            if (requestPath.StartsWith(AudioPlayerConstants.SoundPrefix) && Guid.TryParse(RegexGuid.Match(requestPath).Value, out Guid id))
             {
                 if (_cache.TryGetValue(id, out ResourceItem cachedResourceItem))
                 {
+                    cachedResourceItem.Stream.Position = 0;
                     await context.File(cachedResourceItem.Stream, MimeTypeMap.GetMimeType(cachedResourceItem.Extension), true);
                 }
-
-                //await _client.GetStreamAsync(ri, CancellationToken.None);
+                else
+                {
+                    await context.NotFound();
+                }
             }
             else
             {

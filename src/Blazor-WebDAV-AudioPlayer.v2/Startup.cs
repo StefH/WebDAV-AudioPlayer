@@ -1,4 +1,3 @@
-using Blazor.WebDAV.AudioPlayer.FileProviders;
 using Blazor.WebDAV.AudioPlayer.Middlewares;
 using Blazor.WebDAV.AudioPlayer.Options;
 using Howler.Blazor.Components;
@@ -69,7 +68,7 @@ namespace Blazor.WebDAV.AudioPlayer
 
             app.UseHttpsRedirection();
 
-            app.UseMiddleware<HelloFileProviderMiddleware>();
+            app.UseMiddleware<SoundFileProviderMiddleware>();
 
             ConfigureStaticFiles(app);
 

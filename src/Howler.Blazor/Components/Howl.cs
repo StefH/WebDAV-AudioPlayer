@@ -13,8 +13,8 @@ namespace Howler.Blazor.Components
         public TimeSpan TotalTime { get; private set; } = TimeSpan.Zero;
 
         public event Action<HowlPlayEventArgs> OnPlay;
-
         public event Action<HowlEventArgs> OnStop;
+        public event Action<HowlEventArgs> OnEnd;
 
         public Howl(IJSRuntime runtime)
         {
@@ -35,7 +35,12 @@ namespace Howler.Blazor.Components
 
         public async Task<int> Play(string location)
         {
-            return await _runtime.InvokeAsync<int>("howl.play", dotNetObjectReference, location);
+            var options = new HowlOptions
+            {
+                Sources = new[] { location }
+            };
+
+            return await Play(options);
         }
 
         public async Task<int> Play(byte[] audio, string mimetype)
@@ -44,7 +49,17 @@ namespace Howler.Blazor.Components
             var audioAsBase64 = Convert.ToBase64String(audio);
             string html5AudioUrl = $"data:{mimetype};base64,{audioAsBase64}";
 
-            return await _runtime.InvokeAsync<int>("howl.play", dotNetObjectReference, html5AudioUrl);
+            var options = new HowlOptions
+            {
+                Sources = new[] { html5AudioUrl }
+            };
+
+            return await _runtime.InvokeAsync<int>("howl.play", dotNetObjectReference, options);
+        }
+
+        public async Task<int> Play(HowlOptions options)
+        {
+            return await _runtime.InvokeAsync<int>("howl.play", dotNetObjectReference, options);
         }
 
         public async Task Stop()

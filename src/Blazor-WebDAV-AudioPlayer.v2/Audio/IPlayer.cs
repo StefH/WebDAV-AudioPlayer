@@ -12,9 +12,10 @@ namespace WebDav.AudioPlayer.Audio
         List<ResourceItem> Items { get; set; }
         Action<string> Log { get; set; }
         Action<ResourceItem> PlayContinue { get; set; }
-        Action<ResourceItem> PlayPaused { get; set; }
-        Action<int, ResourceItem> PlayStarted { get; set; }
-        Action PlayStopped { get; set; }
+        Action<ResourceItem> PlayPause { get; set; }
+        Action<int, ResourceItem> PlayStart { get; set; }
+        Action<int, ResourceItem> PlayEnd { get; set; }
+        Action PlayStop { get; set; }
         int SelectedIndex { get; }
         ResourceItem SelectedResourceItem { get; set; }
         TimeSpan TotalTime { get; }

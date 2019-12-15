@@ -21,5 +21,11 @@ namespace Howler.Blazor.Components
 
             OnStop?.Invoke(new HowlEventArgs { SoundId = soundId });
         }
+
+        [JSInvokable]
+        public void OnEndCallback(int soundId)
+        {
+            OnEnd?.Invoke(new HowlEventArgs { SoundId = soundId });
+        }
     }
 }

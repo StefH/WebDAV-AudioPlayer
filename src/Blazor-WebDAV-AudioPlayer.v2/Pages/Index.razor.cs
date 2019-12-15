@@ -1,9 +1,7 @@
 ﻿using Blazor.WebDAV.AudioPlayer.Models;
-using Blazor.WebDAV.AudioPlayer.Options;
 using Blazor.WebDAV.AudioPlayer.TreeComponent;
 using ByteSizeLib;
 using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,13 +46,13 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
 
         protected int SliderValue { get; set; }
 
-        protected bool SliderEnabled { get; set; } = false;
+        protected bool SliderEnabled { get; set; }
 
         private Timer _timer;
 
         private string[] _codecs;
 
-        protected override async Task OnInitializedAsync()
+        protected override void OnInitialized()
         {
             Root = new TreeNode<ResourceItem>
             {
@@ -79,12 +77,12 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
             }
 
             _codecs = await Player.GetCodecs();
-            Log($"Supported codecs: {string.Join(", ", _codecs)}");
+            Log($"Supported codecs : {string.Join(", ", _codecs)}");
 
             Player.Log = Log;
-            Player.PlayStarted = (selectedIndex, resourceItem) =>
+            Player.PlayStart = (selectedIndex, resourceItem) =>
             {
-                Log($"PlayStarted - {resourceItem.DisplayName}");
+                Log($"PlayStarted : '{resourceItem.DisplayName}'");
 
                 SelectedPlayListItem = PlayListItems[selectedIndex];
                 CurrentTime = TIME_ZERO;
@@ -100,22 +98,25 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
             };
             Player.PlayContinue = resourceItem =>
             {
-                Log($"PlayContinue - {resourceItem.DisplayName}");
+                Log($"PlayContinue : '{resourceItem.DisplayName}'");
             };
-            Player.PlayPaused = resourceItem =>
+            Player.PlayPause = resourceItem =>
             {
-                Log($"PlayPaused - {resourceItem.DisplayName}");
+                Log($"PlayPaused : '{resourceItem.DisplayName}'");
             };
-            Player.PlayStopped = () =>
+            Player.PlayStop = () =>
             {
-                // Log($"PlayStopped");
                 SliderMax = 1;
                 SliderValue = 0;
                 SliderEnabled = false;
                 CurrentTime = TIME_ZERO;
             };
+            Player.PlayEnd = (selectedIndex, resourceItem) =>
+            {
+                Player.PlayNextAsync(CancellationToken.None);
+            };
 
-            _timer = new Timer(async state => { await InvokeAsync(OnTimerCallback); }, null, 0, 249);
+            _timer = new Timer(async state => { await InvokeAsync(OnTimerCallback); }, null, 0, 499);
 
             await RefreshTreeAsync();
         }
@@ -181,7 +182,7 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
             {
                 SelectedPlayListItem = item;
 
-                Log($"ClickSong - {item.Title}");
+                // Log($"ClickSong : {item.Title}");
 
                 await Player.PlayAsync(item.Index, CancellationToken.None);
             }
@@ -240,23 +241,14 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
 
         private async Task OnTimerCallback()
         {
-            if (Player == null)
+            if (!(await Player.GetIsPlaying()))
             {
                 return;
             }
 
             var currentTime = await Player.GetCurrentTime();
             CurrentTime = $@"{currentTime:hh\:mm\:ss}";
-
-            if (await Player.GetIsPlaying())
-            {
-                SliderValue = (int)currentTime.TotalSeconds;
-
-                if (currentTime.Add(TimeSpan.FromMilliseconds(500)) > Player.TotalTime)
-                {
-                    await Player.PlayNextAsync(CancellationToken.None);
-                }
-            }
+            SliderValue = (int)currentTime.TotalSeconds;
 
             StateHasChanged();
         }

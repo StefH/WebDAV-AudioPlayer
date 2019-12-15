@@ -18,6 +18,8 @@ namespace Howler.Blazor.Components
 
         Task<int> Play(byte[] audio, string mimeType);
 
+        Task<int> Play(HowlOptions options);
+
         Task Stop();
 
         Task Pause();
