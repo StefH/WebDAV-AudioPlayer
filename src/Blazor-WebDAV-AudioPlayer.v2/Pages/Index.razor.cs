@@ -237,6 +237,8 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
         private void Log(string text)
         {
             Logging = $"{DateTime.Now} - {text}\r\n" + Logging;
+
+            StateHasChanged();
         }
 
         private async Task OnTimerCallback()
