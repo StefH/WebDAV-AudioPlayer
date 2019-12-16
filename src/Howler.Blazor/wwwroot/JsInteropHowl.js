@@ -6,6 +6,7 @@ window.howl = {
             stop();
         }
 
+        // ReSharper disable once UseOfImplicitGlobalInFunctionScope
         howl = new Howl({
             src: options.sources,
             html5: options.html5,
@@ -18,6 +19,12 @@ window.howl = {
             },
             onend: async function (id) {
                 await dotnetReference.invokeMethodAsync('OnEndCallback', id);
+            },
+            onloaderror: async function (id, error) {
+                await dotnetReference.invokeMethodAsync('OnLoadErrorCallback', id, error);
+            },
+            onplayerror: async function (id, error) {
+                await dotnetReference.invokeMethodAsync('OnPlayErrorCallback', id, error);
             }
         });
 

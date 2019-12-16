@@ -16,6 +16,8 @@ namespace Howler.Blazor.Components
         public event Action<HowlPlayEventArgs> OnPlay;
         public event Action<HowlEventArgs> OnStop;
         public event Action<HowlEventArgs> OnEnd;
+        public event Action<HowlErrorEventArgs> OnLoadError;
+        public event Action<HowlErrorEventArgs> OnPlayError;
 
         public Howl(IJSRuntime runtime)
         {
