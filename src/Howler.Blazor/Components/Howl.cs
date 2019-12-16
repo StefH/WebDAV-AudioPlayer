@@ -1,7 +1,8 @@
-﻿using Howler.Blazor.Components.Events;
-using Microsoft.JSInterop;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using Howler.Blazor.Components.Events;
+using Howler.Blazor.Validation;
+using Microsoft.JSInterop;
 
 namespace Howler.Blazor.Components
 {
@@ -18,8 +19,9 @@ namespace Howler.Blazor.Components
 
         public Howl(IJSRuntime runtime)
         {
-            _runtime = runtime;
+            Guard.NotNull(runtime, nameof(runtime));
 
+            _runtime = runtime;
             _dotNetObjectReference = DotNetObjectReference.Create(this);
         }
 
@@ -30,11 +32,15 @@ namespace Howler.Blazor.Components
 
         public ValueTask<int> Play(Uri location)
         {
+            Guard.NotNull(location, nameof(location));
+
             return Play(location.ToString());
         }
 
         public ValueTask<int> Play(string location)
         {
+            Guard.NotNullOrEmpty(location, nameof(location));
+
             var options = new HowlOptions
             {
                 Sources = new[] { location }
@@ -45,6 +51,9 @@ namespace Howler.Blazor.Components
 
         public ValueTask<int> Play(byte[] audio, string mimetype)
         {
+            Guard.NotNull(audio, nameof(audio));
+            Guard.NotNullOrEmpty(mimetype, nameof(mimetype));
+
             // http://www.iandevlin.com/blog/2012/09/html5/html5-media-and-data-uri/
             var audioAsBase64 = Convert.ToBase64String(audio);
             string html5AudioUrl = $"data:{mimetype};base64,{audioAsBase64}";
@@ -59,6 +68,8 @@ namespace Howler.Blazor.Components
 
         public ValueTask<int> Play(HowlOptions options)
         {
+            Guard.NotNull(options, nameof(options));
+
             return _runtime.InvokeAsync<int>("howl.play", _dotNetObjectReference, options);
         }
 
