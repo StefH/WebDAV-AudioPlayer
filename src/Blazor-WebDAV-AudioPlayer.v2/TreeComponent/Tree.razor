@@ -4,8 +4,6 @@
 
     @foreach (var treeNode in ResourceItems ?? Enumerable.Empty<TreeNode<ResourceItem>>())
     {
-        // bool selected = treeNode.Equals(SelectedNode);
-
         <div>
             @if (treeNode.Item.IsCollection)
             {

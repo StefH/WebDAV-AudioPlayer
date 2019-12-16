@@ -6,6 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Util\**" />
+    <Content Remove="Util\**" />
+    <EmbeddedResource Remove="Util\**" />
+    <None Remove="Util\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Audio\IPlayerFactory.cs" />
     <Compile Remove="Audio\PlayerFactory.cs" />
     <Compile Remove="Client\IWebDavClientFactory.cs" />
@@ -38,13 +45,11 @@
     <Compile Include="..\WebDAV-AudioPlayer\Extensions\TaskExtensions.cs" Link="Extensions\TaskExtensions.cs" />
     <Compile Include="..\WebDAV-AudioPlayer\IO\SecurePasswordHelper.cs" Link="IO\SecurePasswordHelper.cs" />
     <Compile Include="..\WebDAV-AudioPlayer\Models\ResourceItem.cs" Link="Models\ResourceItem.cs" />
-    <Compile Include="..\WebDAV-AudioPlayer\Util\FixedSizedQueue.cs" Link="Util\FixedSizedQueue.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="IO\" />
     <Folder Include="Extensions\" />
-    <Folder Include="Util\" />
   </ItemGroup>
 
   <ItemGroup>
