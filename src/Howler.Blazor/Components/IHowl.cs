@@ -22,7 +22,7 @@ namespace Howler.Blazor.Components
 
         ValueTask Stop();
 
-        ValueTask Pause();
+        ValueTask Pause(int? soundId);
 
         ValueTask Seek(TimeSpan position);
 

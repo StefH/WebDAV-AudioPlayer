@@ -69,9 +69,9 @@ namespace Howler.Blazor.Components
             return _runtime.InvokeVoidAsync("howl.stop");
         }
 
-        public ValueTask Pause()
+        public ValueTask Pause(int? soundId)
         {
-            return _runtime.InvokeVoidAsync("howl.pause");
+            return _runtime.InvokeVoidAsync("howl.pause", soundId);
         }
 
         public ValueTask Seek(TimeSpan position)

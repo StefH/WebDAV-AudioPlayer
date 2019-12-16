@@ -40,10 +40,14 @@ window.howl = {
         soundId = null;
         howl = null;
     },
-    pause: function () {
+    pause: function (id) {
         if (howl) {
             if (howl.playing()) {
-                howl.pause();
+                if (id) {
+                    howl.pause(id);
+                } else {
+                    howl.pause();
+                }
             } else {
                 howl.play(soundId);
             }
