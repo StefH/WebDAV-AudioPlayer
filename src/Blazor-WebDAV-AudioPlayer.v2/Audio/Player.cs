@@ -1,15 +1,16 @@
-﻿using Blazor.WebDAV.AudioPlayer.Constants;
-using Howler.Blazor.Components;
-using Microsoft.Extensions.Caching.Memory;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Blazor.WebDAV.AudioPlayer.Constants;
+using Howler.Blazor.Components;
+using Microsoft.Extensions.Caching.Memory;
+using WebDav.AudioPlayer.Audio;
 using WebDav.AudioPlayer.Client;
 using WebDav.AudioPlayer.Models;
 
-namespace WebDav.AudioPlayer.Audio
+namespace Blazor.WebDAV.AudioPlayer.Audio
 {
     internal class Player : IPlayer
     {

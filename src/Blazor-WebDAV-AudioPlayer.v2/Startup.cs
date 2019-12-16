@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using Blazor.WebDAV.AudioPlayer.Audio;
 using WebDav.AudioPlayer.Audio;
 using WebDav.AudioPlayer.Client;
 
