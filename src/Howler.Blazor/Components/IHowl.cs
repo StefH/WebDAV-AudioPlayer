@@ -10,29 +10,29 @@ namespace Howler.Blazor.Components
         #endregion
 
         #region  Methods
-        Task<bool> IsPlaying();
+        ValueTask<bool> IsPlaying();
 
-        Task<int> Play(Uri location);
+        ValueTask<int> Play(Uri location);
 
-        Task<int> Play(string location);
+        ValueTask<int> Play(string location);
 
-        Task<int> Play(byte[] audio, string mimeType);
+        ValueTask<int> Play(byte[] audio, string mimeType);
 
-        Task<int> Play(HowlOptions options);
+        ValueTask<int> Play(HowlOptions options);
 
-        Task Stop();
+        ValueTask Stop();
 
-        Task Pause();
+        ValueTask Pause();
 
-        Task Seek(TimeSpan position);
+        ValueTask Seek(TimeSpan position);
 
-        Task<TimeSpan> GetCurrentTime();
+        ValueTask<TimeSpan> GetCurrentTime();
 
-        Task<TimeSpan> GetTotalTime();
+        ValueTask<TimeSpan> GetTotalTime();
         #endregion
 
         #region Global Methods
-        Task<string[]> GetCodecs();
+        ValueTask<string[]> GetCodecs();
         #endregion
     }
 }

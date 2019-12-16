@@ -66,12 +66,12 @@ namespace WebDav.AudioPlayer.Audio
 
         public async Task<bool> GetIsPlaying()
         {
-            return await _howl?.IsPlaying() == true;
+            return await _howl.IsPlaying();
         }
 
         public async Task<TimeSpan> GetCurrentTime()
         {
-            return _howl != null ? await _howl?.GetCurrentTime() : TimeSpan.Zero;
+            return await _howl.GetCurrentTime();
         }
 
         public async Task PlayAsync(int index, CancellationToken cancellationToken)
@@ -247,12 +247,7 @@ namespace WebDav.AudioPlayer.Audio
 
         public async Task<string[]> GetCodecs()
         {
-            if (_codecs == null)
-            {
-                _codecs = await _howl.GetCodecs();
-            }
-
-            return _codecs;
+            return _codecs ??= await _howl.GetCodecs();
         }
 
         public void Dispose()

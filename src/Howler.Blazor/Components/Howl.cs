@@ -8,7 +8,7 @@ namespace Howler.Blazor.Components
     public partial class Howl : IHowl
     {
         private readonly IJSRuntime _runtime;
-        private readonly DotNetObjectReference<Howl> dotNetObjectReference;
+        private readonly DotNetObjectReference<Howl> _dotNetObjectReference;
 
         public TimeSpan TotalTime { get; private set; } = TimeSpan.Zero;
 
@@ -20,30 +20,30 @@ namespace Howler.Blazor.Components
         {
             _runtime = runtime;
 
-            dotNetObjectReference = DotNetObjectReference.Create(this);
+            _dotNetObjectReference = DotNetObjectReference.Create(this);
         }
 
-        public async Task<bool> IsPlaying()
+        public ValueTask<bool> IsPlaying()
         {
-            return await _runtime.InvokeAsync<bool>("howl.getIsPlaying", dotNetObjectReference);
+            return _runtime.InvokeAsync<bool>("howl.getIsPlaying", _dotNetObjectReference);
         }
 
-        public async Task<int> Play(Uri location)
+        public ValueTask<int> Play(Uri location)
         {
-            return await Play(location.ToString());
+            return Play(location.ToString());
         }
 
-        public async Task<int> Play(string location)
+        public ValueTask<int> Play(string location)
         {
             var options = new HowlOptions
             {
                 Sources = new[] { location }
             };
 
-            return await Play(options);
+            return Play(options);
         }
 
-        public async Task<int> Play(byte[] audio, string mimetype)
+        public ValueTask<int> Play(byte[] audio, string mimetype)
         {
             // http://www.iandevlin.com/blog/2012/09/html5/html5-media-and-data-uri/
             var audioAsBase64 = Convert.ToBase64String(audio);
@@ -54,49 +54,49 @@ namespace Howler.Blazor.Components
                 Sources = new[] { html5AudioUrl }
             };
 
-            return await _runtime.InvokeAsync<int>("howl.play", dotNetObjectReference, options);
+            return _runtime.InvokeAsync<int>("howl.play", _dotNetObjectReference, options);
         }
 
-        public async Task<int> Play(HowlOptions options)
+        public ValueTask<int> Play(HowlOptions options)
         {
-            return await _runtime.InvokeAsync<int>("howl.play", dotNetObjectReference, options);
+            return _runtime.InvokeAsync<int>("howl.play", _dotNetObjectReference, options);
         }
 
-        public async Task Stop()
+        public ValueTask Stop()
         {
-            await _runtime.InvokeAsync<dynamic>("howl.stop");
+            return _runtime.InvokeVoidAsync("howl.stop");
         }
 
-        public async Task Pause()
+        public ValueTask Pause()
         {
-            await _runtime.InvokeAsync<dynamic>("howl.pause");
+            return _runtime.InvokeVoidAsync("howl.pause");
         }
 
-        public async Task Seek(TimeSpan position)
+        public ValueTask Seek(TimeSpan position)
         {
-            await _runtime.InvokeAsync<dynamic>("howl.seek", position.TotalSeconds);
+            return _runtime.InvokeVoidAsync("howl.seek", position.TotalSeconds);
         }
 
-        public async Task<TimeSpan> GetCurrentTime()
+        public async ValueTask<TimeSpan> GetCurrentTime()
         {
             int timeInSeconds = await _runtime.InvokeAsync<int>("howl.getCurrentTime");
             return TimeSpan.FromSeconds(timeInSeconds);
         }
 
-        public async Task<TimeSpan> GetTotalTime()
+        public async ValueTask<TimeSpan> GetTotalTime()
         {
             int timeInSeconds = await _runtime.InvokeAsync<int>("howl.getTotalTime");
             return TimeSpan.FromSeconds(timeInSeconds);
         }
 
-        public async Task<bool> IsCodecSupported(string extension)
+        public ValueTask<bool> IsCodecSupported(string extension)
         {
-            return await _runtime.InvokeAsync<bool>("howl.isCodecSupported", extension);
+            return _runtime.InvokeAsync<bool>("howl.isCodecSupported", extension);
         }
 
-        public async Task<string[]> GetCodecs()
+        public ValueTask<string[]> GetCodecs()
         {
-            return await _runtime.InvokeAsync<string[]>("howl.getCodecs");
+            return _runtime.InvokeAsync<string[]>("howl.getCodecs");
         }
     }
 }
