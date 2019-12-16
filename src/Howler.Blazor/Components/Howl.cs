@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Howler.Blazor.Components.Events;
 using Howler.Blazor.Validation;
 using Microsoft.JSInterop;
 
@@ -13,23 +12,12 @@ namespace Howler.Blazor.Components
 
         public TimeSpan TotalTime { get; private set; } = TimeSpan.Zero;
 
-        public event Action<HowlPlayEventArgs> OnPlay;
-        public event Action<HowlEventArgs> OnStop;
-        public event Action<HowlEventArgs> OnEnd;
-        public event Action<HowlErrorEventArgs> OnLoadError;
-        public event Action<HowlErrorEventArgs> OnPlayError;
-
         public Howl(IJSRuntime runtime)
         {
             Guard.NotNull(runtime, nameof(runtime));
 
             _runtime = runtime;
             _dotNetObjectReference = DotNetObjectReference.Create(this);
-        }
-
-        public ValueTask<bool> IsPlaying()
-        {
-            return _runtime.InvokeAsync<bool>("howl.getIsPlaying", _dotNetObjectReference);
         }
 
         public ValueTask<int> Play(Uri location)
@@ -88,6 +76,10 @@ namespace Howler.Blazor.Components
         public ValueTask Seek(TimeSpan position)
         {
             return _runtime.InvokeVoidAsync("howl.seek", position.TotalSeconds);
+        }
+        public ValueTask<bool> IsPlaying()
+        {
+            return _runtime.InvokeAsync<bool>("howl.getIsPlaying", _dotNetObjectReference);
         }
 
         public async ValueTask<TimeSpan> GetCurrentTime()

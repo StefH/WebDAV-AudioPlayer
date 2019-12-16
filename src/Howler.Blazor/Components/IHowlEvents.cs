@@ -30,29 +30,44 @@ namespace Howler.Blazor.Components
         /// </summary>
         event Action<HowlErrorEventArgs> OnPlayError;
 
-        /*
-         * onload Function
-Fires when the sound is loaded.
+        /// <summary>
+        /// Fires when the sound is loaded.
+        /// </summary>
+        event Action<EventArgs> OnLoad;
 
-onpause Function
-Fires when the sound has been paused. The first parameter is the ID of the sound.
+        /// <summary>
+        /// Fires when the sound has been paused.
+        /// </summary>
+        event Action<HowlEventArgs> OnPause;
 
-onmute Function
-Fires when the sound has been muted/unmuted. The first parameter is the ID of the sound.
+        /// <summary>
+        /// Fires when the sound has been muted/unmuted.
+        /// </summary>
+        event Action<HowlEventArgs> OnMute;
 
-onvolume Function
-Fires when the sound's volume has changed. The first parameter is the ID of the sound.
+        /// <summary>
+        /// Fires when the sound's volume has changed.
+        /// </summary>
+        event Action<HowlEventArgs> OnVolume;
 
-onrate Function
-Fires when the sound's playback rate has changed. The first parameter is the ID of the sound.
+        /// <summary>
+        /// Fires when the sound's playback rate has changed.
+        /// </summary>
+        event Action<HowlEventArgs> OnRate;
 
-onseek Function
-Fires when the sound has been seeked. The first parameter is the ID of the sound.
+        /// <summary>
+        /// Fires when the sound has been seeked.
+        /// </summary>
+        event Action<HowlEventArgs> OnSeek;
 
-onfade Function
-Fires when the current sound finishes fading in/out. The first parameter is the ID of the sound.
+        /// <summary>
+        /// Fires when the current sound finishes fading in/out.
+        /// </summary>
+        event Action<HowlEventArgs> OnFade;
 
-onunlock Function
-Fires when audio has been automatically unlocked through a touch/click event.*/
+        /// <summary>
+        /// Fires when audio has been automatically unlocked through a touch/click event.
+        /// </summary>
+        event Action<EventArgs> OnUnlock;
     }
 }
