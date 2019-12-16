@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Howler.Blazor.Validation;
 using Microsoft.JSInterop;
@@ -20,20 +21,20 @@ namespace Howler.Blazor.Components
             _dotNetObjectReference = DotNetObjectReference.Create(this);
         }
 
-        public ValueTask<int> Play(Uri location)
+        public ValueTask<int> Play(params Uri[] locations)
         {
-            Guard.NotNull(location, nameof(location));
+            Guard.HasNoNulls(locations, nameof(locations));
 
-            return Play(location.ToString());
+            return Play(locations.Select(l => l.ToString()).ToArray());
         }
 
-        public ValueTask<int> Play(string location)
+        public ValueTask<int> Play(params string[] sources)
         {
-            Guard.NotNullOrEmpty(location, nameof(location));
+            Guard.HasNoNulls(sources, nameof(sources));
 
             var options = new HowlOptions
             {
-                Sources = new[] { location }
+                Sources = sources
             };
 
             return Play(options);

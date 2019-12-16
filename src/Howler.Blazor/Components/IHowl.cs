@@ -12,9 +12,9 @@ namespace Howler.Blazor.Components
         #region  Methods
         ValueTask<bool> IsPlaying();
 
-        ValueTask<int> Play(Uri location);
+        ValueTask<int> Play(params Uri[] locations);
 
-        ValueTask<int> Play(string location);
+        ValueTask<int> Play(params string[] sources);
 
         ValueTask<int> Play(byte[] audio, string mimeType);
 
