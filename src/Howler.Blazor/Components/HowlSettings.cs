@@ -1,6 +1,6 @@
 ﻿namespace Howler.Blazor.Components
 {
-    public class HowlOptions
+    public class HowlSettings
     {
         /// <summary>
         /// The sources to the track(s) to be loaded for the sound (URLs or base64 data URIs).

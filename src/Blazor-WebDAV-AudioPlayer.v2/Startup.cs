@@ -48,6 +48,8 @@ namespace Blazor.WebDAV.AudioPlayer
                 };
             });
 
+            // services.AddSingleton(Microsoft.Extensions.Options.Options.Create(new ConnectionSettings()));
+
             services.AddSingleton<IWebDavClient, MyWebDavClient>();
             services.AddScoped<IHowl, Howl>();
             services.AddScoped<IPlayer, Player>();
@@ -96,8 +98,7 @@ namespace Blazor.WebDAV.AudioPlayer
 
             app.UseStaticFiles(new StaticFileOptions
             {
-                ContentTypeProvider = provider,
-                //FileProvider = new MyFileProvider()
+                ContentTypeProvider = provider
             });
         }
     }

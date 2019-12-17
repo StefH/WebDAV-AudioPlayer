@@ -29,9 +29,15 @@ namespace Howler.Blazor.Components
         }
 
         [JSInvokable]
+        public void OnLoadCallback()
+        {
+            OnLoad?.Invoke(new EventArgs());
+        }
+
+        [JSInvokable]
         public void OnLoadErrorCallback(int soundId, string error)
         {
-            OnLoadError?.Invoke(new HowlErrorEventArgs { SoundId = soundId, Error = error});
+            OnLoadError?.Invoke(new HowlErrorEventArgs { SoundId = soundId, Error = error });
         }
 
         [JSInvokable]

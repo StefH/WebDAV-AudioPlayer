@@ -6,7 +6,6 @@ window.howl = {
             stop();
         }
 
-        // ReSharper disable once UseOfImplicitGlobalInFunctionScope
         howl = new Howl({
             src: options.sources,
             html5: options.html5,
@@ -19,6 +18,9 @@ window.howl = {
             },
             onend: async function (id) {
                 await dotnetReference.invokeMethodAsync('OnEndCallback', id);
+            },
+            onload: async function () {
+                await dotnetReference.invokeMethodAsync('OnLoadCallback');
             },
             onloaderror: async function (id, error) {
                 await dotnetReference.invokeMethodAsync('OnLoadErrorCallback', id, error);
@@ -34,7 +36,6 @@ window.howl = {
     stop: function () {
         if (howl) {
             howl.stop();
-            howl.unload();
         }
 
         soundId = null;
@@ -56,6 +57,19 @@ window.howl = {
     seek: function (position) {
         if (howl) {
             howl.seek(position);
+        }
+    },
+    load: function () {
+        if (howl) {
+            howl.load();
+        }
+    },
+    unload: function () {
+        if (howl) {
+            howl.unload();
+
+            soundId = null;
+            howl = null;
         }
     },
     getIsPlaying: function () {

@@ -32,7 +32,7 @@ namespace Howler.Blazor.Components
         {
             Guard.HasNoNulls(sources, nameof(sources));
 
-            var options = new HowlOptions
+            var options = new HowlSettings
             {
                 Sources = sources
             };
@@ -49,7 +49,7 @@ namespace Howler.Blazor.Components
             var audioAsBase64 = Convert.ToBase64String(audio);
             string html5AudioUrl = $"data:{mimetype};base64,{audioAsBase64}";
 
-            var options = new HowlOptions
+            var options = new HowlSettings
             {
                 Sources = new[] { html5AudioUrl }
             };
@@ -57,11 +57,11 @@ namespace Howler.Blazor.Components
             return _runtime.InvokeAsync<int>("howl.play", _dotNetObjectReference, options);
         }
 
-        public ValueTask<int> Play(HowlOptions options)
+        public ValueTask<int> Play(HowlSettings settings)
         {
-            Guard.NotNull(options, nameof(options));
+            Guard.NotNull(settings, nameof(settings));
 
-            return _runtime.InvokeAsync<int>("howl.play", _dotNetObjectReference, options);
+            return _runtime.InvokeAsync<int>("howl.play", _dotNetObjectReference, settings);
         }
 
         public ValueTask Stop()
@@ -78,6 +78,17 @@ namespace Howler.Blazor.Components
         {
             return _runtime.InvokeVoidAsync("howl.seek", position.TotalSeconds);
         }
+
+        public ValueTask Load()
+        {
+            return _runtime.InvokeVoidAsync("howl.load");
+        }
+
+        public ValueTask Unload()
+        {
+            return _runtime.InvokeVoidAsync("howl.unload");
+        }
+
         public ValueTask<bool> IsPlaying()
         {
             return _runtime.InvokeAsync<bool>("howl.getIsPlaying", _dotNetObjectReference);

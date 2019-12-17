@@ -3,6 +3,9 @@ using System.Threading.Tasks;
 
 namespace Howler.Blazor.Components
 {
+    /// <summary>
+    /// See https://github.com/goldfire/howler.js
+    /// </summary>
     public interface IHowl : IHowlEvents
     {
         #region Properties
@@ -18,13 +21,23 @@ namespace Howler.Blazor.Components
 
         ValueTask<int> Play(byte[] audio, string mimeType);
 
-        ValueTask<int> Play(HowlOptions options);
+        ValueTask<int> Play(HowlSettings settings);
 
         ValueTask Stop();
 
         ValueTask Pause(int? soundId = null);
 
         ValueTask Seek(TimeSpan position);
+
+        /// <summary>
+        /// This is called by default, but if you set preload to false, you must call load before you can play any sounds.
+        /// </summary>
+        ValueTask Load();
+
+        /// <summary>
+        /// Unload and destroy a Howl object. This will immediately stop all sounds attached to this sound and remove it from the cache.
+        /// </summary>
+        ValueTask Unload();
 
         ValueTask<TimeSpan> GetCurrentTime();
 

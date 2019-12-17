@@ -114,11 +114,6 @@ namespace Blazor.WebDAV.AudioPlayer.Audio
                 }
             }
 
-            //var options = new HowlOptions
-            //{
-            //    Html5 = true,
-            //    Sources = new[] { $"{AudioPlayerConstants.SoundPrefix}{SelectedResourceItem.Id}{SelectedResourceItem.Extension}" }
-            //};
             await _howl.Play($"{AudioPlayerConstants.SoundPrefix}{SelectedResourceItem.Id}{SelectedResourceItem.Extension}");
 
             // Preload Next
