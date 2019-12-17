@@ -105,15 +105,5 @@ namespace Howler.Blazor.Components
             int timeInSeconds = await _runtime.InvokeAsync<int>("howl.getTotalTime");
             return TimeSpan.FromSeconds(timeInSeconds);
         }
-
-        public ValueTask<bool> IsCodecSupported(string extension)
-        {
-            return _runtime.InvokeAsync<bool>("howl.isCodecSupported", extension);
-        }
-
-        public ValueTask<string[]> GetCodecs()
-        {
-            return _runtime.InvokeAsync<string[]>("howl.getCodecs");
-        }
     }
 }

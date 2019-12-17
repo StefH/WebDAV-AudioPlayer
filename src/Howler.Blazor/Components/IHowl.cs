@@ -42,12 +42,6 @@ namespace Howler.Blazor.Components
         ValueTask<TimeSpan> GetCurrentTime();
 
         ValueTask<TimeSpan> GetTotalTime();
-
-        ValueTask<bool> IsCodecSupported(string extension);
-        #endregion
-
-        #region Global Methods
-        ValueTask<string[]> GetCodecs();
         #endregion
     }
 }

@@ -17,6 +17,7 @@ namespace Blazor.WebDAV.AudioPlayer.Audio
         private readonly IMemoryCache _cache;
         private readonly IWebDavClient _client;
         private readonly IHowl _howl;
+        private readonly IHowlGlobal _howlGlobal;
 
         private List<ResourceItem> _items;
         private string[] _codecs;
@@ -46,11 +47,12 @@ namespace Blazor.WebDAV.AudioPlayer.Audio
 
         public TimeSpan TotalTime { get; private set; } = TimeSpan.Zero;
 
-        public Player(IMemoryCache cache, IWebDavClient client, IHowl howl)
+        public Player(IMemoryCache cache, IWebDavClient client, IHowl howl, IHowlGlobal howlGlobal)
         {
             _cache = cache;
             _client = client;
             _howl = howl;
+            _howlGlobal = howlGlobal;
 
             _howl.OnPlay += (e) =>
             {
@@ -243,7 +245,7 @@ namespace Blazor.WebDAV.AudioPlayer.Audio
 
         public async Task<string[]> GetCodecs()
         {
-            return _codecs ??= await _howl.GetCodecs();
+            return _codecs ??= await _howlGlobal.GetCodecs();
         }
 
         public void Dispose()

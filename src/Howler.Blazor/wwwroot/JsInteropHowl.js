@@ -1,5 +1,6 @@
 ﻿let howl = null;
 let soundId = null;
+
 window.howl = {
     play: function (dotnetReference, options) {
         if (howl) {
@@ -97,6 +98,12 @@ window.howl = {
         }
 
         return 0;
+    }
+};
+
+window.howler = {
+    mute: function (muted) {
+        Howler.mute(muted);
     },
     getCodecs: function () {
         const codecs = [];
