@@ -17,6 +17,9 @@ window.howl = {
             onstop: async function (id) {
                 await dotnetReference.invokeMethodAsync('OnStopCallback', id);
             },
+            onpause: async function (id) {
+                await dotnetReference.invokeMethodAsync('OnPauseCallback', id);
+            },
             onend: async function (id) {
                 await dotnetReference.invokeMethodAsync('OnEndCallback', id);
             },

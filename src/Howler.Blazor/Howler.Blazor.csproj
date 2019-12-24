@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <Version>0.0.2</Version>
+    <Version>0.9.0</Version>
     <Title>Howler.Blazor</Title>
     <Description>A Blazor JSInterop wrapper for Howler.js</Description>
     <Authors>Stef Heyenrath</Authors>

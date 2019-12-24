@@ -82,6 +82,11 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
             Player.Log = Log;
             Player.PlayStart = (selectedIndex, resourceItem) =>
             {
+                if (resourceItem == null)
+                {
+                    return;
+                }
+
                 Log($"PlayStarted : '{resourceItem.DisplayName}'");
 
                 SelectedPlayListItem = PlayListItems[selectedIndex];
@@ -98,10 +103,20 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
             };
             Player.PlayContinue = resourceItem =>
             {
+                if (resourceItem == null)
+                {
+                    return;
+                }
+
                 Log($"PlayContinue : '{resourceItem.DisplayName}'");
             };
             Player.PlayPause = resourceItem =>
             {
+                if (resourceItem == null)
+                {
+                    return;
+                }
+
                 Log($"PlayPaused : '{resourceItem.DisplayName}'");
             };
             Player.PlayStop = () =>

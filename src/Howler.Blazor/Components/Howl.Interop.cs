@@ -23,6 +23,14 @@ namespace Howler.Blazor.Components
         }
 
         [JSInvokable]
+        public void OnPauseCallback(int soundId)
+        {
+            TotalTime = TimeSpan.Zero;
+
+            OnPause?.Invoke(new HowlEventArgs { SoundId = soundId });
+        }
+
+        [JSInvokable]
         public void OnEndCallback(int soundId)
         {
             OnEnd?.Invoke(new HowlEventArgs { SoundId = soundId });
