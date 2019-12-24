@@ -24,8 +24,8 @@ public void ConfigureServices(IServiceCollection services)
 ### Add the required javascripts to _Host.cshtml
 ``` diff
 <head>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.1.2/howler.core.min.js" integrity="sha256-q2vnVvwrx3RbYXPyAwx7c2npmULQg2VdCXBoJ5+iigs=" crossorigin="anonymous"></script>
-    <script src="_content/Howler.Blazor/JsInteropHowl.js"></script>
++    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.1.2/howler.core.min.js" integrity="sha256-q2vnVvwrx3RbYXPyAwx7c2npmULQg2VdCXBoJ5+iigs=" crossorigin="anonymous"></script>
++    <script src="_content/Howler.Blazor/JsInteropHowl.js"></script>
 </head>
 ```
 

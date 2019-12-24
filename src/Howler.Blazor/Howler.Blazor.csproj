@@ -10,10 +10,10 @@
     <PackageTags>Blazor;Howler;Howler.js;audio;jsinterop</PackageTags>
     <PackageReleaseNotes>See CHANGELOG.md</PackageReleaseNotes>
     <PackageIconUrl>https://i.ibb.co/Sxyn93T/Howler-Blazor-240x240.png</PackageIconUrl>
-    <PackageProjectUrl>https://github.com/StefH/WebDAV-AudioPlayer</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/StefH/WebDAV-AudioPlayer/tree/master/src/Howler.Blazor</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/StefH/WebDAV-AudioPlayer</RepositoryUrl>
+    <RepositoryUrl>https://github.com/StefH/WebDAV-AudioPlayer/tree/master/src/Howler.Blazor</RepositoryUrl>
     <ProjectGuid>{D3804221-1234-4502-9595-39584E5A0000}</ProjectGuid>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
 
