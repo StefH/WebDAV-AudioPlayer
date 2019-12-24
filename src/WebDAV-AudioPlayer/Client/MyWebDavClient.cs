@@ -13,10 +13,6 @@ namespace WebDav.AudioPlayer.Client
 {
     public class MyWebDavClient : IWebDavClient
     {
-        private static readonly string[] AudioExtensions = { ".wav", ".wma", ".mp3", ".mp4", ".m4a", ".aac", ".ogg", ".flac", ".opus" };
-        private static readonly Func<WebDavResource, bool> IsAudioFile = r => AudioExtensions.Any(e => r.Uri.ToLowerInvariant().EndsWith(e));
-        private static readonly Func<WebDavResource, bool> IsFolder = r => r.IsCollection;
-
         private readonly WebDavClient _client;
         private readonly IConnectionSettings _connectionSettings;
 
@@ -47,7 +43,7 @@ namespace WebDav.AudioPlayer.Client
             Debug.WriteLine("path=[" + parent.FullPath + "]");
 
             var result = await _client.Propfind(parent.FullPath, new PropfindParameters { CancellationToken = cancellationToken });
-            if (result.StatusCode == (int) HttpStatusCode.Unauthorized)
+            if (result.StatusCode == (int)HttpStatusCode.Unauthorized)
             {
                 return ResourceLoadStatus.Unauthorized;
             }
@@ -55,13 +51,15 @@ namespace WebDav.AudioPlayer.Client
             if (result.Resources != null)
             {
                 var tasks = result.Resources.Skip(1)
-                    .Where(r => IsAudioFile(r) || IsFolder(r))
+                    .Where(r => !r.DisplayName.StartsWith("."))
                     .Select(async r =>
                     {
                         Uri fullPath = OnlinePathBuilder.Combine(_connectionSettings.StorageUri, r.Uri);
                         var resourceItem = new ResourceItem
                         {
+                            Id = Guid.NewGuid(),
                             DisplayName = r.DisplayName,
+                            Extension = new FileInfo(r.DisplayName).Extension.ToLowerInvariant(),
                             IsCollection = r.IsCollection,
                             FullPath = fullPath,
                             ContentLength = r.ContentLength,

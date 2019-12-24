@@ -7,6 +7,8 @@ namespace WebDav.AudioPlayer.Models
 {
     public class ResourceItem
     {
+        public Guid Id { get; set; }
+
         public int Level { get; set; }
 
         public MediaDetails MediaDetails { get; set; }
@@ -14,6 +16,8 @@ namespace WebDav.AudioPlayer.Models
         public string DisplayName { get; set; }
 
         public Uri FullPath { get; set; }
+
+        public string Extension { get; set; }
 
         public bool IsCollection { get; set; }
 

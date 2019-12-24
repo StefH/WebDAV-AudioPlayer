@@ -158,7 +158,7 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
             if (Status == ResourceLoadStatus.Ok)
             {
                 _player.Items = treeNode.Item.Items;
-                PlayListItems = treeNode.Item.Items
+                PlayListItems = _player.Items
                     .Where(resourceItem => !resourceItem.IsCollection)
                     .Select((resourceItem, index) => new PlayListItem
                     {

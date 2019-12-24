@@ -1,0 +1,27 @@
+﻿<input type="range" style="width:95%;" min="0" max="@Max" value="@Value" disabled="@(!Enabled)" @oninput="ChangeSlider" @onmouseup="MouseUp">
+
+@code {
+    [Parameter] public bool Enabled { get; set; } = true;
+
+    [Parameter] public int Max { get; set; }
+
+    [Parameter] public int Value { get; set; }
+
+    [Parameter] public EventCallback<int> ValueChanged { get; set; }
+
+    private int _value = 0;
+
+    private void ChangeSlider(ChangeEventArgs e)
+    {
+        string stringValue = (string)e.Value;
+        if (int.TryParse(stringValue, out int value))
+        {
+            _value = value;
+        }
+    }
+
+    private void MouseUp(MouseEventArgs e)
+    {
+        ValueChanged.InvokeAsync(_value);
+    }
+}
