@@ -53,7 +53,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Howler.Blazor\Howler.Blazor.csproj" />
+    <ProjectReference Include="..\..\..\Howler.Blazor\src\Howler.Blazor\Howler.Blazor.csproj" />
   </ItemGroup>
 
 </Project>
