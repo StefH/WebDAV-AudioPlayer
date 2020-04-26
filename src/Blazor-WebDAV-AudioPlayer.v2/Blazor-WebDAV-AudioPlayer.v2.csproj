@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <PackageReference Include="ByteSize" Version="2.0.0" />
+    <PackageReference Include="Howler.Blazor" Version="0.9.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.0" />
     <PackageReference Include="WebApiContrib.Core" Version="2.2.1" />
@@ -52,8 +53,8 @@
     <Folder Include="Extensions\" />
   </ItemGroup>
 
-  <ItemGroup>
+  <!--<ItemGroup>
     <ProjectReference Include="..\..\..\Howler.Blazor\src\Howler.Blazor\Howler.Blazor.csproj" />
-  </ItemGroup>
+  </ItemGroup>-->
 
 </Project>
