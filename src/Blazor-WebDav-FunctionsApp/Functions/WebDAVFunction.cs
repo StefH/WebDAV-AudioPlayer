@@ -10,7 +10,6 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using WebDav;
-using WebDav.AudioPlayer.Audio;
 using WebDav.AudioPlayer.Client;
 using WebDav.AudioPlayer.Models;
 
@@ -35,6 +34,17 @@ namespace BlazorWebDavFunctionsApp.Functions
                 Timeout = TimeSpan.FromMinutes(5)
             });
         }
+
+        [FunctionName("GetRoot")]
+        public ResourceItem GetRoot([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req)
+        {
+            return new ResourceItem
+            {
+                DisplayName = _connectionSettings.RootFolder,
+                FullPath = OnlinePathBuilder.Combine(_connectionSettings.StorageUri, _connectionSettings.RootFolder)
+            };
+        }
+
 
         [FunctionName("FetchChildResources")]
         public async Task<FetchChildResourcesResult> FetchChildResources([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req)
