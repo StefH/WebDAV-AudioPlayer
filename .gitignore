@@ -253,3 +253,4 @@ paket-files/
 
 **/appsettings.development.json
 /src/Blazor-WASM-WebDAV-AudioPlayer/Secrets.cs
+/src/Blazor-WebDav-FunctionsApp/local.settings.development.json
