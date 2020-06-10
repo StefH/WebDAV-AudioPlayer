@@ -46,6 +46,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor-WebDav-FunctionsApp"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor-WASM-WebDAV-AudioPlayer.v2", "src\Blazor-WASM-WebDAV-AudioPlayer.v2\Blazor-WASM-WebDAV-AudioPlayer.v2.csproj", "{61854B34-16FC-428E-BFA7-BAEA9C336CBA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src-blazor-WebAssembly hosted on WebApi", "src-blazor-WebAssembly hosted on WebApi", "{BC359F96-CE49-4E71-BCCE-B312BD1DB757}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor-Client-Server.Server", "src\Blazor-Client-Server\Server\Blazor-Client-Server.Server.csproj", "{FC9B374B-8806-4AE2-8AB1-FBE9D4B47EFF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor-Client-Server.Shared", "src\Blazor-Client-Server\Shared\Blazor-Client-Server.Shared.csproj", "{974B5B1E-7F7F-4F7B-9A5A-CB51B75E2103}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -96,6 +102,14 @@ Global
 		{61854B34-16FC-428E-BFA7-BAEA9C336CBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61854B34-16FC-428E-BFA7-BAEA9C336CBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61854B34-16FC-428E-BFA7-BAEA9C336CBA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC9B374B-8806-4AE2-8AB1-FBE9D4B47EFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC9B374B-8806-4AE2-8AB1-FBE9D4B47EFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC9B374B-8806-4AE2-8AB1-FBE9D4B47EFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC9B374B-8806-4AE2-8AB1-FBE9D4B47EFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{974B5B1E-7F7F-4F7B-9A5A-CB51B75E2103}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{974B5B1E-7F7F-4F7B-9A5A-CB51B75E2103}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{974B5B1E-7F7F-4F7B-9A5A-CB51B75E2103}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{974B5B1E-7F7F-4F7B-9A5A-CB51B75E2103}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -112,6 +126,8 @@ Global
 		{A7C4D9EF-93AC-44E6-BA0D-EAFA7125EF5F} = {945A1F37-C419-4A51-BA4F-9B418D5113A8}
 		{E14E5EF5-9076-4623-847A-D904C0B1FDCE} = {9E243FE9-0A49-4857-AADD-19A9E9CC8AED}
 		{61854B34-16FC-428E-BFA7-BAEA9C336CBA} = {9E243FE9-0A49-4857-AADD-19A9E9CC8AED}
+		{FC9B374B-8806-4AE2-8AB1-FBE9D4B47EFF} = {BC359F96-CE49-4E71-BCCE-B312BD1DB757}
+		{974B5B1E-7F7F-4F7B-9A5A-CB51B75E2103} = {BC359F96-CE49-4E71-BCCE-B312BD1DB757}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B6A8922C-F54E-40FD-B26A-0E636A9EE552}

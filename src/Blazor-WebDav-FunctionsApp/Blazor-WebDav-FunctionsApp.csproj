@@ -22,15 +22,10 @@
   <ItemGroup>
     <Compile Include="..\WebDAV-AudioPlayer\Client\IConnectionSettings.cs" Link="Client\IConnectionSettings.cs" />
     <Compile Include="..\WebDAV-AudioPlayer\Audio\MediaDetails.cs" Link="Audio\MediaDetails.cs" />
-    <!--<Compile Include="..\WebDAV-AudioPlayer\Audio\TrackInfoHelper.cs" Link="Audio\TrackInfoHelper.cs" />-->
-    <!--<Compile Include="..\WebDAV-AudioPlayer\Client\IWebDavClient.cs" Link="Client\IWebDavClient.cs" />
-    <Compile Include="..\WebDAV-AudioPlayer\Client\MyWebDavClient.cs" Link="Client\MyWebDavClient.cs" />-->
     <Compile Include="..\WebDAV-AudioPlayer\Client\OnlinePathBuilder.cs" Link="Client\OnlinePathBuilder.cs" />
     <Compile Include="..\WebDAV-AudioPlayer\Client\ResourceLoadStatus.cs" Link="Client\ResourceLoadStatus.cs" />
-    <!--<Compile Include="..\WebDAV-AudioPlayer\Extensions\TaskExtensions.cs" Link="Extensions\TaskExtensions.cs" />-->
     <Compile Include="..\WebDAV-AudioPlayer\IO\SecurePasswordHelper.cs" Link="IO\SecurePasswordHelper.cs" />
     <Compile Include="..\WebDAV-AudioPlayer\Models\ResourceItem.cs" Link="Models\ResourceItem.cs" />
-    <!--<Compile Include="..\WebDAV-AudioPlayer\Models\ResourceItem.cs" Link="Models\ResourceItem.cs" />-->
   </ItemGroup>
 
   <ItemGroup>
