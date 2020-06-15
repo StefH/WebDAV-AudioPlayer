@@ -24,7 +24,7 @@ namespace Blazor.WebDAV.AudioPlayer
             {
                 memoryCacheOptions.SizeLimit = 5;
             });
-            builder.Services.AddSingleton<IWebDavClient, WebDavClient>();
+            builder.Services.AddSingleton<IWebDavClient, ApiClient>();
             builder.Services.AddScoped<IHowl, Howl>();
             builder.Services.AddScoped<IHowlGlobal, HowlGlobal>();
             builder.Services.AddScoped<IPlayer, Player>();

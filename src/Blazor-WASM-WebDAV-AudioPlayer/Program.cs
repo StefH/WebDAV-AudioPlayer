@@ -1,10 +1,6 @@
-using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Blazor.WebDAV.AudioPlayer.Audio;
-using Blazor.WebDAV.AudioPlayer.Options;
 using Howler.Blazor.Components;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using WebDav.AudioPlayer.Audio;
@@ -30,16 +26,16 @@ namespace Blazor.WebDAV.AudioPlayer
             builder.Services.AddScoped<IHowlGlobal, HowlGlobal>();
             builder.Services.AddScoped<IPlayer, Player>();
 
-            builder.Services.AddSingleton<IConnectionSettings>(serviceProvider =>
-            {
-                return new ConnectionSettings
-                {
-                    Password = Secrets.Password,
-                    RootFolder = Secrets.RootFolder,
-                    StorageUri = new Uri(Secrets.StorageUri),
-                    UserName = Secrets.UserName
-                };
-            });
+            //builder.Services.AddSingleton<IConnectionSettings>(serviceProvider =>
+            //{
+            //    return new ConnectionSettings
+            //    {
+            //        Password = Secrets.Password,
+            //        RootFolder = Secrets.RootFolder,
+            //        StorageUri = new Uri(Secrets.StorageUri),
+            //        UserName = Secrets.UserName
+            //    };
+            //});
 
             await builder.Build().RunAsync();
         }

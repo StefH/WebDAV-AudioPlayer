@@ -9,20 +9,18 @@ using WebDav.AudioPlayer.Models;
 
 namespace Blazor.WebDAV.AudioPlayer.Client
 {
-    public class WebDavClient: IWebDavClient
+    public class ApiClient : IWebDavClient
     {
-        private readonly IHttpClientFactory _factory;
+        private readonly HttpClient _client;
 
-        public WebDavClient(IHttpClientFactory factory)
+        public ApiClient(HttpClient client)
         {
-            _factory = factory;
+            _client = client;
         }
 
         public async Task<ResourceLoadStatus> FetchChildResourcesAsync(ResourceItem resourceItem, CancellationToken cancellationToken, int maxLevel, int level = 0)
         {
-            var client = _factory.CreateClient();
-
-            var content = await client.GetStringAsync("api/FetchChildResources");
+            var content = await _client.GetStringAsync("api/FetchChildResources");
 
             var result = JsonConvert.DeserializeObject<FetchChildResourcesResult>(content);
 
@@ -43,7 +41,7 @@ namespace Blazor.WebDAV.AudioPlayer.Client
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

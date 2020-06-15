@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -11,17 +11,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\WebDAV-AudioPlayer\Client\IConnectionSettings.cs" Link="Client\IConnectionSettings.cs" />
-    <Compile Include="..\WebDAV-AudioPlayer\Audio\MediaDetails.cs" Link="Audio\MediaDetails.cs" />
-    <Compile Include="..\WebDAV-AudioPlayer\Client\OnlinePathBuilder.cs" Link="Client\OnlinePathBuilder.cs" />
-    <Compile Include="..\WebDAV-AudioPlayer\Client\ResourceLoadStatus.cs" Link="Client\ResourceLoadStatus.cs" />
-    <Compile Include="..\WebDAV-AudioPlayer\IO\SecurePasswordHelper.cs" Link="IO\SecurePasswordHelper.cs" />
-    <Compile Include="..\WebDAV-AudioPlayer\Models\ResourceItem.cs" Link="Models\ResourceItem.cs" />
+    <Compile Include="..\..\WebDAV-AudioPlayer\Client\IConnectionSettings.cs" Link="Client\IConnectionSettings.cs" />
+    <Compile Include="..\..\WebDAV-AudioPlayer\Audio\MediaDetails.cs" Link="Audio\MediaDetails.cs" />
+    <Compile Include="..\..\WebDAV-AudioPlayer\Client\OnlinePathBuilder.cs" Link="Client\OnlinePathBuilder.cs" />
+    <Compile Include="..\..\WebDAV-AudioPlayer\Client\ResourceLoadStatus.cs" Link="Client\ResourceLoadStatus.cs" />
+    <Compile Include="..\..\WebDAV-AudioPlayer\IO\SecurePasswordHelper.cs" Link="IO\SecurePasswordHelper.cs" />
+    <Compile Include="..\..\WebDAV-AudioPlayer\Models\ResourceItem.cs" Link="Models\ResourceItem.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Blazor-WASM-WebDAV-AudioPlayer.v2\Blazor-WASM-WebDAV-AudioPlayer.v2.csproj" />
   </ItemGroup>
-
 
 </Project>

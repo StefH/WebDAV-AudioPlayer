@@ -17,8 +17,8 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
     {
         private const string TIME_ZERO = "00:00:00";
 
-        [Inject]
-        protected IConnectionSettings ConnectionSettings { get; set; }
+        //[Inject]
+        //protected IConnectionSettings ConnectionSettings { get; set; }
 
         [Inject]
         protected IWebDavClient _client { get; set; }
@@ -56,11 +56,11 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
         {
             Root = new TreeNode<ResourceItem>
             {
-                Item = new ResourceItem
-                {
-                    DisplayName = ConnectionSettings.RootFolder,
-                    FullPath = OnlinePathBuilder.Combine(ConnectionSettings.StorageUri, ConnectionSettings.RootFolder)
-                }
+                //Item = new ResourceItem
+                //{
+                //    DisplayName = ConnectionSettings.RootFolder,
+                //    FullPath = OnlinePathBuilder.Combine(ConnectionSettings.StorageUri, ConnectionSettings.RootFolder)
+                //}
             };
         }
 
