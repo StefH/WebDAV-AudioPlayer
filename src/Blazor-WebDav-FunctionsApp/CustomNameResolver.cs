@@ -18,8 +18,7 @@ namespace BlazorWebDavFunctionsApp
             string value = _configuration.GetValue<string>(name, null);
             if (string.IsNullOrWhiteSpace(value))
             {
-                throw new ArgumentException(
-                    $"The key '{name}' in the configuration file does not exist or has a null or empty value.", name);
+                throw new ArgumentException($"The key '{name}' in the configuration file does not exist or has a null or empty value.", name);
             }
 
             return value;

@@ -18,7 +18,21 @@ namespace Blazor.WebDAV.AudioPlayer
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("app");
 
-            builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+            // HttpClient
+            var baseAddress = builder.HostEnvironment.BaseAddress;
+            Console.WriteLine("baseAddress = " + baseAddress);
+
+            bool isLocalHost = baseAddress.Contains("localhost");
+            Console.WriteLine("isLocalHost = " + isLocalHost);
+
+            bool isAzure = baseAddress.Contains("azurestaticapps.net") || baseAddress.Contains("music.heyenrath.nl");
+            Console.WriteLine("isAzure = " + isAzure);
+
+            string httpClientBaseAddress = isLocalHost ? "http://localhost:7071" : baseAddress;
+            Console.WriteLine("httpClientBaseAddress = " + httpClientBaseAddress);
+            builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(httpClientBaseAddress) });
+
+            // builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
             builder.Services.AddMemoryCache(memoryCacheOptions =>
             {

@@ -54,6 +54,8 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
 
         protected override void OnInitialized()
         {
+
+            //_client
             Root = new TreeNode<ResourceItem>
             {
                 //Item = new ResourceItem
