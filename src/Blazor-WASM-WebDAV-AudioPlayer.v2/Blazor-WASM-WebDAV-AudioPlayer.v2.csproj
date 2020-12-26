@@ -9,6 +9,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Extensions\**" />
+    <Compile Remove="IO\**" />
+    <Content Remove="Extensions\**" />
+    <Content Remove="IO\**" />
+    <EmbeddedResource Remove="Extensions\**" />
+    <EmbeddedResource Remove="IO\**" />
+    <None Remove="Extensions\**" />
+    <None Remove="IO\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="3.2.0-rc1.20223.4" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Build" Version="3.2.0-rc1.20223.4" PrivateAssets="all" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="3.2.0-rc1.20223.4" PrivateAssets="all" />
@@ -43,8 +54,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="IO\" />
-    <Folder Include="Extensions\" />
     <Folder Include="Options\" />
   </ItemGroup>
 

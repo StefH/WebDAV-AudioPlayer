@@ -29,9 +29,11 @@ namespace Blazor.WebDAV.AudioPlayer.Client
             return result.ResourceLoadStatus;
         }
 
-        public Task<ResourceLoadStatus> GetStreamAsync(ResourceItem resourceItem, CancellationToken cancellationToken)
+        public async Task<ResourceLoadStatus> GetStreamAsync(ResourceItem resourceItem, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var stream = await _client.GetStreamAsync("api/GetStream");
+
+            return ResourceLoadStatus.Ok;
         }
 
         public Task<ResourceLoadStatus> DownloadFolderAsync(ResourceItem folder, string destinationFolder, Action<bool, ResourceItem, int, int> notify, CancellationToken cancellationToken)
