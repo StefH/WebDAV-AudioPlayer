@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Blazor.WebDAV.AudioPlayer.Client;
 using Blazor.WebDAV.AudioPlayer.Constants;
 using Howler.Blazor.Components;
 using Microsoft.Extensions.Caching.Memory;
@@ -15,7 +16,7 @@ namespace Blazor.WebDAV.AudioPlayer.Audio
     internal class Player : IPlayer
     {
         private readonly IMemoryCache _cache;
-        private readonly IWebDavClient _client;
+        private readonly IWebDAVFunctionApi _client;
         private readonly IHowl _howl;
         private readonly IHowlGlobal _howlGlobal;
 
@@ -47,7 +48,7 @@ namespace Blazor.WebDAV.AudioPlayer.Audio
 
         public TimeSpan TotalTime { get; private set; } = TimeSpan.Zero;
 
-        public Player(IMemoryCache cache, IWebDavClient client, IHowl howl, IHowlGlobal howlGlobal)
+        public Player(IMemoryCache cache, IWebDAVFunctionApi client, IHowl howl, IHowlGlobal howlGlobal)
         {
             _cache = cache;
             _client = client;
@@ -101,16 +102,25 @@ namespace Blazor.WebDAV.AudioPlayer.Audio
 
             if (!_cache.TryGetValue(SelectedResourceItem.Id, out ResourceItem cachedResourceItem))
             {
-                var status = await _client.GetStreamAsync(SelectedResourceItem, cancellationToken);
-                if (status != ResourceLoadStatus.Ok && status != ResourceLoadStatus.StreamExisting)
+                var status = await _client.GetStreamAsync(SelectedResourceItem);
+
+                if (status == null)
                 {
-                    Log($@"Loading error : {status}");
+                    Log($@"Loading error");
                     return;
                 }
 
+                SelectedResourceItem.Stream = status;
+
+                //if (status != ResourceLoadStatus.Ok && status != ResourceLoadStatus.StreamExisting)
+                //{
+                //    Log($@"Loading error : {status}");
+                //    return;
+                //}
+
                 Log($@"Loading : '{SelectedResourceItem.DisplayName}' is done");
 
-                if (status == ResourceLoadStatus.Ok)
+               // if (status == ResourceLoadStatus.Ok)
                 {
                     _cache.Set(SelectedResourceItem.Id, SelectedResourceItem, new MemoryCacheEntryOptions { Size = 1 });
                 }
@@ -138,16 +148,17 @@ namespace Blazor.WebDAV.AudioPlayer.Audio
 
                 if (!_cache.TryGetValue(resourceItem.Id, out ResourceItem cachedResourceItem))
                 {
-                    var status = await _client.GetStreamAsync(resourceItem, cancellationToken);
-                    if (status != ResourceLoadStatus.Ok && status != ResourceLoadStatus.StreamExisting)
-                    {
-                        Log($"Preloading error : {status}");
-                        return;
-                    }
+                    var status = await _client.GetStreamAsync(resourceItem);
+                    resourceItem.Stream = status;
+                    //if (status != ResourceLoadStatus.Ok && status != ResourceLoadStatus.StreamExisting)
+                    //{
+                    //    Log($"Preloading error : {status}");
+                    //    return;
+                    //}
 
                     Log($"Preloading : '{resourceItem.DisplayName}' is done");
 
-                    if (status == ResourceLoadStatus.Ok)
+                    //if (status == ResourceLoadStatus.Ok)
                     {
                         _cache.Set(resourceItem.Id, resourceItem, new MemoryCacheEntryOptions { Size = 1 });
                     }

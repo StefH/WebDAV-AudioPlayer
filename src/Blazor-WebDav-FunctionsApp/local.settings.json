@@ -4,6 +4,10 @@
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet"
   },
+  "Host": {
+    "LocalHttpPort": 7071,
+    "CORS": "*"
+  },
   "ConnectionSettings": {
     "Username": "",
     "Password": "",

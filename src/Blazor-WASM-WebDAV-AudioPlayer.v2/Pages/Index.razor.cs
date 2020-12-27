@@ -1,12 +1,13 @@
-﻿using Blazor.WebDAV.AudioPlayer.Models;
-using Blazor.WebDAV.AudioPlayer.TreeComponent;
-using ByteSizeLib;
-using Microsoft.AspNetCore.Components;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Blazor.WebDAV.AudioPlayer.Client;
+using Blazor.WebDAV.AudioPlayer.Models;
+using Blazor.WebDAV.AudioPlayer.TreeComponent;
+using ByteSizeLib;
+using Microsoft.AspNetCore.Components;
 using WebDav.AudioPlayer.Audio;
 using WebDav.AudioPlayer.Client;
 using WebDav.AudioPlayer.Models;
@@ -21,7 +22,7 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
         //protected IConnectionSettings ConnectionSettings { get; set; }
 
         [Inject]
-        protected IWebDavClient _client { get; set; }
+        protected IWebDAVFunctionApi _client { get; set; }
 
         [Inject]
         protected IPlayer Player { get; set; }
@@ -52,12 +53,12 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
 
         private string[] _codecs;
 
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
-
             //_client
             Root = new TreeNode<ResourceItem>
             {
+                Item = await _client.GetRootAsync()
                 //Item = new ResourceItem
                 //{
                 //    DisplayName = ConnectionSettings.RootFolder,
@@ -151,7 +152,7 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
             }
 
             Status = ResourceLoadStatus.Unknown;
-            Status = await _client.FetchChildResourcesAsync(treeNode.Item, CancellationToken.None, treeNode.Item.Level, treeNode.Item.Level);
+            Status = await _client.FetchChildResourcesAsync(treeNode.Item); //, CancellationToken.None, treeNode.Item.Level, treeNode.Item.Level);
             if (Status == ResourceLoadStatus.Ok)
             {
                 treeNode.ChildNodes = treeNode.Item.Items
@@ -170,7 +171,7 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
 
             if (treeNode.Item.Items == null)
             {
-                Status = await _client.FetchChildResourcesAsync(treeNode.Item, CancellationToken.None, treeNode.Item.Level, treeNode.Item.Level);
+                Status = await _client.FetchChildResourcesAsync(treeNode.Item); //, CancellationToken.None, treeNode.Item.Level, treeNode.Item.Level);
             }
 
             if (Status == ResourceLoadStatus.Ok)
@@ -275,7 +276,7 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
             await Player?.Stop(true);
 
             Status = ResourceLoadStatus.Unknown;
-            Status = await _client.FetchChildResourcesAsync(Root.Item, CancellationToken.None, 0);
+            Status = await _client.FetchChildResourcesAsync(Root.Item); // , CancellationToken.None, 0);
             if (Status == ResourceLoadStatus.Ok)
             {
                 Root.ChildNodes = Root.Item.Items.Select(resourceItem => new TreeNode<ResourceItem>

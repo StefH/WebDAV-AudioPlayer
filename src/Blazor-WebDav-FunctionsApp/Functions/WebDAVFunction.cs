@@ -36,7 +36,7 @@ namespace BlazorWebDavFunctionsApp.Functions
         }
 
         [FunctionName("GetRoot")]
-        public ResourceItem GetRoot([HttpTrigger(AuthorizationLevel.Function, "get")] HttpRequest req)
+        public ResourceItem GetRoot([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req)
         {
             return new ResourceItem
             {
@@ -47,7 +47,7 @@ namespace BlazorWebDavFunctionsApp.Functions
 
 
         [FunctionName("FetchChildResources")]
-        public async Task<FetchChildResourcesResult> FetchChildResources([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequest req)
+        public async Task<FetchChildResourcesResult> FetchChildResources([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req)
         {
             _logger.LogInformation("{method} executed at: {now}", DateTime.Now, nameof(FetchChildResources));
 
@@ -147,7 +147,7 @@ namespace BlazorWebDavFunctionsApp.Functions
         }
 
         [FunctionName("GetStream")]
-        public async Task<Stream> GetStream([HttpTrigger(AuthorizationLevel.Function, "get")] HttpRequest req)
+        public async Task<Stream> GetStream([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req)
         {
             _logger.LogInformation("{method} executed at: {now}", DateTime.Now, nameof(GetStream));
 
