@@ -18,6 +18,7 @@
     protected TimeSpan TotalTime;
     protected string State = "-";
     protected string SupportedCodes;
+    private int _soundId;
 
     protected override async Task OnInitializedAsync()
     {
@@ -51,16 +52,16 @@
 
     protected async Task Play()
     {
-        await Howl.Play("https://www.healingfrequenciesmusic.com/wp-content/uploads/2015/03/Love-Abounds-Sample.mp3?_=1");
+        _soundId = await Howl.Play("https://www.healingfrequenciesmusic.com/wp-content/uploads/2015/03/Love-Abounds-Sample.mp3?_=1");
     }
 
     protected async Task Stop()
     {
-        await Howl.Stop();
+        await Howl.Stop(_soundId);
     }
 
     protected async Task Pause()
     {
-        await Howl.Pause();
+        await Howl.Pause(_soundId);
     }
 }

@@ -18,8 +18,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSCore.Codecs.OPUS", "src\C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSCore.Codecs.OGG", "src\CSCore.Ogg\CSCore.Codecs.OGG.csproj", "{D3804221-91F4-4502-9595-39584E5A0122}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencies", "{7C80D218-CD7A-4D57-B8F1-4A47398B74ED}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{0964E94F-387A-45EA-9FED-0C86CFA4B8FF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleAppPlayer", "test\ConsoleAppPlayer\ConsoleAppPlayer.csproj", "{E0430C60-1BDA-4122-9EDE-D502613D37A0}"

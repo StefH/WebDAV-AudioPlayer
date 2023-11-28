@@ -10,247 +10,248 @@ using WebDav.AudioPlayer.Audio;
 using WebDav.AudioPlayer.Client;
 using WebDav.AudioPlayer.Models;
 
-namespace Blazor.WebDAV.AudioPlayer.Audio
+namespace Blazor.WebDAV.AudioPlayer.Audio;
+
+internal class Player : IPlayer
 {
-    internal class Player : IPlayer
+    private readonly IMemoryCache _cache;
+    private readonly IWebDavClient _client;
+    private readonly IHowl _howl;
+    private readonly IHowlGlobal _howlGlobal;
+
+    private List<ResourceItem> _items;
+    private string[] _codecs;
+    private int _soundId;
+
+    public ResourceItem SelectedResourceItem { get; set; }
+
+    public Action<string> Log { get; set; }
+    public Action<int, ResourceItem> PlayStart { get; set; }
+    public Action<int, ResourceItem> PlayEnd { get; set; }
+    public Action<ResourceItem> PlayPause { get; set; }
+    public Action<ResourceItem> PlayContinue { get; set; }
+    public Func<ResourceItem, Task> DoubleClickFolderAndPlayFirstSong { get; set; }
+    public Action PlayStop { get; set; }
+
+    public List<ResourceItem> Items
     {
-        private readonly IMemoryCache _cache;
-        private readonly IWebDavClient _client;
-        private readonly IHowl _howl;
-        private readonly IHowlGlobal _howlGlobal;
+        get => _items;
 
-        private List<ResourceItem> _items;
-        private string[] _codecs;
-
-        public ResourceItem SelectedResourceItem { get; set; }
-
-        public Action<string> Log { get; set; }
-        public Action<int, ResourceItem> PlayStart { get; set; }
-        public Action<int, ResourceItem> PlayEnd { get; set; }
-        public Action<ResourceItem> PlayPause { get; set; }
-        public Action<ResourceItem> PlayContinue { get; set; }
-        public Func<ResourceItem, Task> DoubleClickFolderAndPlayFirstSong { get; set; }
-        public Action PlayStop { get; set; }
-
-        public List<ResourceItem> Items
+        set
         {
-            get => _items;
+            StopAsync(true);
 
-            set
-            {
-                Stop(true);
-                _items = value;
-            }
+            _items = value;
+        }
+    }
+
+    public int SelectedIndex { get; private set; } = -1;
+
+    public TimeSpan TotalTime { get; private set; } = TimeSpan.Zero;
+
+    public Player(IMemoryCache cache, IWebDavClient client, IHowl howl, IHowlGlobal howlGlobal)
+    {
+        _cache = cache;
+        _client = client;
+        _howl = howl;
+        _howlGlobal = howlGlobal;
+
+        _howl.OnPlay += e =>
+        {
+            TotalTime = e.TotalTime;
+
+            PlayStart(SelectedIndex, SelectedResourceItem);
+        };
+
+        _howl.OnEnd += e =>
+        {
+            PlayEnd(SelectedIndex, SelectedResourceItem);
+        };
+    }
+
+    public async Task<bool> GetIsPlaying()
+    {
+        return await _howl.IsPlaying(_soundId);
+    }
+
+    public async Task<TimeSpan> GetCurrentTime()
+    {
+        return await _howl.GetCurrentTime(_soundId);
+    }
+
+    public async Task PlayAsync(int index, CancellationToken cancellationToken)
+    {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return;
         }
 
-        public int SelectedIndex { get; private set; } = -1;
+        bool sameSong = index == SelectedIndex;
+        SelectedIndex = index;
+        SelectedResourceItem = Items[index];
 
-        public TimeSpan TotalTime { get; private set; } = TimeSpan.Zero;
-
-        public Player(IMemoryCache cache, IWebDavClient client, IHowl howl, IHowlGlobal howlGlobal)
+        // If same song and stream is loaded, just Seek start and start play.
+        if (sameSong && SelectedResourceItem.Stream != null && await GetIsPlaying())
         {
-            _cache = cache;
-            _client = client;
-            _howl = howl;
-            _howlGlobal = howlGlobal;
-
-            _howl.OnPlay += (e) =>
-            {
-                TotalTime = e.TotalTime;
-
-                PlayStart(SelectedIndex, SelectedResourceItem);
-            };
-
-            _howl.OnEnd += (e) =>
-            {
-                PlayEnd(SelectedIndex, SelectedResourceItem);
-            };
+            await Seek(TimeSpan.Zero);
+            return;
         }
 
-        public async Task<bool> GetIsPlaying()
-        {
-            return await _howl.IsPlaying();
-        }
+        await StopAsync(false);
 
-        public async Task<TimeSpan> GetCurrentTime()
-        {
-            return await _howl.GetCurrentTime();
-        }
+        Log($@"Loading : '{SelectedResourceItem.DisplayName}'");
 
-        public async Task PlayAsync(int index, CancellationToken cancellationToken)
+        if (!_cache.TryGetValue(SelectedResourceItem.Id, out ResourceItem cachedResourceItem))
         {
-            if (cancellationToken.IsCancellationRequested)
+            var status = await _client.GetStreamAsync(SelectedResourceItem, cancellationToken);
+            if (status != ResourceLoadStatus.Ok && status != ResourceLoadStatus.StreamExisting)
             {
+                Log($@"Loading error : {status}");
                 return;
             }
 
-            bool sameSong = index == SelectedIndex;
-            SelectedIndex = index;
-            SelectedResourceItem = Items[index];
+            Log($@"Loading : '{SelectedResourceItem.DisplayName}' is done");
 
-            // If same song and stream is loaded, just Seek start and start play.
-            if (sameSong && SelectedResourceItem.Stream != null && await GetIsPlaying())
+            if (status == ResourceLoadStatus.Ok)
             {
-                await Seek(TimeSpan.Zero);
-                return;
+                _cache.Set(SelectedResourceItem.Id, SelectedResourceItem, new MemoryCacheEntryOptions { Size = 1 });
             }
+        }
 
-            await Stop(false);
+        _soundId = await _howl.Play($"{AudioPlayerConstants.SoundPrefix}{SelectedResourceItem.Id}{SelectedResourceItem.Extension}");
 
-            Log($@"Loading : '{SelectedResourceItem.DisplayName}'");
+        // Preload Next
+        await PreloadNextAsync(cancellationToken);
+    }
 
-            if (!_cache.TryGetValue(SelectedResourceItem.Id, out ResourceItem cachedResourceItem))
+    private async Task PreloadNextAsync(CancellationToken cancellationToken)
+    {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return;
+        }
+
+        int nextIndex = SelectedIndex + 1;
+        if (nextIndex < Items.Count)
+        {
+            // Loading next resourceItem from this folder
+            var resourceItem = Items[nextIndex];
+            Log($"Preloading : '{resourceItem.DisplayName}'");
+
+            if (!_cache.TryGetValue(resourceItem.Id, out ResourceItem cachedResourceItem))
             {
-                var status = await _client.GetStreamAsync(SelectedResourceItem, cancellationToken);
+                var status = await _client.GetStreamAsync(resourceItem, cancellationToken);
                 if (status != ResourceLoadStatus.Ok && status != ResourceLoadStatus.StreamExisting)
                 {
-                    Log($@"Loading error : {status}");
+                    Log($"Preloading error : {status}");
                     return;
                 }
 
-                Log($@"Loading : '{SelectedResourceItem.DisplayName}' is done");
+                Log($"Preloading : '{resourceItem.DisplayName}' is done");
 
                 if (status == ResourceLoadStatus.Ok)
                 {
-                    _cache.Set(SelectedResourceItem.Id, SelectedResourceItem, new MemoryCacheEntryOptions { Size = 1 });
-                }
-            }
-
-            await _howl.Play($"{AudioPlayerConstants.SoundPrefix}{SelectedResourceItem.Id}{SelectedResourceItem.Extension}");
-
-            // Preload Next
-            await PreloadNextAsync(cancellationToken);
-        }
-
-        private async Task PreloadNextAsync(CancellationToken cancellationToken)
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return;
-            }
-
-            int nextIndex = SelectedIndex + 1;
-            if (nextIndex < Items.Count)
-            {
-                // Loading next resourceItem from this folder
-                var resourceItem = Items[nextIndex];
-                Log($"Preloading : '{resourceItem.DisplayName}'");
-
-                if (!_cache.TryGetValue(resourceItem.Id, out ResourceItem cachedResourceItem))
-                {
-                    var status = await _client.GetStreamAsync(resourceItem, cancellationToken);
-                    if (status != ResourceLoadStatus.Ok && status != ResourceLoadStatus.StreamExisting)
-                    {
-                        Log($"Preloading error : {status}");
-                        return;
-                    }
-
-                    Log($"Preloading : '{resourceItem.DisplayName}' is done");
-
-                    if (status == ResourceLoadStatus.Ok)
-                    {
-                        _cache.Set(resourceItem.Id, resourceItem, new MemoryCacheEntryOptions { Size = 1 });
-                    }
+                    _cache.Set(resourceItem.Id, resourceItem, new MemoryCacheEntryOptions { Size = 1 });
                 }
             }
         }
+    }
 
-        private ResourceItem GetNextFolderFromParent(ResourceItem lastResourceItemFromFolder)
+    private ResourceItem GetNextFolderFromParent(ResourceItem lastResourceItemFromFolder)
+    {
+        var parent = lastResourceItemFromFolder?.Parent?.Parent;
+        if (parent != null)
         {
-            var parent = lastResourceItemFromFolder?.Parent?.Parent;
-            if (parent != null)
+            var folderFromLastResourceItem = lastResourceItemFromFolder.Parent;
+            int indexFromCurrentPlayingFolder = parent.Items.IndexOf(folderFromLastResourceItem);
+            int indexFromNextFolder = indexFromCurrentPlayingFolder + 1;
+            if (indexFromNextFolder < parent.Items.Count)
             {
-                var folderFromLastResourceItem = lastResourceItemFromFolder.Parent;
-                int indexFromCurrentPlayingFolder = parent.Items.IndexOf(folderFromLastResourceItem);
-                int indexFromNextFolder = indexFromCurrentPlayingFolder + 1;
-                if (indexFromNextFolder < parent.Items.Count)
-                {
-                    return parent.Items.ElementAt(indexFromNextFolder);
-                }
+                return parent.Items.ElementAt(indexFromNextFolder);
             }
-
-            return null;
         }
 
-        public async Task PlayNextAsync(CancellationToken cancelAction)
-        {
-            int nextIndex = SelectedIndex + 1;
+        return null;
+    }
 
-            if (nextIndex < Items.Count)
+    public async Task PlayNextAsync(CancellationToken cancelAction)
+    {
+        int nextIndex = SelectedIndex + 1;
+
+        if (nextIndex < Items.Count)
+        {
+            await PlayAsync(nextIndex, cancelAction);
+        }
+        else
+        {
+            var currentResourceItem = Items[SelectedIndex];
+            var nextFolderToPlay = GetNextFolderFromParent(currentResourceItem);
+            if (nextFolderToPlay != null && DoubleClickFolderAndPlayFirstSong != null)
             {
-                await PlayAsync(nextIndex, cancelAction);
+                await DoubleClickFolderAndPlayFirstSong(nextFolderToPlay);
+                await PlayAsync(0, cancelAction);
             }
             else
             {
-                var currentResourceItem = Items[SelectedIndex];
-                var nextFolderToPlay = GetNextFolderFromParent(currentResourceItem);
-                if (nextFolderToPlay != null && DoubleClickFolderAndPlayFirstSong != null)
-                {
-                    await DoubleClickFolderAndPlayFirstSong(nextFolderToPlay);
-                    await PlayAsync(0, cancelAction);
-                }
-                else
-                {
-                    Stop(true);
-                }
+                StopAsync(true);
             }
         }
+    }
 
-        public async Task PlayPreviousAsync(CancellationToken cancelAction)
+    public async Task PlayPreviousAsync(CancellationToken cancelAction)
+    {
+        int previousIndex = SelectedIndex - 1;
+
+        if (previousIndex >= 0)
         {
-            int previousIndex = SelectedIndex - 1;
+            await PlayAsync(previousIndex, cancelAction);
+        }
+        else
+        {
+            await StopAsync(true);
+        }
+    }
 
-            if (previousIndex >= 0)
-            {
-                await PlayAsync(previousIndex, cancelAction);
-            }
-            else
-            {
-                await Stop(true);
-            }
+    public async Task StopAsync(bool force)
+    {
+        await _howl.Stop(_soundId);
+        PlayStop();
+
+        if (force)
+        {
+            //_resourceItemQueue.Clear();
+            //_cache.Remove
+        }
+    }
+
+    public async Task Pause()
+    {
+        var resourceItem = Items[SelectedIndex];
+
+        if (await _howl.IsPlaying(_soundId))
+        {
+            PlayPause(resourceItem);
+        }
+        else
+        {
+            PlayContinue(resourceItem);
         }
 
-        public async Task Stop(bool force)
-        {
-            await _howl.Stop();
-            PlayStop();
+        await _howl.Pause(_soundId);
+    }
 
-            if (force)
-            {
-                //_resourceItemQueue.Clear();
-                //_cache.Remove
-            }
-        }
+    public async Task Seek(TimeSpan position)
+    {
+        await _howl.Seek(_soundId, position);
+    }
 
-        public async Task Pause()
-        {
-            var resourceItem = Items[SelectedIndex];
+    public async Task<string[]> GetCodecs()
+    {
+        return _codecs ??= await _howlGlobal.GetCodecs();
+    }
 
-            if (await _howl.IsPlaying())
-            {
-                PlayPause(resourceItem);
-            }
-            else
-            {
-                PlayContinue(resourceItem);
-            }
-
-            await _howl.Pause();
-        }
-
-        public async Task Seek(TimeSpan position)
-        {
-            await _howl.Seek(position);
-        }
-
-        public async Task<string[]> GetCodecs()
-        {
-            return _codecs ??= await _howlGlobal.GetCodecs();
-        }
-
-        public void Dispose()
-        {
-            Stop(true);
-        }
+    public void Dispose()
+    {
+        StopAsync(true);
     }
 }

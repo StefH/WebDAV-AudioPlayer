@@ -28,6 +28,6 @@ namespace WebDav.AudioPlayer.Audio
         Task PlayNextAsync(CancellationToken cancelAction);
         Task PlayPreviousAsync(CancellationToken cancelAction);
         Task Seek(TimeSpan position);
-        Task Stop(bool force);
+        Task StopAsync(bool force);
     }
 }
