@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29519.181
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34316.72
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8A9BC34B-DF33-49C3-AB28-92AEEBD45F84}"
 EndProject
@@ -31,8 +31,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor-WebDAV-AudioPlayer.v2", "src\Blazor-WebDAV-AudioPlayer.v2\Blazor-WebDAV-AudioPlayer.v2.csproj", "{FD0636A6-34DF-4004-A143-D7B620272A3A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src-serverside-blazor", "src-serverside-blazor", "{BAD54432-3613-4FC8-B979-0F9C2950E9C9}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Howler.Blazor", "..\Howler.Blazor\src\Howler.Blazor\Howler.Blazor.csproj", "{D3804221-1234-4502-9595-39584E5A0000}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -64,10 +62,6 @@ Global
 		{FD0636A6-34DF-4004-A143-D7B620272A3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD0636A6-34DF-4004-A143-D7B620272A3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FD0636A6-34DF-4004-A143-D7B620272A3A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D3804221-1234-4502-9595-39584E5A0000}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D3804221-1234-4502-9595-39584E5A0000}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D3804221-1234-4502-9595-39584E5A0000}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D3804221-1234-4502-9595-39584E5A0000}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -79,7 +73,6 @@ Global
 		{E0430C60-1BDA-4122-9EDE-D502613D37A0} = {0964E94F-387A-45EA-9FED-0C86CFA4B8FF}
 		{7787F05A-6791-4B52-A004-3E70AAE2248D} = {BAD54432-3613-4FC8-B979-0F9C2950E9C9}
 		{FD0636A6-34DF-4004-A143-D7B620272A3A} = {BAD54432-3613-4FC8-B979-0F9C2950E9C9}
-		{D3804221-1234-4502-9595-39584E5A0000} = {7C80D218-CD7A-4D57-B8F1-4A47398B74ED}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B6A8922C-F54E-40FD-B26A-0E636A9EE552}
