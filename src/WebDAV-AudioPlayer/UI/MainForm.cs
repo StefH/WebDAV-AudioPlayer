@@ -23,11 +23,13 @@ namespace WebDav.AudioPlayer.UI
         private CancellationTokenSource _cancellationTokenSource;
         private CancellationToken _cancelToken;
 
-        private float _scalingFactor = 1;
+        private float _scalingFactor; // = 1;
+        private SizeF _scale; // = new SizeF(1, 1);
 
         public MainForm(AssemblyConfig config)
         {
             _scalingFactor = DeviceDpi / UIConstants.StandardDPI;
+            _scale = new SizeF(_scalingFactor, _scalingFactor);
 
             InitializeComponent();
 
@@ -95,34 +97,47 @@ namespace WebDav.AudioPlayer.UI
             Log($"Using : '{_player.SoundOut}-SoundOut'");
         }
         
-        protected override void OnDpiChanged(DpiChangedEventArgs e)
-        {
-            _scalingFactor = DeviceDpi / UIConstants.StandardDPI;
-            
-            base.OnDpiChanged(e);
-        }
+        //protected override void OnDpiChanged(DpiChangedEventArgs e)
+        //{
+        //    _scalingFactor = DeviceDpi / UIConstants.StandardDPI;
+        //    _scale = new SizeF(_scalingFactor, _scalingFactor);
+
+        //    Scale();
+
+        //    base.OnDpiChanged(e);
+        //}
 
         protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
         {
-            var scale = new SizeF(_scalingFactor, _scalingFactor);
-            
+            Scale();
+
+            base.ScaleControl(_scale, specified);
+        }
+
+        private void Scale()
+        {
             Font = new Font(UIConstants.FontFamilyName, UIConstants.FontSize * _scalingFactor);
 
-            ScaleListViewColumns(listView, _scalingFactor);
-            
+            foreach (ColumnHeader column in listView.Columns)
+            {
+                column.Width = (int)Math.Round(column.Width * _scalingFactor);
+            }
+
             textBoxSong.Font = Font;
 
             toolStripRight.Font = Font;
-            toolStripRight.Scale(scale);
+            toolStripRight.Scale(_scale);
             foreach (var toolStripRightItem in toolStripRight.Items.OfType<ToolStripItem>())
             {
                 toolStripRightItem.Font = Font;
+                if (toolStripRightItem is ToolStripButton b)
+                {
+                    //
+                }
             }
 
             trackBarSong.Font = Font;
-            trackBarSong.Scale(scale);
-
-            base.ScaleControl(scale, specified);
+            trackBarSong.Scale(_scale);
         }
 
         private void InitCancellationTokenSource()
@@ -438,14 +453,6 @@ namespace WebDav.AudioPlayer.UI
             foreach (ColumnHeader column in lv.Columns)
             {
                 column.Width = (int)Math.Round(column.Width * factor.Width);
-            }
-        }
-
-        private static void ScaleListViewColumns(ListView lv, float factor)
-        {
-            foreach (ColumnHeader column in lv.Columns)
-            {
-                column.Width = (int)Math.Round(column.Width * factor);
             }
         }
 
