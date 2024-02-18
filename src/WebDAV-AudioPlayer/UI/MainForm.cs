@@ -104,12 +104,25 @@ namespace WebDav.AudioPlayer.UI
 
         protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
         {
-            base.ScaleControl(new SizeF(_scalingFactor, _scalingFactor), specified);
-
-            base.Font = new Font(UIConstants.FontFamilyName, UIConstants.FontSize * _scalingFactor);
+            var scale = new SizeF(_scalingFactor, _scalingFactor);
+            
+            Font = new Font(UIConstants.FontFamilyName, UIConstants.FontSize * _scalingFactor);
 
             ScaleListViewColumns(listView, _scalingFactor);
-            textBoxSong.Font = base.Font;
+            
+            textBoxSong.Font = Font;
+
+            toolStripRight.Font = Font;
+            toolStripRight.Scale(scale);
+            foreach (var toolStripRightItem in toolStripRight.Items.OfType<ToolStripItem>())
+            {
+                toolStripRightItem.Font = Font;
+            }
+
+            trackBarSong.Font = Font;
+            trackBarSong.Scale(scale);
+
+            base.ScaleControl(scale, specified);
         }
 
         private void InitCancellationTokenSource()
