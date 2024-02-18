@@ -96,7 +96,7 @@ namespace WebDav.AudioPlayer.UI
 
             Log($"Using : '{_player.SoundOut}-SoundOut'");
         }
-        
+
         //protected override void OnDpiChanged(DpiChangedEventArgs e)
         //{
         //    _scalingFactor = DeviceDpi / UIConstants.StandardDPI;
@@ -129,16 +129,31 @@ namespace WebDav.AudioPlayer.UI
             toolStripRight.Scale(_scale);
             foreach (var toolStripRightItem in toolStripRight.Items.OfType<ToolStripItem>())
             {
-                toolStripRightItem.Font = Font;
-                if (toolStripRightItem is ToolStripButton b)
+                // toolStripRightItem.Font = Font;
+                if (toolStripRightItem is ToolStripButton toolStripButton)
                 {
-                    //
+                    // toolStripButton.Size = new Size((int)(toolStripButton.Width * _scalingFactor), (int)(toolStripButton.Height * _scalingFactor));
+                    // toolStripButton.Image = ResizeImage(toolStripButton.Image);
                 }
             }
-
-            trackBarSong.Font = Font;
-            trackBarSong.Scale(_scale);
         }
+
+        //private Image ResizeImage(Image originalImage)
+        //{
+        //    int width = (int)(originalImage.Width * _scalingFactor);
+        //    int height = (int)(originalImage.Height * _scalingFactor);
+
+        //    var resizedImage = new Bitmap(width, height);
+        //    using (var graphics = Graphics.FromImage(resizedImage))
+        //    {
+        //        graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+        //        graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+        //        graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+        //        graphics.DrawImage(originalImage, 0, 0, width, height);
+        //    }
+
+        //    return resizedImage;
+        //}
 
         private void InitCancellationTokenSource()
         {
@@ -447,7 +462,7 @@ namespace WebDav.AudioPlayer.UI
                 }
             }
         }
-        
+
         private static void ScaleListViewColumns(ListView lv, SizeF factor)
         {
             foreach (ColumnHeader column in lv.Columns)

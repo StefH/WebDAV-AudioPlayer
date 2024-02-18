@@ -192,7 +192,7 @@
             // 
             this.Length.Tag = "Length";
             this.Length.Text = "Length";
-            this.Length.Width = 100;
+            this.Length.Width = 95;
             // 
             // Bitrate
             // 
