@@ -19,17 +19,18 @@ namespace WebDav.AudioPlayer.UI
         private readonly AssemblyConfig _config;
         private readonly IWebDavClient _client;
         private readonly Player _player;
+        private readonly float _scalingFactor;
+        private readonly SizeF _scale;
 
         private CancellationTokenSource _cancellationTokenSource;
         private CancellationToken _cancelToken;
-
-        private float _scalingFactor; // = 1;
-        private SizeF _scale; // = new SizeF(1, 1);
 
         public MainForm(AssemblyConfig config)
         {
             _scalingFactor = DeviceDpi / UIConstants.StandardDPI;
             _scale = new SizeF(_scalingFactor, _scalingFactor);
+
+            WindowState = FormWindowState.Maximized;
 
             InitializeComponent();
 
@@ -41,13 +42,13 @@ namespace WebDav.AudioPlayer.UI
 
             _client = new MyWebDavClient(config);
 
-            Func<ResourceItem, string, string> updateTitle = (resourceItem, action) =>
+            string UpdateTitle(ResourceItem resourceItem, string action)
             {
                 var text = $"{action} : '{resourceItem.Parent.DisplayName}\\{resourceItem.DisplayName}' ({resourceItem.MediaDetails.Mode} {resourceItem.MediaDetails.BitrateKbps} kbps)";
                 Text = @"WebDAV-AudioPlayer " + text;
 
                 return text;
-            };
+            }
 
             _player = new Player(_client)
             {
@@ -56,7 +57,7 @@ namespace WebDav.AudioPlayer.UI
                 PlayStarted = (player, selectedIndex, resourceItem) =>
                 {
                     var bitrateAsString = $"{resourceItem.MediaDetails.BitrateKbps}";
-                    var text = updateTitle(resourceItem, "Playing");
+                    var text = UpdateTitle(resourceItem, "Playing");
                     textBoxSong.Text = text;
 
                     labelTotalTime.Text = $@"{player.TotalTime:hh\:mm\:ss}";
@@ -69,12 +70,12 @@ namespace WebDav.AudioPlayer.UI
                 },
                 PlayContinue = resourceItem =>
                 {
-                    var text = updateTitle(resourceItem, "Playing");
+                    var text = UpdateTitle(resourceItem, "Playing");
                     textBoxSong.Text = text;
                 },
                 PlayPaused = resourceItem =>
                 {
-                    var text = updateTitle(resourceItem, "Pausing");
+                    var text = UpdateTitle(resourceItem, "Pausing");
                     textBoxSong.Text = text;
                 },
                 PlayStopped = () =>
@@ -96,16 +97,6 @@ namespace WebDav.AudioPlayer.UI
 
             Log($"Using : '{_player.SoundOut}-SoundOut'");
         }
-
-        //protected override void OnDpiChanged(DpiChangedEventArgs e)
-        //{
-        //    _scalingFactor = DeviceDpi / UIConstants.StandardDPI;
-        //    _scale = new SizeF(_scalingFactor, _scalingFactor);
-
-        //    Scale();
-
-        //    base.OnDpiChanged(e);
-        //}
 
         protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
         {

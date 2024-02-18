@@ -81,7 +81,7 @@
             this.splitContainer.Panel2.Controls.Add(this.panelRightBottom);
             this.splitContainer.Panel2.Controls.Add(this.panelRightTop);
             this.splitContainer.Size = new System.Drawing.Size(1578, 1032);
-            this.splitContainer.SplitterDistance = 777;
+            this.splitContainer.SplitterDistance = 500;
             this.splitContainer.SplitterWidth = 6;
             this.splitContainer.TabIndex = 1;
             // 
@@ -95,7 +95,7 @@
             this.textBoxSong.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.textBoxSong.Name = "textBoxSong";
             this.textBoxSong.ReadOnly = true;
-            this.textBoxSong.Size = new System.Drawing.Size(777, 26);
+            this.textBoxSong.Size = new System.Drawing.Size(500, 26);
             this.textBoxSong.TabIndex = 2;
             // 
             // treeView
@@ -108,7 +108,7 @@
             this.treeView.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.treeView.Name = "treeView";
             this.treeView.SelectedImageIndex = 0;
-            this.treeView.Size = new System.Drawing.Size(777, 999);
+            this.treeView.Size = new System.Drawing.Size(500, 999);
             this.treeView.TabIndex = 0;
             this.treeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView_NodeMouseClick);
             // 
@@ -129,7 +129,7 @@
             this.toolStripTreeView.Location = new System.Drawing.Point(0, 0);
             this.toolStripTreeView.Name = "toolStripTreeView";
             this.toolStripTreeView.Padding = new System.Windows.Forms.Padding(0, 0, 3, 0);
-            this.toolStripTreeView.Size = new System.Drawing.Size(777, 33);
+            this.toolStripTreeView.Size = new System.Drawing.Size(500, 33);
             this.toolStripTreeView.TabIndex = 1;
             this.toolStripTreeView.Text = "toolStripTreeView";
             // 
@@ -151,7 +151,7 @@
             this.panelRightMid.Location = new System.Drawing.Point(0, 123);
             this.panelRightMid.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.panelRightMid.Name = "panelRightMid";
-            this.panelRightMid.Size = new System.Drawing.Size(795, 801);
+            this.panelRightMid.Size = new System.Drawing.Size(1072, 759);
             this.panelRightMid.TabIndex = 2;
             // 
             // listView
@@ -169,7 +169,7 @@
             this.listView.Margin = new System.Windows.Forms.Padding(0);
             this.listView.MultiSelect = false;
             this.listView.Name = "listView";
-            this.listView.Size = new System.Drawing.Size(795, 801);
+            this.listView.Size = new System.Drawing.Size(1072, 759);
             this.listView.TabIndex = 17;
             this.listView.UseCompatibleStateImageBehavior = false;
             this.listView.View = System.Windows.Forms.View.Details;
@@ -205,10 +205,10 @@
             this.panelRightBottom.BackColor = System.Drawing.SystemColors.Control;
             this.panelRightBottom.Controls.Add(this.txtLogging);
             this.panelRightBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelRightBottom.Location = new System.Drawing.Point(0, 924);
+            this.panelRightBottom.Location = new System.Drawing.Point(0, 882);
             this.panelRightBottom.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.panelRightBottom.Name = "panelRightBottom";
-            this.panelRightBottom.Size = new System.Drawing.Size(795, 108);
+            this.panelRightBottom.Size = new System.Drawing.Size(1072, 150);
             this.panelRightBottom.TabIndex = 1;
             // 
             // txtLogging
@@ -222,7 +222,7 @@
             this.txtLogging.Name = "txtLogging";
             this.txtLogging.ReadOnly = true;
             this.txtLogging.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtLogging.Size = new System.Drawing.Size(795, 108);
+            this.txtLogging.Size = new System.Drawing.Size(1072, 150);
             this.txtLogging.TabIndex = 18;
             // 
             // panelRightTop
@@ -234,7 +234,7 @@
             this.panelRightTop.Location = new System.Drawing.Point(0, 0);
             this.panelRightTop.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.panelRightTop.Name = "panelRightTop";
-            this.panelRightTop.Size = new System.Drawing.Size(795, 123);
+            this.panelRightTop.Size = new System.Drawing.Size(1072, 123);
             this.panelRightTop.TabIndex = 0;
             // 
             // toolStripRight
@@ -254,7 +254,7 @@
             this.toolStripRight.Location = new System.Drawing.Point(0, 0);
             this.toolStripRight.Name = "toolStripRight";
             this.toolStripRight.Padding = new System.Windows.Forms.Padding(0, 0, 3, 0);
-            this.toolStripRight.Size = new System.Drawing.Size(795, 33);
+            this.toolStripRight.Size = new System.Drawing.Size(1072, 33);
             this.toolStripRight.TabIndex = 16;
             this.toolStripRight.Text = "toolStripRight";
             // 
@@ -349,7 +349,7 @@
             this.trackBarSong.Location = new System.Drawing.Point(4, 45);
             this.trackBarSong.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.trackBarSong.Name = "trackBarSong";
-            this.trackBarSong.Size = new System.Drawing.Size(787, 69);
+            this.trackBarSong.Size = new System.Drawing.Size(1064, 69);
             this.trackBarSong.SmallChange = 5;
             this.trackBarSong.TabIndex = 0;
             this.trackBarSong.TickFrequency = 5;
@@ -396,6 +396,7 @@
             this.Controls.Add(this.splitContainer);
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "MainForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "WebDAV-AudioPlayer";
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.splitContainer.Panel1.ResumeLayout(false);
