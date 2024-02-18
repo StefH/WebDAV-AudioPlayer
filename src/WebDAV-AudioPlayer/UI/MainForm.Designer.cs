@@ -66,6 +66,7 @@
             // 
             this.splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.splitContainer.Name = "splitContainer";
             // 
             // splitContainer.Panel1
@@ -79,8 +80,9 @@
             this.splitContainer.Panel2.Controls.Add(this.panelRightMid);
             this.splitContainer.Panel2.Controls.Add(this.panelRightBottom);
             this.splitContainer.Panel2.Controls.Add(this.panelRightTop);
-            this.splitContainer.Size = new System.Drawing.Size(984, 671);
-            this.splitContainer.SplitterDistance = 485;
+            this.splitContainer.Size = new System.Drawing.Size(1476, 1032);
+            this.splitContainer.SplitterDistance = 727;
+            this.splitContainer.SplitterWidth = 6;
             this.splitContainer.TabIndex = 1;
             // 
             // textBoxSong
@@ -89,10 +91,11 @@
             this.textBoxSong.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.textBoxSong.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxSong.ForeColor = System.Drawing.SystemColors.MenuHighlight;
-            this.textBoxSong.Location = new System.Drawing.Point(0, 651);
+            this.textBoxSong.Location = new System.Drawing.Point(0, 1006);
+            this.textBoxSong.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.textBoxSong.Name = "textBoxSong";
             this.textBoxSong.ReadOnly = true;
-            this.textBoxSong.Size = new System.Drawing.Size(485, 20);
+            this.textBoxSong.Size = new System.Drawing.Size(727, 26);
             this.textBoxSong.TabIndex = 2;
             // 
             // treeView
@@ -101,10 +104,11 @@
             this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView.ImageIndex = 0;
             this.treeView.ImageList = this.imageListTreeView;
-            this.treeView.Location = new System.Drawing.Point(0, 25);
+            this.treeView.Location = new System.Drawing.Point(0, 33);
+            this.treeView.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.treeView.Name = "treeView";
             this.treeView.SelectedImageIndex = 0;
-            this.treeView.Size = new System.Drawing.Size(485, 646);
+            this.treeView.Size = new System.Drawing.Size(727, 999);
             this.treeView.TabIndex = 0;
             this.treeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView_NodeMouseClick);
             // 
@@ -119,11 +123,13 @@
             // 
             // toolStripTreeView
             // 
+            this.toolStripTreeView.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.toolStripTreeView.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnRefresh});
             this.toolStripTreeView.Location = new System.Drawing.Point(0, 0);
             this.toolStripTreeView.Name = "toolStripTreeView";
-            this.toolStripTreeView.Size = new System.Drawing.Size(485, 25);
+            this.toolStripTreeView.Padding = new System.Windows.Forms.Padding(0, 0, 3, 0);
+            this.toolStripTreeView.Size = new System.Drawing.Size(727, 33);
             this.toolStripTreeView.TabIndex = 1;
             this.toolStripTreeView.Text = "toolStripTreeView";
             // 
@@ -133,7 +139,7 @@
             this.btnRefresh.Image = global::WebDav.AudioPlayer.Properties.Resources.Refresh;
             this.btnRefresh.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(23, 22);
+            this.btnRefresh.Size = new System.Drawing.Size(34, 28);
             this.btnRefresh.Text = "Refresh";
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
@@ -142,9 +148,10 @@
             this.panelRightMid.BackColor = System.Drawing.SystemColors.Control;
             this.panelRightMid.Controls.Add(this.listView);
             this.panelRightMid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelRightMid.Location = new System.Drawing.Point(0, 80);
+            this.panelRightMid.Location = new System.Drawing.Point(0, 123);
+            this.panelRightMid.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.panelRightMid.Name = "panelRightMid";
-            this.panelRightMid.Size = new System.Drawing.Size(495, 521);
+            this.panelRightMid.Size = new System.Drawing.Size(743, 801);
             this.panelRightMid.TabIndex = 2;
             // 
             // listView
@@ -157,11 +164,12 @@
             this.Bitrate});
             this.listView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listView.GridLines = true;
+            this.listView.HideSelection = false;
             this.listView.Location = new System.Drawing.Point(0, 0);
             this.listView.Margin = new System.Windows.Forms.Padding(0);
             this.listView.MultiSelect = false;
             this.listView.Name = "listView";
-            this.listView.Size = new System.Drawing.Size(495, 521);
+            this.listView.Size = new System.Drawing.Size(743, 801);
             this.listView.TabIndex = 17;
             this.listView.UseCompatibleStateImageBehavior = false;
             this.listView.View = System.Windows.Forms.View.Details;
@@ -172,34 +180,35 @@
             // 
             this.DisplayName.Tag = "DisplayName";
             this.DisplayName.Text = "Title";
-            this.DisplayName.Width = 300;
+            this.DisplayName.Width = 500;
             // 
             // ContentLength
             // 
             this.ContentLength.Tag = "ContentLength";
             this.ContentLength.Text = "Size";
-            this.ContentLength.Width = 70;
+            this.ContentLength.Width = 100;
             // 
             // Length
             // 
             this.Length.Tag = "Length";
             this.Length.Text = "Length";
-            this.Length.Width = 50;
+            this.Length.Width = 100;
             // 
             // Bitrate
             // 
             this.Bitrate.Tag = "BitrateKbps";
             this.Bitrate.Text = "BitrateKbps";
-            this.Bitrate.Width = 55;
+            this.Bitrate.Width = 100;
             // 
             // panelRightBottom
             // 
             this.panelRightBottom.BackColor = System.Drawing.SystemColors.Control;
             this.panelRightBottom.Controls.Add(this.txtLogging);
             this.panelRightBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelRightBottom.Location = new System.Drawing.Point(0, 601);
+            this.panelRightBottom.Location = new System.Drawing.Point(0, 924);
+            this.panelRightBottom.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.panelRightBottom.Name = "panelRightBottom";
-            this.panelRightBottom.Size = new System.Drawing.Size(495, 70);
+            this.panelRightBottom.Size = new System.Drawing.Size(743, 108);
             this.panelRightBottom.TabIndex = 1;
             // 
             // txtLogging
@@ -208,11 +217,12 @@
             this.txtLogging.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtLogging.ForeColor = System.Drawing.Color.Green;
             this.txtLogging.Location = new System.Drawing.Point(0, 0);
+            this.txtLogging.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtLogging.Multiline = true;
             this.txtLogging.Name = "txtLogging";
             this.txtLogging.ReadOnly = true;
             this.txtLogging.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtLogging.Size = new System.Drawing.Size(495, 70);
+            this.txtLogging.Size = new System.Drawing.Size(743, 108);
             this.txtLogging.TabIndex = 18;
             // 
             // panelRightTop
@@ -222,12 +232,14 @@
             this.panelRightTop.Controls.Add(this.trackBarSong);
             this.panelRightTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelRightTop.Location = new System.Drawing.Point(0, 0);
+            this.panelRightTop.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.panelRightTop.Name = "panelRightTop";
-            this.panelRightTop.Size = new System.Drawing.Size(495, 80);
+            this.panelRightTop.Size = new System.Drawing.Size(743, 123);
             this.panelRightTop.TabIndex = 0;
             // 
             // toolStripRight
             // 
+            this.toolStripRight.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.toolStripRight.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.buttonPlay,
             this.buttonStop,
@@ -241,7 +253,8 @@
             this.labelTotalTime});
             this.toolStripRight.Location = new System.Drawing.Point(0, 0);
             this.toolStripRight.Name = "toolStripRight";
-            this.toolStripRight.Size = new System.Drawing.Size(495, 25);
+            this.toolStripRight.Padding = new System.Windows.Forms.Padding(0, 0, 3, 0);
+            this.toolStripRight.Size = new System.Drawing.Size(743, 33);
             this.toolStripRight.TabIndex = 16;
             this.toolStripRight.Text = "toolStripRight";
             // 
@@ -251,7 +264,7 @@
             this.buttonPlay.Image = ((System.Drawing.Image)(resources.GetObject("buttonPlay.Image")));
             this.buttonPlay.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonPlay.Name = "buttonPlay";
-            this.buttonPlay.Size = new System.Drawing.Size(23, 22);
+            this.buttonPlay.Size = new System.Drawing.Size(34, 28);
             this.buttonPlay.Text = "Play";
             this.buttonPlay.Click += new System.EventHandler(this.buttonPlay_Click);
             // 
@@ -261,7 +274,7 @@
             this.buttonStop.Image = ((System.Drawing.Image)(resources.GetObject("buttonStop.Image")));
             this.buttonStop.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonStop.Name = "buttonStop";
-            this.buttonStop.Size = new System.Drawing.Size(23, 22);
+            this.buttonStop.Size = new System.Drawing.Size(34, 28);
             this.buttonStop.Text = "Stop";
             this.buttonStop.Click += new System.EventHandler(this.buttonStop_Click);
             // 
@@ -271,7 +284,7 @@
             this.buttonPause.Image = ((System.Drawing.Image)(resources.GetObject("buttonPause.Image")));
             this.buttonPause.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonPause.Name = "buttonPause";
-            this.buttonPause.Size = new System.Drawing.Size(23, 22);
+            this.buttonPause.Size = new System.Drawing.Size(34, 28);
             this.buttonPause.Text = "Pause";
             this.buttonPause.Click += new System.EventHandler(this.buttonPause_Click);
             // 
@@ -281,7 +294,7 @@
             this.btnPrevious.Image = global::WebDav.AudioPlayer.Properties.Resources.Previous;
             this.btnPrevious.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnPrevious.Name = "btnPrevious";
-            this.btnPrevious.Size = new System.Drawing.Size(23, 22);
+            this.btnPrevious.Size = new System.Drawing.Size(34, 28);
             this.btnPrevious.Text = "Previous";
             this.btnPrevious.Click += new System.EventHandler(this.btnPrevious_Click);
             // 
@@ -291,7 +304,7 @@
             this.btnNext.Image = global::WebDav.AudioPlayer.Properties.Resources.Next;
             this.btnNext.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnNext.Name = "btnNext";
-            this.btnNext.Size = new System.Drawing.Size(23, 22);
+            this.btnNext.Size = new System.Drawing.Size(34, 28);
             this.btnNext.Text = "Next";
             this.btnNext.Click += new System.EventHandler(this.btnNext_Click);
             // 
@@ -301,31 +314,31 @@
             this.btnSettings.Image = global::WebDav.AudioPlayer.Properties.Resources.Settings;
             this.btnSettings.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnSettings.Name = "btnSettings";
-            this.btnSettings.Size = new System.Drawing.Size(23, 22);
+            this.btnSettings.Size = new System.Drawing.Size(34, 28);
             this.btnSettings.Text = "Settings";
             // 
             // tsLblCurrentTime
             // 
             this.tsLblCurrentTime.Name = "tsLblCurrentTime";
-            this.tsLblCurrentTime.Size = new System.Drawing.Size(53, 22);
+            this.tsLblCurrentTime.Size = new System.Drawing.Size(79, 28);
             this.tsLblCurrentTime.Text = "Current :";
             // 
             // labelCurrentTime
             // 
             this.labelCurrentTime.Name = "labelCurrentTime";
-            this.labelCurrentTime.Size = new System.Drawing.Size(49, 22);
+            this.labelCurrentTime.Size = new System.Drawing.Size(80, 28);
             this.labelCurrentTime.Text = "00:00:00";
             // 
             // tsLblTotalTime
             // 
             this.tsLblTotalTime.Name = "tsLblTotalTime";
-            this.tsLblTotalTime.Size = new System.Drawing.Size(39, 22);
+            this.tsLblTotalTime.Size = new System.Drawing.Size(58, 28);
             this.tsLblTotalTime.Text = "Total :";
             // 
             // labelTotalTime
             // 
             this.labelTotalTime.Name = "labelTotalTime";
-            this.labelTotalTime.Size = new System.Drawing.Size(49, 22);
+            this.labelTotalTime.Size = new System.Drawing.Size(80, 28);
             this.labelTotalTime.Text = "00:00:00";
             // 
             // trackBarSong
@@ -333,9 +346,10 @@
             this.trackBarSong.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.trackBarSong.LargeChange = 10;
-            this.trackBarSong.Location = new System.Drawing.Point(3, 29);
+            this.trackBarSong.Location = new System.Drawing.Point(4, 45);
+            this.trackBarSong.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.trackBarSong.Name = "trackBarSong";
-            this.trackBarSong.Size = new System.Drawing.Size(489, 45);
+            this.trackBarSong.Size = new System.Drawing.Size(735, 69);
             this.trackBarSong.SmallChange = 5;
             this.trackBarSong.TabIndex = 0;
             this.trackBarSong.TickFrequency = 5;
@@ -352,33 +366,35 @@
             // 
             // contextMenuStripOnFolder
             // 
+            this.contextMenuStripOnFolder.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.contextMenuStripOnFolder.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.save,
             this.cancel});
             this.contextMenuStripOnFolder.Name = "contextMenuStripOnFolder";
-            this.contextMenuStripOnFolder.Size = new System.Drawing.Size(149, 48);
+            this.contextMenuStripOnFolder.Size = new System.Drawing.Size(199, 68);
             this.contextMenuStripOnFolder.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.contextMenuStripOnFolder_ItemClicked);
             // 
             // save
             // 
             this.save.Name = "save";
-            this.save.Size = new System.Drawing.Size(148, 22);
+            this.save.Size = new System.Drawing.Size(198, 32);
             this.save.Tag = "save";
             this.save.Text = "&Save to Folder";
             // 
             // cancel
             // 
             this.cancel.Name = "cancel";
-            this.cancel.Size = new System.Drawing.Size(148, 22);
+            this.cancel.Size = new System.Drawing.Size(198, 32);
             this.cancel.Tag = "cancel";
             this.cancel.Text = "&Cancel";
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(984, 671);
+            this.ClientSize = new System.Drawing.Size(1476, 1032);
             this.Controls.Add(this.splitContainer);
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "MainForm";
             this.Text = "WebDAV-AudioPlayer";
             this.Load += new System.EventHandler(this.MainForm_Load);

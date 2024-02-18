@@ -23,11 +23,15 @@ namespace WebDav.AudioPlayer.UI
         private CancellationTokenSource _cancellationTokenSource;
         private CancellationToken _cancelToken;
 
+        private float _scalingFactor = 1;
+
         public MainForm(AssemblyConfig config)
         {
-            _config = config;
+            _scalingFactor = DeviceDpi / UIConstants.StandardDPI;
 
             InitializeComponent();
+
+            _config = config;
 
             Icon = Resources.icon;
 
@@ -37,7 +41,7 @@ namespace WebDav.AudioPlayer.UI
 
             Func<ResourceItem, string, string> updateTitle = (resourceItem, action) =>
             {
-                string text = $"{action} : '{resourceItem.Parent.DisplayName}\\{resourceItem.DisplayName}' ({resourceItem.MediaDetails.Mode} {resourceItem.MediaDetails.BitrateKbps} kbps)";
+                var text = $"{action} : '{resourceItem.Parent.DisplayName}\\{resourceItem.DisplayName}' ({resourceItem.MediaDetails.Mode} {resourceItem.MediaDetails.BitrateKbps} kbps)";
                 Text = @"WebDAV-AudioPlayer " + text;
 
                 return text;
@@ -47,28 +51,28 @@ namespace WebDav.AudioPlayer.UI
             {
                 Log = Log,
 
-                PlayStarted = (selectedIndex, resourceItem) =>
+                PlayStarted = (player, selectedIndex, resourceItem) =>
                 {
-                    string bitrate = $"{resourceItem.MediaDetails.BitrateKbps}";
-                    string text = updateTitle(resourceItem, "Playing");
+                    var bitrateAsString = $"{resourceItem.MediaDetails.BitrateKbps}";
+                    var text = updateTitle(resourceItem, "Playing");
                     textBoxSong.Text = text;
 
-                    labelTotalTime.Text = $@"{_player.TotalTime:hh\:mm\:ss}";
+                    labelTotalTime.Text = $@"{player.TotalTime:hh\:mm\:ss}";
 
-                    trackBarSong.Maximum = (int)_player.TotalTime.TotalSeconds;
-                    trackBarSong.Enabled = _player.CanSeek;
+                    trackBarSong.Maximum = (int)player.TotalTime.TotalSeconds;
+                    trackBarSong.Enabled = player.CanSeek;
 
-                    listView.SetCells(selectedIndex, $@"{_player.TotalTime:h\:mm\:ss}", bitrate);
+                    listView.SetCells(selectedIndex, $@"{player.TotalTime:h\:mm\:ss}", bitrateAsString);
                     listView.SetSelectedIndex(selectedIndex);
                 },
                 PlayContinue = resourceItem =>
                 {
-                    string text = updateTitle(resourceItem, "Playing");
+                    var text = updateTitle(resourceItem, "Playing");
                     textBoxSong.Text = text;
                 },
                 PlayPaused = resourceItem =>
                 {
-                    string text = updateTitle(resourceItem, "Pausing");
+                    var text = updateTitle(resourceItem, "Pausing");
                     textBoxSong.Text = text;
                 },
                 PlayStopped = () =>
@@ -89,6 +93,23 @@ namespace WebDav.AudioPlayer.UI
             };
 
             Log($"Using : '{_player.SoundOut}-SoundOut'");
+        }
+        
+        protected override void OnDpiChanged(DpiChangedEventArgs e)
+        {
+            _scalingFactor = DeviceDpi / UIConstants.StandardDPI;
+            
+            base.OnDpiChanged(e);
+        }
+
+        protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
+        {
+            base.ScaleControl(new SizeF(_scalingFactor, _scalingFactor), specified);
+
+            base.Font = new Font(UIConstants.FontFamilyName, UIConstants.FontSize * _scalingFactor);
+
+            ScaleListViewColumns(listView, _scalingFactor);
+            textBoxSong.Font = base.Font;
         }
 
         private void InitCancellationTokenSource()
@@ -177,8 +198,7 @@ namespace WebDav.AudioPlayer.UI
 
         private async void contextMenuStripOnFolder_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            var resourceItem = e.ClickedItem.Tag as ResourceItem;
-            if (resourceItem != null && e.ClickedItem.Name == "save")
+            if (e.ClickedItem.Tag is ResourceItem resourceItem && e.ClickedItem.Name == "save")
             {
                 await ShowFolderSaveDialogAsync(resourceItem);
             }
@@ -399,19 +419,20 @@ namespace WebDav.AudioPlayer.UI
                 }
             }
         }
-
-        protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
-        {
-            base.ScaleControl(factor, specified);
-
-            ScaleListViewColumns(listView, factor);
-        }
-
-        private void ScaleListViewColumns(ListView lv, SizeF factor)
+        
+        private static void ScaleListViewColumns(ListView lv, SizeF factor)
         {
             foreach (ColumnHeader column in lv.Columns)
             {
                 column.Width = (int)Math.Round(column.Width * factor.Width);
+            }
+        }
+
+        private static void ScaleListViewColumns(ListView lv, float factor)
+        {
+            foreach (ColumnHeader column in lv.Columns)
+            {
+                column.Width = (int)Math.Round(column.Width * factor);
             }
         }
 

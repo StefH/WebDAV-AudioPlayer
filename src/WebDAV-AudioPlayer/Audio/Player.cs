@@ -34,7 +34,7 @@ namespace WebDav.AudioPlayer.Audio
         public bool CanSeek => _waveSource.CanSeek;
 
         public Action<string> Log;
-        public Action<int, ResourceItem> PlayStarted;
+        public Action<Player, int, ResourceItem> PlayStarted;
         public Action<ResourceItem> PlayPaused;
         public Action<ResourceItem> PlayContinue;
         public Func<ResourceItem, Task> DoubleClickFolderAndPlayFirstSong;
@@ -164,7 +164,7 @@ namespace WebDav.AudioPlayer.Audio
 
             _soundOut.Initialize(_waveSource);
             _soundOut.Play();
-            PlayStarted(SelectedIndex, resourceItem);
+            PlayStarted(this, SelectedIndex, resourceItem);
 
             // Preload Next
             await PreloadNextAsync(cancellationToken);

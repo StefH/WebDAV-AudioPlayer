@@ -55,7 +55,7 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            base.OnInitialized();
+            await base.OnInitializedAsync();
 
             _client = Factory.GetClient();
 
@@ -63,19 +63,19 @@ namespace Blazor.WebDAV.AudioPlayer.Pages
             {
                 Log = Log,
 
-                PlayStarted = (selectedIndex, resourceItem) =>
+                PlayStarted = (player, selectedIndex, resourceItem) =>
                 {
                     Log($"PlayStarted - {resourceItem.DisplayName}");
 
                     SelectedPlayListItem = PlayListItems[selectedIndex];
                     CurrentTime = TIME_ZERO;
-                    TotalTime = $@"{_player.TotalTime:hh\:mm\:ss}";
+                    TotalTime = $@"{player.TotalTime:hh\:mm\:ss}";
 
-                    SliderMax = (int)_player.TotalTime.TotalSeconds;
-                    SliderEnabled = _player.CanSeek;
+                    SliderMax = (int)player.TotalTime.TotalSeconds;
+                    SliderEnabled = player.CanSeek;
 
                     PlayListItems[selectedIndex].Bitrate = $"{resourceItem.MediaDetails.BitrateKbps}";
-                    PlayListItems[selectedIndex].Length = $@"{_player.TotalTime:hh\:mm\:ss}";
+                    PlayListItems[selectedIndex].Length = $@"{player.TotalTime:hh\:mm\:ss}";
                 },
                 PlayContinue = resourceItem =>
                 {

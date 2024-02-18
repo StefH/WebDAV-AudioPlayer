@@ -25,7 +25,7 @@ namespace WebDav.AudioPlayer.IO
         }
 
         /// <summary>
-        /// Loads the settings from the persistant storage.
+        /// Loads the settings from the persistent storage.
         /// </summary>
         /// <returns>Settings.</returns>
         public static T Load()
@@ -51,7 +51,7 @@ namespace WebDav.AudioPlayer.IO
         }
 
         /// <summary>
-        /// Saves the settings to a persistant storage.
+        /// Saves the settings to a persistent storage.
         /// </summary>
         public void Save()
         {
@@ -59,7 +59,10 @@ namespace WebDav.AudioPlayer.IO
 
             var path = GetPath();
             if (File.Exists(path))
+            {
                 File.Delete(path);
+            }
+
             File.WriteAllText(path, serialized);
             IsDefault = false;
         }

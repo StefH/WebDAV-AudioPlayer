@@ -273,6 +273,7 @@
     <Compile Include="UI\ConfigurationForm.Designer.cs">
       <DependentUpon>ConfigurationForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\UIConstants.cs" />
     <Compile Include="UI\DownloadFolderForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -298,6 +299,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
