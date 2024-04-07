@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using AsyncAwaitBestPractices;
 using WebDav.AudioPlayer.Audio;
 using WebDav.AudioPlayer.Client;
 using WebDav.AudioPlayer.Models;
@@ -350,7 +351,7 @@ namespace WebDav.AudioPlayer.UI
 
         private void listView_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            _player.PlayAsync(listView.SelectedIndices[0], _cancelToken);
+            PlayAsync(listView.SelectedIndices[0]);
         }
 
         private void listView_KeyDown(object sender, KeyEventArgs e)
@@ -363,7 +364,7 @@ namespace WebDav.AudioPlayer.UI
             switch (e.KeyData)
             {
                 case Keys.Enter:
-                    _player.PlayAsync(listView.SelectedIndices[0], _cancelToken);
+                    PlayAsync(listView.SelectedIndices[0]);
                     break;
 
                 case Keys.PageUp:
@@ -395,7 +396,7 @@ namespace WebDav.AudioPlayer.UI
 
         private void buttonPlay_Click(object sender, EventArgs e)
         {
-            _player.PlayAsync(listView.SelectedIndices[0], _cancelToken);
+            PlayAsync(listView.SelectedIndices[0]);
         }
 
         private void buttonPause_Click(object sender, EventArgs e)
@@ -412,12 +413,12 @@ namespace WebDav.AudioPlayer.UI
 
         private void btnPrevious_Click(object sender, EventArgs e)
         {
-            _player.PlayPreviousAsync(_cancelToken);
+            PlayPreviousAsync();
         }
 
         private void btnNext_Click(object sender, EventArgs e)
         {
-            _player.PlayNextAsync(_cancelToken);
+            PlayNextAsync();
         }
 
         private void trackBarSong_Scroll(object sender, EventArgs e)
@@ -456,10 +457,28 @@ namespace WebDav.AudioPlayer.UI
 
                     if (_player.CurrentTime.Add(TimeSpan.FromMilliseconds(500)) > _player.TotalTime)
                     {
-                        _player.PlayNextAsync(_cancelToken);
+                        PlayNextAsync();
                     }
                 }
             }
+        }
+
+        private void PlayAsync(int index)
+        {
+            _player.PlayAsync(index, _cancelToken)
+                .SafeFireAndForget(ex => MessageBox.Show(ex.ToString(), "Play Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation));
+        }
+
+        private void PlayNextAsync()
+        {
+            _player.PlayNextAsync(_cancelToken)
+                .SafeFireAndForget(ex => MessageBox.Show(ex.ToString(), "Play Next Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation));
+        }
+
+        private void PlayPreviousAsync()
+        {
+            _player.PlayPreviousAsync(_cancelToken)
+                .SafeFireAndForget(ex => MessageBox.Show(ex.ToString(), "Play Previous Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation));
         }
 
         /// <summary>

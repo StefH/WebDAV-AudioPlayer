@@ -66,6 +66,9 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AsyncAwaitBestPractices, Version=7.0.0.0, Culture=neutral, PublicKeyToken=532360cfd341384d, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\AsyncAwaitBestPractices.7.0.0\lib\netstandard2.0\AsyncAwaitBestPractices.dll</HintPath>
+    </Reference>
     <Reference Include="ATL, Version=4.29.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\z440.atl.core.4.29.0\lib\net48\ATL.dll</HintPath>
     </Reference>
