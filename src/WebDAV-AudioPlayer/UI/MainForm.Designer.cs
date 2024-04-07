@@ -66,7 +66,6 @@
             // 
             this.splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.splitContainer.Name = "splitContainer";
             // 
             // splitContainer.Panel1
@@ -80,9 +79,8 @@
             this.splitContainer.Panel2.Controls.Add(this.panelRightMid);
             this.splitContainer.Panel2.Controls.Add(this.panelRightBottom);
             this.splitContainer.Panel2.Controls.Add(this.panelRightTop);
-            this.splitContainer.Size = new System.Drawing.Size(1578, 1032);
-            this.splitContainer.SplitterDistance = 500;
-            this.splitContainer.SplitterWidth = 6;
+            this.splitContainer.Size = new System.Drawing.Size(1052, 671);
+            this.splitContainer.SplitterDistance = 333;
             this.splitContainer.TabIndex = 1;
             // 
             // textBoxSong
@@ -91,11 +89,10 @@
             this.textBoxSong.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.textBoxSong.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxSong.ForeColor = System.Drawing.SystemColors.MenuHighlight;
-            this.textBoxSong.Location = new System.Drawing.Point(0, 1006);
-            this.textBoxSong.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBoxSong.Location = new System.Drawing.Point(0, 651);
             this.textBoxSong.Name = "textBoxSong";
             this.textBoxSong.ReadOnly = true;
-            this.textBoxSong.Size = new System.Drawing.Size(500, 26);
+            this.textBoxSong.Size = new System.Drawing.Size(333, 20);
             this.textBoxSong.TabIndex = 2;
             // 
             // treeView
@@ -104,11 +101,10 @@
             this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView.ImageIndex = 0;
             this.treeView.ImageList = this.imageListTreeView;
-            this.treeView.Location = new System.Drawing.Point(0, 33);
-            this.treeView.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.treeView.Location = new System.Drawing.Point(0, 31);
             this.treeView.Name = "treeView";
             this.treeView.SelectedImageIndex = 0;
-            this.treeView.Size = new System.Drawing.Size(500, 999);
+            this.treeView.Size = new System.Drawing.Size(333, 640);
             this.treeView.TabIndex = 0;
             this.treeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView_NodeMouseClick);
             // 
@@ -128,8 +124,8 @@
             this.btnRefresh});
             this.toolStripTreeView.Location = new System.Drawing.Point(0, 0);
             this.toolStripTreeView.Name = "toolStripTreeView";
-            this.toolStripTreeView.Padding = new System.Windows.Forms.Padding(0, 0, 3, 0);
-            this.toolStripTreeView.Size = new System.Drawing.Size(500, 33);
+            this.toolStripTreeView.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
+            this.toolStripTreeView.Size = new System.Drawing.Size(333, 31);
             this.toolStripTreeView.TabIndex = 1;
             this.toolStripTreeView.Text = "toolStripTreeView";
             // 
@@ -139,7 +135,7 @@
             this.btnRefresh.Image = global::WebDav.AudioPlayer.Properties.Resources.Refresh;
             this.btnRefresh.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(34, 28);
+            this.btnRefresh.Size = new System.Drawing.Size(28, 28);
             this.btnRefresh.Text = "Refresh";
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
@@ -148,10 +144,9 @@
             this.panelRightMid.BackColor = System.Drawing.SystemColors.Control;
             this.panelRightMid.Controls.Add(this.listView);
             this.panelRightMid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelRightMid.Location = new System.Drawing.Point(0, 123);
-            this.panelRightMid.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.panelRightMid.Location = new System.Drawing.Point(0, 80);
             this.panelRightMid.Name = "panelRightMid";
-            this.panelRightMid.Size = new System.Drawing.Size(1072, 759);
+            this.panelRightMid.Size = new System.Drawing.Size(715, 493);
             this.panelRightMid.TabIndex = 2;
             // 
             // listView
@@ -169,7 +164,7 @@
             this.listView.Margin = new System.Windows.Forms.Padding(0);
             this.listView.MultiSelect = false;
             this.listView.Name = "listView";
-            this.listView.Size = new System.Drawing.Size(1072, 759);
+            this.listView.Size = new System.Drawing.Size(715, 493);
             this.listView.TabIndex = 17;
             this.listView.UseCompatibleStateImageBehavior = false;
             this.listView.View = System.Windows.Forms.View.Details;
@@ -205,10 +200,9 @@
             this.panelRightBottom.BackColor = System.Drawing.SystemColors.Control;
             this.panelRightBottom.Controls.Add(this.txtLogging);
             this.panelRightBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelRightBottom.Location = new System.Drawing.Point(0, 882);
-            this.panelRightBottom.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.panelRightBottom.Location = new System.Drawing.Point(0, 573);
             this.panelRightBottom.Name = "panelRightBottom";
-            this.panelRightBottom.Size = new System.Drawing.Size(1072, 150);
+            this.panelRightBottom.Size = new System.Drawing.Size(715, 98);
             this.panelRightBottom.TabIndex = 1;
             // 
             // txtLogging
@@ -217,12 +211,11 @@
             this.txtLogging.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtLogging.ForeColor = System.Drawing.Color.Green;
             this.txtLogging.Location = new System.Drawing.Point(0, 0);
-            this.txtLogging.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtLogging.Multiline = true;
             this.txtLogging.Name = "txtLogging";
             this.txtLogging.ReadOnly = true;
             this.txtLogging.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtLogging.Size = new System.Drawing.Size(1072, 150);
+            this.txtLogging.Size = new System.Drawing.Size(715, 98);
             this.txtLogging.TabIndex = 18;
             // 
             // panelRightTop
@@ -232,9 +225,8 @@
             this.panelRightTop.Controls.Add(this.trackBarSong);
             this.panelRightTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelRightTop.Location = new System.Drawing.Point(0, 0);
-            this.panelRightTop.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.panelRightTop.Name = "panelRightTop";
-            this.panelRightTop.Size = new System.Drawing.Size(1072, 123);
+            this.panelRightTop.Size = new System.Drawing.Size(715, 80);
             this.panelRightTop.TabIndex = 0;
             // 
             // toolStripRight
@@ -253,8 +245,8 @@
             this.labelTotalTime});
             this.toolStripRight.Location = new System.Drawing.Point(0, 0);
             this.toolStripRight.Name = "toolStripRight";
-            this.toolStripRight.Padding = new System.Windows.Forms.Padding(0, 0, 3, 0);
-            this.toolStripRight.Size = new System.Drawing.Size(1072, 33);
+            this.toolStripRight.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
+            this.toolStripRight.Size = new System.Drawing.Size(715, 25);
             this.toolStripRight.TabIndex = 16;
             this.toolStripRight.Text = "toolStripRight";
             // 
@@ -262,9 +254,10 @@
             // 
             this.buttonPlay.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.buttonPlay.Image = ((System.Drawing.Image)(resources.GetObject("buttonPlay.Image")));
+            this.buttonPlay.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.buttonPlay.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonPlay.Name = "buttonPlay";
-            this.buttonPlay.Size = new System.Drawing.Size(34, 28);
+            this.buttonPlay.Size = new System.Drawing.Size(23, 22);
             this.buttonPlay.Text = "Play";
             this.buttonPlay.Click += new System.EventHandler(this.buttonPlay_Click);
             // 
@@ -272,9 +265,10 @@
             // 
             this.buttonStop.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.buttonStop.Image = ((System.Drawing.Image)(resources.GetObject("buttonStop.Image")));
+            this.buttonStop.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.buttonStop.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonStop.Name = "buttonStop";
-            this.buttonStop.Size = new System.Drawing.Size(34, 28);
+            this.buttonStop.Size = new System.Drawing.Size(23, 22);
             this.buttonStop.Text = "Stop";
             this.buttonStop.Click += new System.EventHandler(this.buttonStop_Click);
             // 
@@ -282,9 +276,10 @@
             // 
             this.buttonPause.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.buttonPause.Image = ((System.Drawing.Image)(resources.GetObject("buttonPause.Image")));
+            this.buttonPause.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.buttonPause.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonPause.Name = "buttonPause";
-            this.buttonPause.Size = new System.Drawing.Size(34, 28);
+            this.buttonPause.Size = new System.Drawing.Size(23, 22);
             this.buttonPause.Text = "Pause";
             this.buttonPause.Click += new System.EventHandler(this.buttonPause_Click);
             // 
@@ -292,9 +287,10 @@
             // 
             this.btnPrevious.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnPrevious.Image = global::WebDav.AudioPlayer.Properties.Resources.Previous;
+            this.btnPrevious.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnPrevious.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnPrevious.Name = "btnPrevious";
-            this.btnPrevious.Size = new System.Drawing.Size(34, 28);
+            this.btnPrevious.Size = new System.Drawing.Size(23, 22);
             this.btnPrevious.Text = "Previous";
             this.btnPrevious.Click += new System.EventHandler(this.btnPrevious_Click);
             // 
@@ -302,9 +298,10 @@
             // 
             this.btnNext.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnNext.Image = global::WebDav.AudioPlayer.Properties.Resources.Next;
+            this.btnNext.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnNext.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnNext.Name = "btnNext";
-            this.btnNext.Size = new System.Drawing.Size(34, 28);
+            this.btnNext.Size = new System.Drawing.Size(23, 22);
             this.btnNext.Text = "Next";
             this.btnNext.Click += new System.EventHandler(this.btnNext_Click);
             // 
@@ -312,33 +309,34 @@
             // 
             this.btnSettings.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnSettings.Image = global::WebDav.AudioPlayer.Properties.Resources.Settings;
+            this.btnSettings.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnSettings.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnSettings.Name = "btnSettings";
-            this.btnSettings.Size = new System.Drawing.Size(34, 28);
+            this.btnSettings.Size = new System.Drawing.Size(23, 22);
             this.btnSettings.Text = "Settings";
             // 
             // tsLblCurrentTime
             // 
             this.tsLblCurrentTime.Name = "tsLblCurrentTime";
-            this.tsLblCurrentTime.Size = new System.Drawing.Size(79, 28);
+            this.tsLblCurrentTime.Size = new System.Drawing.Size(53, 22);
             this.tsLblCurrentTime.Text = "Current :";
             // 
             // labelCurrentTime
             // 
             this.labelCurrentTime.Name = "labelCurrentTime";
-            this.labelCurrentTime.Size = new System.Drawing.Size(80, 28);
+            this.labelCurrentTime.Size = new System.Drawing.Size(49, 22);
             this.labelCurrentTime.Text = "00:00:00";
             // 
             // tsLblTotalTime
             // 
             this.tsLblTotalTime.Name = "tsLblTotalTime";
-            this.tsLblTotalTime.Size = new System.Drawing.Size(58, 28);
+            this.tsLblTotalTime.Size = new System.Drawing.Size(38, 22);
             this.tsLblTotalTime.Text = "Total :";
             // 
             // labelTotalTime
             // 
             this.labelTotalTime.Name = "labelTotalTime";
-            this.labelTotalTime.Size = new System.Drawing.Size(80, 28);
+            this.labelTotalTime.Size = new System.Drawing.Size(49, 22);
             this.labelTotalTime.Text = "00:00:00";
             // 
             // trackBarSong
@@ -346,10 +344,9 @@
             this.trackBarSong.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.trackBarSong.LargeChange = 10;
-            this.trackBarSong.Location = new System.Drawing.Point(4, 45);
-            this.trackBarSong.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.trackBarSong.Location = new System.Drawing.Point(3, 29);
             this.trackBarSong.Name = "trackBarSong";
-            this.trackBarSong.Size = new System.Drawing.Size(1064, 69);
+            this.trackBarSong.Size = new System.Drawing.Size(709, 45);
             this.trackBarSong.SmallChange = 5;
             this.trackBarSong.TabIndex = 0;
             this.trackBarSong.TickFrequency = 5;
@@ -371,30 +368,29 @@
             this.save,
             this.cancel});
             this.contextMenuStripOnFolder.Name = "contextMenuStripOnFolder";
-            this.contextMenuStripOnFolder.Size = new System.Drawing.Size(199, 68);
+            this.contextMenuStripOnFolder.Size = new System.Drawing.Size(149, 48);
             this.contextMenuStripOnFolder.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.contextMenuStripOnFolder_ItemClicked);
             // 
             // save
             // 
             this.save.Name = "save";
-            this.save.Size = new System.Drawing.Size(198, 32);
+            this.save.Size = new System.Drawing.Size(148, 22);
             this.save.Tag = "save";
             this.save.Text = "&Save to Folder";
             // 
             // cancel
             // 
             this.cancel.Name = "cancel";
-            this.cancel.Size = new System.Drawing.Size(198, 32);
+            this.cancel.Size = new System.Drawing.Size(148, 22);
             this.cancel.Tag = "cancel";
             this.cancel.Text = "&Cancel";
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1578, 1032);
+            this.ClientSize = new System.Drawing.Size(1052, 671);
             this.Controls.Add(this.splitContainer);
-            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "WebDAV-AudioPlayer";

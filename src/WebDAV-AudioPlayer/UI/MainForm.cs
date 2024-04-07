@@ -105,6 +105,14 @@ namespace WebDav.AudioPlayer.UI
             base.ScaleControl(_scale, specified);
         }
 
+        private static void ScaleListViewColumns(ListView lv, SizeF factor)
+        {
+            foreach (ColumnHeader column in lv.Columns)
+            {
+                column.Width = (int)Math.Round(column.Width * factor.Width);
+            }
+        }
+
         private void Scale()
         {
             Font = new Font(UIConstants.FontFamilyName, UIConstants.FontSize * _scalingFactor);
@@ -451,14 +459,6 @@ namespace WebDav.AudioPlayer.UI
                         _player.PlayNextAsync(_cancelToken);
                     }
                 }
-            }
-        }
-
-        private static void ScaleListViewColumns(ListView lv, SizeF factor)
-        {
-            foreach (ColumnHeader column in lv.Columns)
-            {
-                column.Width = (int)Math.Round(column.Width * factor.Width);
             }
         }
 
