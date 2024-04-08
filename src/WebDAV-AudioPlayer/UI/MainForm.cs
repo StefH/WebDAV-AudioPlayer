@@ -124,7 +124,7 @@ namespace WebDav.AudioPlayer.UI
                 column.Width = (int)Math.Round(column.Width * _scalingFactor);
             }
             // listView.Size =  new Size((int)(listView.Width * _scalingFactor), (int)(listView.Height * _scalingFactor));
-            
+
             // Set the textBoxSong.Font
             textBoxSong.Font = Font;
 
@@ -472,20 +472,17 @@ namespace WebDav.AudioPlayer.UI
 
         private void PlayAsync(int index)
         {
-            _player.PlayAsync(index, _cancelToken)
-                .SafeFireAndForget(ex => MessageBox.Show(ex.ToString(), "Play Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation));
+            _player.PlayAsync(index, _cancelToken).SafeFireAndForget();
         }
 
         private void PlayNextAsync()
         {
-            _player.PlayNextAsync(_cancelToken)
-                .SafeFireAndForget(ex => MessageBox.Show(ex.ToString(), "Play Next Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation));
+            _player.PlayNextAsync(_cancelToken).SafeFireAndForget();
         }
 
         private void PlayPreviousAsync()
         {
-            _player.PlayPreviousAsync(_cancelToken)
-                .SafeFireAndForget(ex => MessageBox.Show(ex.ToString(), "Play Previous Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation));
+            _player.PlayPreviousAsync(_cancelToken).SafeFireAndForget();
         }
 
         /// <summary>
