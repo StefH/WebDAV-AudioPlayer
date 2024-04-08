@@ -118,42 +118,49 @@ namespace WebDav.AudioPlayer.UI
         {
             Font = new Font(UIConstants.FontFamilyName, UIConstants.FontSize * _scalingFactor);
 
+            // Scale the ListView columns
             foreach (ColumnHeader column in listView.Columns)
             {
                 column.Width = (int)Math.Round(column.Width * _scalingFactor);
             }
-
+            // listView.Size =  new Size((int)(listView.Width * _scalingFactor), (int)(listView.Height * _scalingFactor));
+            
+            // Set the textBoxSong.Font
             textBoxSong.Font = Font;
 
+            // Scale the buttons from the toolStripRight
             toolStripRight.Font = Font;
             toolStripRight.Scale(_scale);
             foreach (var toolStripRightItem in toolStripRight.Items.OfType<ToolStripItem>())
             {
-                // toolStripRightItem.Font = Font;
+                toolStripRightItem.Font = Font;
                 if (toolStripRightItem is ToolStripButton toolStripButton)
                 {
-                    // toolStripButton.Size = new Size((int)(toolStripButton.Width * _scalingFactor), (int)(toolStripButton.Height * _scalingFactor));
-                    // toolStripButton.Image = ResizeImage(toolStripButton.Image);
+                    toolStripButton.Size = new Size((int)(toolStripButton.Width * _scalingFactor), (int)(toolStripButton.Height * _scalingFactor));
+                    toolStripButton.Image = ResizeImage(toolStripButton.Image);
                 }
             }
+
+            //trackBarSong.Size = new Size(trackBarSong.Width, (int)(trackBarSong.Height * _scalingFactor));
+            //trackBarSong.Scale(_scale);
         }
 
-        //private Image ResizeImage(Image originalImage)
-        //{
-        //    int width = (int)(originalImage.Width * _scalingFactor);
-        //    int height = (int)(originalImage.Height * _scalingFactor);
+        private Image ResizeImage(Image originalImage)
+        {
+            int width = (int)(originalImage.Width * _scalingFactor);
+            int height = (int)(originalImage.Height * _scalingFactor);
 
-        //    var resizedImage = new Bitmap(width, height);
-        //    using (var graphics = Graphics.FromImage(resizedImage))
-        //    {
-        //        graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
-        //        graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-        //        graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-        //        graphics.DrawImage(originalImage, 0, 0, width, height);
-        //    }
+            var resizedImage = new Bitmap(width, height);
+            using (var graphics = Graphics.FromImage(resizedImage))
+            {
+                graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                graphics.DrawImage(originalImage, 0, 0, width, height);
+            }
 
-        //    return resizedImage;
-        //}
+            return resizedImage;
+        }
 
         private void InitCancellationTokenSource()
         {
