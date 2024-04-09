@@ -1,6 +1,4 @@
-﻿using ByteSizeLib;
-using CSCore.SoundOut;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -8,6 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AsyncAwaitBestPractices;
+using ByteSizeLib;
+using CSCore.SoundOut;
 using WebDav.AudioPlayer.Audio;
 using WebDav.AudioPlayer.Client;
 using WebDav.AudioPlayer.Models;
@@ -106,31 +106,31 @@ namespace WebDav.AudioPlayer.UI
             base.ScaleControl(_scale, specified);
         }
 
-        private static void ScaleListViewColumns(ListView lv, SizeF factor)
-        {
-            foreach (ColumnHeader column in lv.Columns)
-            {
-                column.Width = (int)Math.Round(column.Width * factor.Width);
-            }
-        }
-
         private void Scale()
         {
-            Font = new Font(UIConstants.FontFamilyName, UIConstants.FontSize * _scalingFactor);
-
-            // Scale the ListView columns
-            foreach (ColumnHeader column in listView.Columns)
+            if (!(_scalingFactor > 1.0))
             {
-                column.Width = (int)Math.Round(column.Width * _scalingFactor);
+                return;
             }
-            // listView.Size =  new Size((int)(listView.Width * _scalingFactor), (int)(listView.Height * _scalingFactor));
 
-            // Set the textBoxSong.Font
-            textBoxSong.Font = Font;
+            var font = new Font(UIConstants.FontFamilyName, UIConstants.FontSize * _scalingFactor);
 
-            // Scale the buttons from the toolStripRight
-            toolStripRight.Font = Font;
-            toolStripRight.Scale(_scale);
+            // Left panel
+            toolStripTreeView.Font = font;
+            foreach (var toolStripTreeViewItem in toolStripTreeView.Items.OfType<ToolStripItem>())
+            {
+                toolStripTreeViewItem.Font = Font;
+                if (toolStripTreeViewItem is ToolStripButton toolStripButton)
+                {
+                    toolStripButton.Size = new Size((int)(toolStripButton.Width * _scalingFactor), (int)(toolStripButton.Height * _scalingFactor));
+                    toolStripButton.Image = ResizeImage(toolStripButton.Image);
+                }
+            }
+            treeView.Font = font;
+            textBoxSong.Font = font;
+
+            // Right panel
+            toolStripRight.Font = font;
             foreach (var toolStripRightItem in toolStripRight.Items.OfType<ToolStripItem>())
             {
                 toolStripRightItem.Font = Font;
@@ -141,8 +141,24 @@ namespace WebDav.AudioPlayer.UI
                 }
             }
 
-            //trackBarSong.Size = new Size(trackBarSong.Width, (int)(trackBarSong.Height * _scalingFactor));
-            //trackBarSong.Scale(_scale);
+            tsLblCurrentTime.Font = font;
+            labelCurrentTime.Font = font;
+            tsLblTotalTime.Font = font;
+            labelTotalTime.Font = font;
+
+            trackBarSong.Font = font;
+            trackBarSong.Size = new Size((int)(trackBarSong.Width * _scalingFactor), (int)(trackBarSong.Height * _scalingFactor));
+
+            listView.Font = font;
+            foreach (ColumnHeader column in listView.Columns)
+            {
+                var extra = column.Text == "Title" ? 2.5 : 1.5;
+                column.Width = (int)Math.Round(column.Width * _scalingFactor * extra);
+            }
+
+            panelRightBottom.Size = new Size(txtLogging.Width, (int)(txtLogging.Height * _scalingFactor));
+
+            txtLogging.Font = font;
         }
 
         private Image ResizeImage(Image originalImage)

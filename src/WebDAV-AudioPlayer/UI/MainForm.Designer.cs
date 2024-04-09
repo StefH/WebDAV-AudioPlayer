@@ -79,7 +79,7 @@
             this.splitContainer.Panel2.Controls.Add(this.panelRightMid);
             this.splitContainer.Panel2.Controls.Add(this.panelRightBottom);
             this.splitContainer.Panel2.Controls.Add(this.panelRightTop);
-            this.splitContainer.Size = new System.Drawing.Size(1052, 671);
+            this.splitContainer.Size = new System.Drawing.Size(1052, 711);
             this.splitContainer.SplitterDistance = 333;
             this.splitContainer.TabIndex = 1;
             // 
@@ -89,7 +89,7 @@
             this.textBoxSong.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.textBoxSong.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxSong.ForeColor = System.Drawing.SystemColors.MenuHighlight;
-            this.textBoxSong.Location = new System.Drawing.Point(0, 651);
+            this.textBoxSong.Location = new System.Drawing.Point(0, 691);
             this.textBoxSong.Name = "textBoxSong";
             this.textBoxSong.ReadOnly = true;
             this.textBoxSong.Size = new System.Drawing.Size(333, 20);
@@ -101,10 +101,10 @@
             this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView.ImageIndex = 0;
             this.treeView.ImageList = this.imageListTreeView;
-            this.treeView.Location = new System.Drawing.Point(0, 31);
+            this.treeView.Location = new System.Drawing.Point(0, 25);
             this.treeView.Name = "treeView";
             this.treeView.SelectedImageIndex = 0;
-            this.treeView.Size = new System.Drawing.Size(333, 640);
+            this.treeView.Size = new System.Drawing.Size(333, 686);
             this.treeView.TabIndex = 0;
             this.treeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView_NodeMouseClick);
             // 
@@ -125,7 +125,7 @@
             this.toolStripTreeView.Location = new System.Drawing.Point(0, 0);
             this.toolStripTreeView.Name = "toolStripTreeView";
             this.toolStripTreeView.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStripTreeView.Size = new System.Drawing.Size(333, 31);
+            this.toolStripTreeView.Size = new System.Drawing.Size(333, 25);
             this.toolStripTreeView.TabIndex = 1;
             this.toolStripTreeView.Text = "toolStripTreeView";
             // 
@@ -133,9 +133,10 @@
             // 
             this.btnRefresh.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnRefresh.Image = global::WebDav.AudioPlayer.Properties.Resources.Refresh;
+            this.btnRefresh.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnRefresh.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(28, 28);
+            this.btnRefresh.Size = new System.Drawing.Size(23, 22);
             this.btnRefresh.Text = "Refresh";
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
@@ -146,7 +147,7 @@
             this.panelRightMid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelRightMid.Location = new System.Drawing.Point(0, 80);
             this.panelRightMid.Name = "panelRightMid";
-            this.panelRightMid.Size = new System.Drawing.Size(715, 493);
+            this.panelRightMid.Size = new System.Drawing.Size(715, 541);
             this.panelRightMid.TabIndex = 2;
             // 
             // listView
@@ -164,7 +165,7 @@
             this.listView.Margin = new System.Windows.Forms.Padding(0);
             this.listView.MultiSelect = false;
             this.listView.Name = "listView";
-            this.listView.Size = new System.Drawing.Size(715, 493);
+            this.listView.Size = new System.Drawing.Size(715, 541);
             this.listView.TabIndex = 17;
             this.listView.UseCompatibleStateImageBehavior = false;
             this.listView.View = System.Windows.Forms.View.Details;
@@ -175,34 +176,34 @@
             // 
             this.DisplayName.Tag = "DisplayName";
             this.DisplayName.Text = "Title";
-            this.DisplayName.Width = 500;
+            this.DisplayName.Width = 400;
             // 
             // ContentLength
             // 
             this.ContentLength.Tag = "ContentLength";
             this.ContentLength.Text = "Size";
-            this.ContentLength.Width = 100;
+            this.ContentLength.Width = 90;
             // 
             // Length
             // 
             this.Length.Tag = "Length";
             this.Length.Text = "Length";
-            this.Length.Width = 95;
+            this.Length.Width = 90;
             // 
             // Bitrate
             // 
             this.Bitrate.Tag = "BitrateKbps";
             this.Bitrate.Text = "BitrateKbps";
-            this.Bitrate.Width = 100;
+            this.Bitrate.Width = 90;
             // 
             // panelRightBottom
             // 
             this.panelRightBottom.BackColor = System.Drawing.SystemColors.Control;
             this.panelRightBottom.Controls.Add(this.txtLogging);
             this.panelRightBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelRightBottom.Location = new System.Drawing.Point(0, 573);
+            this.panelRightBottom.Location = new System.Drawing.Point(0, 621);
             this.panelRightBottom.Name = "panelRightBottom";
-            this.panelRightBottom.Size = new System.Drawing.Size(715, 98);
+            this.panelRightBottom.Size = new System.Drawing.Size(715, 90);
             this.panelRightBottom.TabIndex = 1;
             // 
             // txtLogging
@@ -215,7 +216,7 @@
             this.txtLogging.Name = "txtLogging";
             this.txtLogging.ReadOnly = true;
             this.txtLogging.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtLogging.Size = new System.Drawing.Size(715, 98);
+            this.txtLogging.Size = new System.Drawing.Size(715, 90);
             this.txtLogging.TabIndex = 18;
             // 
             // panelRightTop
@@ -341,12 +342,11 @@
             // 
             // trackBarSong
             // 
-            this.trackBarSong.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.trackBarSong.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.trackBarSong.LargeChange = 10;
-            this.trackBarSong.Location = new System.Drawing.Point(3, 29);
+            this.trackBarSong.Location = new System.Drawing.Point(0, 35);
             this.trackBarSong.Name = "trackBarSong";
-            this.trackBarSong.Size = new System.Drawing.Size(709, 45);
+            this.trackBarSong.Size = new System.Drawing.Size(715, 45);
             this.trackBarSong.SmallChange = 5;
             this.trackBarSong.TabIndex = 0;
             this.trackBarSong.TickFrequency = 5;
@@ -389,7 +389,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1052, 671);
+            this.ClientSize = new System.Drawing.Size(1052, 711);
             this.Controls.Add(this.splitContainer);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
