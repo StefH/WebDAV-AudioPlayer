@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>1.0.0.0</Version>
+    <Version>1.0.0.1</Version>
     <Title>OggSource ISampleSource implementation for CSCore</Title>
     <Description>OggSource ISampleSource implementation for CSCore</Description>
     <Authors>Stef Heyenrath</Authors>
@@ -9,9 +9,9 @@
     <PackageId>CSCore.Ogg</PackageId>
     <PackageTags>cscore;ogg;vorbis</PackageTags>
     <PackageReleaseNotes>See CHANGELOG.md</PackageReleaseNotes>
-    <PackageIconUrl>https://raw.githubusercontent.com/StefH/WebDAV-AudioPlayer/master/resources/CSCore_Ogg.png</PackageIconUrl>
+    <PackageIcon>CSCore_Ogg.png</PackageIcon>
     <PackageProjectUrl>https://github.com/StefH/WebDAV-AudioPlayer</PackageProjectUrl>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/StefH/WebDAV-AudioPlayer/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/StefH/WebDAV-AudioPlayer</RepositoryUrl>
     <DebugType>full</DebugType>
@@ -22,12 +22,18 @@
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+    <PackageReadmeFile>PackageReadme.md</PackageReadmeFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <PathMap>$(MSBuildProjectDirectory)=/</PathMap>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../resources/CSCore_Ogg.png" Pack="true" PackagePath="" />
+    <None Include="./PackageReadme.md" Pack="true" PackagePath="" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2018.3.0">
