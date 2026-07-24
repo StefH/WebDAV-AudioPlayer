@@ -1,27 +1,31 @@
-﻿using ByteSizeLib;
-using CSCore.SoundOut;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ByteSizeLib;
+using CSCore.SoundOut;
 using WebDav.AudioPlayer.Audio;
 using WebDav.AudioPlayer.Client;
 using WebDav.AudioPlayer.Models;
 using WebDav.AudioPlayer.Properties;
+using WebDav.AudioPlayer.Util;
 
 namespace WebDav.AudioPlayer.UI
 {
     public partial class MainForm : Form
     {
+        public static readonly string AppName = "WebDAV-AudioPlayer";
+
         private readonly AssemblyConfig _config;
         private readonly IWebDavClient _client;
         private readonly Player _player;
 
         private CancellationTokenSource _cancellationTokenSource;
         private CancellationToken _cancelToken;
+
 
         public MainForm(AssemblyConfig config)
         {
@@ -33,12 +37,14 @@ namespace WebDav.AudioPlayer.UI
 
             InitCancellationTokenSource();
 
+            LcdUtils.MonoSetDefault();
+
             _client = new MyWebDavClient(config);
 
             Func<ResourceItem, string, string> updateTitle = (resourceItem, action) =>
             {
                 string text = $"{action} : '{resourceItem.Parent.DisplayName}\\{resourceItem.DisplayName}' ({resourceItem.MediaDetails.Mode} {resourceItem.MediaDetails.BitrateKbps} kbps)";
-                Text = @"WebDAV-AudioPlayer " + text;
+                Text = $"{AppName} {text}";
 
                 return text;
             };
@@ -60,6 +66,13 @@ namespace WebDav.AudioPlayer.UI
 
                     listView.SetCells(selectedIndex, $@"{_player.TotalTime:h\:mm\:ss}", bitrate);
                     listView.SetSelectedIndex(selectedIndex);
+
+                    LcdUtils.MonoSetText
+                    (
+                        resourceItem.Parent.DisplayName,
+                        resourceItem.DisplayName,
+                        $"{resourceItem.MediaDetails.BitrateKbps} kbps ({resourceItem.MediaDetails.Mode})"
+                    );
                 },
                 PlayContinue = resourceItem =>
                 {
@@ -77,6 +90,8 @@ namespace WebDav.AudioPlayer.UI
                     trackBarSong.Maximum = 1;
                     labelCurrentTime.Text = labelTotalTime.Text = @"00:00:00";
                     Text = @"WebDAV-AudioPlayer";
+
+                    LcdUtils.MonoSetDefault();
                 },
                 DoubleClickFolderAndPlayFirstSong = async resourceItem =>
                 {
@@ -386,6 +401,8 @@ namespace WebDav.AudioPlayer.UI
 
                 if (_player.PlaybackState == PlaybackState.Playing)
                 {
+                    LcdUtils.MonoSetTime("▶︎", _player.CurrentTime, _player.TotalTime);
+
                     trackBarSong.Value = (int)_player.CurrentTime.TotalSeconds;
                     // trackBarSong.Enabled = _player.CanSeek;
 
@@ -396,6 +413,14 @@ namespace WebDav.AudioPlayer.UI
                     {
                         _player.PlayNextAsync(_cancelToken);
                     }
+                }
+                else if (_player.PlaybackState == PlaybackState.Paused)
+                {
+                    LcdUtils.MonoSetTime("‖", _player.CurrentTime, _player.TotalTime);
+                }
+                else
+                {
+                    LcdUtils.MonoSetTime(string.Empty);
                 }
             }
         }
