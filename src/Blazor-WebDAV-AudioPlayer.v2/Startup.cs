@@ -50,7 +50,7 @@ namespace Blazor.WebDAV.AudioPlayer
 
             // services.AddSingleton(Microsoft.Extensions.Options.Options.Create(new ConnectionSettings()));
 
-            services.AddSingleton<IWebDavClient, MyWebDavClient>();
+            services.AddSingleton<IWebDavClient, AudioPlayerWebDavClient>();
             services.AddScoped<IHowl, Howl>();
             services.AddScoped<IHowlGlobal, HowlGlobal>();
             services.AddScoped<IPlayer, Player>();

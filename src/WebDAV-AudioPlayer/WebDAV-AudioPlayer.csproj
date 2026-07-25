@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\Required.1.0.0\build\Required.props" Condition="Exists('..\..\packages\Required.1.0.0\build\Required.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -10,6 +11,9 @@
     <RootNamespace>WebDav.AudioPlayer</RootNamespace>
     <AssemblyName>WebDav-AudioPlayer</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <SccProjectName>SAK</SccProjectName>
@@ -254,7 +258,7 @@
     <Compile Include="Audio\TrackInfoHelper.cs" />
     <Compile Include="Client\IConnectionSettings.cs" />
     <Compile Include="Client\IWebDavClient.cs" />
-    <Compile Include="Client\MyWebDavClient.cs" />
+    <Compile Include="Client\AudioPlayerWebDavClient.cs" />
     <Compile Include="Client\OnlinePathBuilder.cs" />
     <Compile Include="Client\ResourceLoadStatus.cs" />
     <Compile Include="Extensions\ListViewExtensions.cs" />
@@ -270,6 +274,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Required\Required.cs" />
     <Compile Include="UI\ConfigurationForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -342,6 +347,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Required.1.0.0\build\Required.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Required.1.0.0\build\Required.props'))" />
   </Target>
   <!--<PropertyGroup>
     <PostBuildEvent>copy "$(SolutionDir)packages\MediaInfo.Native.0.7.91\build\native\$(PlatformName)\*.dll" "$(TargetDir)"</PostBuildEvent>

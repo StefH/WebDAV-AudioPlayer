@@ -2,52 +2,53 @@
 using Logitech_LCD;
 using WebDav.AudioPlayer.UI;
 
-namespace WebDav.AudioPlayer.Util
+namespace WebDav.AudioPlayer.Util;
+
+internal static class LcdUtils
 {
-    internal static class LcdUtils
+    private static readonly bool _isLcdMonoInit = LogitechLcd.Instance.Init(MainForm.AppName, LcdType.Mono);
+
+    internal static void MonoSetDefault()
     {
-        private static readonly bool _isLcdMonoInit = LogitechLcd.Instance.Init(MainForm.AppName, LcdType.Mono);
+        MonoSetText($"    {MainForm.AppName}", "    by", "    Stef Heyenrath");
+    }
 
-        internal static void MonoSetDefault()
+    internal static void MonoSetText(params string[] lines)
+    {
+        if (_isLcdMonoInit)
         {
-            MonoSetText($"    {MainForm.AppName}", "    by", "    Stef Heyenrath");
+            LogitechLcd.Instance.MonoSetText(0, lines.Length > 0 ? lines[0] : string.Empty);
+            LogitechLcd.Instance.MonoSetText(1, lines.Length > 1 ? lines[1] : string.Empty);
+            LogitechLcd.Instance.MonoSetText(2, lines.Length > 2 ? lines[2] : string.Empty);
+            LogitechLcd.Instance.MonoSetText(3, lines.Length > 3 ? lines[3] : string.Empty);
+            LogitechLcd.Instance.Update();
         }
+    }
 
-        internal static void MonoSetText(params string[] lines)
+    internal static void MonoSetTimeAndBitrate(string pre, int bitrateKbps, string mode, TimeSpan? currentTime = null, TimeSpan? totalTime = null)
+    {
+        if (_isLcdMonoInit)
         {
-            if (_isLcdMonoInit)
-            {
-                LogitechLcd.Instance.MonoSetText(0, lines.Length > 0 ? lines[0] : string.Empty);
-                LogitechLcd.Instance.MonoSetText(1, lines.Length > 1 ? lines[1] : string.Empty);
-                LogitechLcd.Instance.MonoSetText(2, lines.Length > 2 ? lines[2] : string.Empty);
-                LogitechLcd.Instance.MonoSetText(3, lines.Length > 3 ? lines[3] : string.Empty);
-                LogitechLcd.Instance.Update();
-            }
-        }
+            var bitrate = $"{bitrateKbps} kbps {mode}";
 
-        internal static void MonoSetTime(string pre, TimeSpan? currentTime = null, TimeSpan? totalTime = null)
-        {
-            if (_isLcdMonoInit)
+            if (currentTime == null || totalTime == null)
             {
-                if (currentTime == null || totalTime == null)
-                {
-                    LogitechLcd.Instance.MonoSetText(3, string.Empty);
-                }
-                else if (totalTime.HasValue && totalTime.Value.TotalMinutes >= 60)
-                {
-                    LogitechLcd.Instance.MonoSetText(3, $"{pre} {currentTime:hh\\:mm\\:ss} / {totalTime:hh\\:mm\\:ss}");
-                }
-                else if (totalTime.HasValue && totalTime.Value.TotalMinutes < 10)
-                {
-                    LogitechLcd.Instance.MonoSetText(3, $"{pre} {currentTime:m\\:ss} / {totalTime:m\\:ss}");
-                }
-                else
-                {
-                    LogitechLcd.Instance.MonoSetText(3, $"{pre} {currentTime:mm\\:ss} / {totalTime:mm\\:ss}");
-                }
-
-                LogitechLcd.Instance.Update();
+                LogitechLcd.Instance.MonoSetText(3, string.Empty);
             }
+            else if (totalTime.HasValue && totalTime.Value.TotalMinutes >= 60)
+            {
+                LogitechLcd.Instance.MonoSetText(3, $"{pre} {currentTime:hh\\:mm\\:ss} / {totalTime:hh\\:mm\\:ss} ({bitrate})");
+            }
+            else if (totalTime.HasValue && totalTime.Value.TotalMinutes < 10)
+            {
+                LogitechLcd.Instance.MonoSetText(3, $"{pre} {currentTime:m\\:ss} / {totalTime:m\\:ss}       ({bitrate})");
+            }
+            else
+            {
+                LogitechLcd.Instance.MonoSetText(3, $"{pre} {currentTime:mm\\:ss} / {totalTime:mm\\:ss}      ({bitrate})");
+            }
+
+            LogitechLcd.Instance.Update();
         }
     }
 }

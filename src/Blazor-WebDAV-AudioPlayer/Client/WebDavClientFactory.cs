@@ -1,29 +1,20 @@
 ﻿using Blazor.WebDAV.AudioPlayer.Options;
 using Microsoft.Extensions.Options;
-using System;
 using WebDav.AudioPlayer.Client;
 
-namespace Blazor.WebDAV.AudioPlayer.Client
+namespace Blazor.WebDAV.AudioPlayer.Client;
+
+public class WebDavClientFactory(IOptions<ConnectionSettings> options) : IWebDavClientFactory
 {
-    public class WebDavClientFactory : IWebDavClientFactory
+    public IWebDavClient GetClient()
     {
-        private readonly IOptions<ConnectionSettings> _options;
-
-        public WebDavClientFactory(IOptions<ConnectionSettings> options)
+        var con = new ConnectionSettings
         {
-            _options = options;
-        }
-
-        public IWebDavClient GetClient()
-        {
-            var con = new ConnectionSettings
-            {
-                Password = _options.Value.Password,
-                UserName = _options.Value.UserName,
-                RootFolder = _options.Value.RootFolder,
-                StorageUri = _options.Value.StorageUri
-            };
-            return new MyWebDavClient(con);
-        }
+            Password = options.Value.Password,
+            UserName = options.Value.UserName,
+            RootFolder = options.Value.RootFolder,
+            StorageUri = options.Value.StorageUri
+        };
+        return new AudioPlayerWebDavClient(con);
     }
 }

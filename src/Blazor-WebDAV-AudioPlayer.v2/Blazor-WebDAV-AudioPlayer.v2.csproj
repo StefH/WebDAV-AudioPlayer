@@ -20,7 +20,7 @@
     <Compile Include="..\WebDAV-AudioPlayer\Audio\TrackInfoHelper.cs" Link="Audio\TrackInfoHelper.cs" />
     <Compile Include="..\WebDAV-AudioPlayer\Client\IConnectionSettings.cs" Link="Client\IConnectionSettings.cs" />
     <Compile Include="..\WebDAV-AudioPlayer\Client\IWebDavClient.cs" Link="Client\IWebDavClient.cs" />
-    <Compile Include="..\WebDAV-AudioPlayer\Client\MyWebDavClient.cs" Link="Client\MyWebDavClient.cs" />
+    <Compile Include="..\WebDAV-AudioPlayer\Client\AudioPlayerWebDavClient.cs" Link="Client\AudioPlayerWebDavClient.cs" />
     <Compile Include="..\WebDAV-AudioPlayer\Client\OnlinePathBuilder.cs" Link="Client\OnlinePathBuilder.cs" />
     <Compile Include="..\WebDAV-AudioPlayer\Client\ResourceLoadStatus.cs" Link="Client\ResourceLoadStatus.cs" />
     <Compile Include="..\WebDAV-AudioPlayer\Extensions\TaskExtensions.cs" Link="Extensions\TaskExtensions.cs" />

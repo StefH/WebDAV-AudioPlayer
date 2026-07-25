@@ -17,7 +17,11 @@ namespace WebDav.AudioPlayer.UI
 {
     public partial class MainForm : Form
     {
+#if DEBUG
+        public static readonly string AppName = "WebDAV-AudioPlayer [Debug]";
+#else
         public static readonly string AppName = "WebDAV-AudioPlayer";
+#endif
 
         private readonly AssemblyConfig _config;
         private readonly IWebDavClient _client;
@@ -39,7 +43,7 @@ namespace WebDav.AudioPlayer.UI
 
             LcdUtils.MonoSetDefault();
 
-            _client = new MyWebDavClient(config);
+            _client = new AudioPlayerWebDavClient(config);
 
             Func<ResourceItem, string, string> updateTitle = (resourceItem, action) =>
             {
@@ -69,9 +73,9 @@ namespace WebDav.AudioPlayer.UI
 
                     LcdUtils.MonoSetText
                     (
-                        resourceItem.Parent.DisplayName,
-                        resourceItem.DisplayName,
-                        $"{resourceItem.MediaDetails.BitrateKbps} kbps ({resourceItem.MediaDetails.Mode})"
+                        $" {(!string.IsNullOrEmpty(resourceItem.MediaDetails.Artist) ? resourceItem.MediaDetails.Artist : resourceItem.Parent.DisplayName)}",
+                        $" {(!string.IsNullOrEmpty(resourceItem.MediaDetails.Album) ? resourceItem.MediaDetails.Album : resourceItem.Parent.DisplayName)}",
+                        $" {(!string.IsNullOrEmpty(resourceItem.MediaDetails.Title) ? resourceItem.MediaDetails.Title : resourceItem.DisplayName)}"
                     );
                 },
                 PlayContinue = resourceItem =>
@@ -89,7 +93,7 @@ namespace WebDav.AudioPlayer.UI
                     trackBarSong.Value = 0;
                     trackBarSong.Maximum = 1;
                     labelCurrentTime.Text = labelTotalTime.Text = @"00:00:00";
-                    Text = @"WebDAV-AudioPlayer";
+                    Text = AppName;
 
                     LcdUtils.MonoSetDefault();
                 },
@@ -401,7 +405,8 @@ namespace WebDav.AudioPlayer.UI
 
                 if (_player.PlaybackState == PlaybackState.Playing)
                 {
-                    LcdUtils.MonoSetTime("▶︎", _player.CurrentTime, _player.TotalTime);
+                    var resourceItem = _player.Items[_player.SelectedIndex];
+                    LcdUtils.MonoSetTimeAndBitrate("▶︎", resourceItem.MediaDetails.BitrateKbps, resourceItem.MediaDetails.Mode, _player.CurrentTime, _player.TotalTime);
 
                     trackBarSong.Value = (int)_player.CurrentTime.TotalSeconds;
                     // trackBarSong.Enabled = _player.CanSeek;
@@ -416,11 +421,12 @@ namespace WebDav.AudioPlayer.UI
                 }
                 else if (_player.PlaybackState == PlaybackState.Paused)
                 {
-                    LcdUtils.MonoSetTime("‖", _player.CurrentTime, _player.TotalTime);
+                    var resourceItem = _player.Items[_player.SelectedIndex];
+                    LcdUtils.MonoSetTimeAndBitrate("‖", resourceItem.MediaDetails.BitrateKbps, resourceItem.MediaDetails.Mode, _player.CurrentTime, _player.TotalTime);
                 }
                 else
                 {
-                    LcdUtils.MonoSetTime(string.Empty);
+                    LcdUtils.MonoSetTimeAndBitrate(string.Empty, default, default);
                 }
             }
         }
